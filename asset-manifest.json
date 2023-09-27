@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/ASU-Rideshare-App/static/css/main.a240c550.css",
-    "main.js": "/ASU-Rideshare-App/static/js/main.00b67339.js",
+    "main.js": "/ASU-Rideshare-App/static/js/main.dd951a8b.js",
     "index.html": "/ASU-Rideshare-App/index.html",
     "main.a240c550.css.map": "/ASU-Rideshare-App/static/css/main.a240c550.css.map",
-    "main.00b67339.js.map": "/ASU-Rideshare-App/static/js/main.00b67339.js.map"
+    "main.dd951a8b.js.map": "/ASU-Rideshare-App/static/js/main.dd951a8b.js.map"
   },
   "entrypoints": [
     "static/css/main.a240c550.css",
-    "static/js/main.00b67339.js"
+    "static/js/main.dd951a8b.js"
   ]
 }
