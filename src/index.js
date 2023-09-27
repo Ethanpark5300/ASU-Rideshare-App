@@ -2,6 +2,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import Navbar from "./components/Navigation_Bar/Navbar";
+import ErrorPage from "./pages/ErrorPage";
 import Home from "./pages/Home";
 import RequestRide from "./pages/RequestRide";
 import TrackRide from "./pages/TrackRide";
@@ -32,8 +33,24 @@ const router = createBrowserRouter
                     element: <Home />,
                 },
                 {
-                    path: "/",
-                    element: <Home />,
+                    path: "RequestRide",
+                    element: <RequestRide />,
+                },
+                {
+                    path: "TrackRide",
+                    element: <TrackRide />,
+                },
+                {
+                    path: "RideHistory",
+                    element: <RideHistory />,
+                },
+                {
+                    path: "Payment",
+                    element: <Payment />,
+                },
+                {
+                    path: "Profile",
+                    element: <Profile />,
                 },
 
             ],
