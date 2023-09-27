@@ -1,4 +1,4 @@
-import '../styles/Map.css';
+import '../styles/Payment.css';
 
 function Map() {
     return (
