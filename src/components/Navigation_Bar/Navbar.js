@@ -13,7 +13,7 @@ function Navbar()
 
     return (
         <>
-        <IconContext.Provider value = {{color: "#800000"}}>
+        <IconContext.Provider value = {{color: "white"}}>
             <nav className="navbar">
                 <div className="navbar-container container">
                     <Link to="/" className="navbar-logo" onClick={closeMobileMenu}>
