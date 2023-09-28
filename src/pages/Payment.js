@@ -1,11 +1,11 @@
 import '../styles/Payment.css';
 
-function Map() {
+function Payment() {
     return (
-        <div className='Map'>
-            <h1>Map</h1>
+        <div className='Payment'>
+            <h1>Payment</h1>
         </div>
     );
 }
 
-export default Map;
+export default Payment;
