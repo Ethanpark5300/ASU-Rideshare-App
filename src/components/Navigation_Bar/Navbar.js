@@ -1,7 +1,6 @@
 import {useState} from "react";
 import { Link, NavLink } from "react-router-dom";
 import "./Navbar.css";
-import {GiRocketThruster} from "react-icons/gi";
 import {FaBars, FaTimes} from "react-icons/fa";
 import {IconContext} from "react-icons/lib";
 
