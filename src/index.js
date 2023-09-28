@@ -1,7 +1,6 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
-import Navbar from "./components/Navigation_Bar/Navbar";
 import ErrorPage from "./pages/ErrorPage";
 import Home from "./pages/Home";
 import RequestRide from "./pages/RequestRide";
@@ -14,7 +13,6 @@ const AppLayout = () =>
 {
     return (
         <>
-            <Navbar />
             <Outlet />
         </>
     );
