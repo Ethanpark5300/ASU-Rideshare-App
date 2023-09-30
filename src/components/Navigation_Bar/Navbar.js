@@ -16,14 +16,14 @@ function Navbar()
         <IconContext.Provider value = {{color: "white"}}>
             <nav className="navbar">
                 <div className="navbar-container container">
-                    <Link to="/" className="navbar-logo" onClick={closeMobileMenu}>
+                    <Link to="/home" className="navbar-logo" onClick={closeMobileMenu}>
                         
                         <div className="navbar-title"> ASU Rideshare App </div>
                     </Link>
                     <div className="menu-icon" onClick={handleClick}> {click ? <FaTimes /> : <FaBars /> } </div>
                     <ul className={click ? "nav-menu active" : "nav-menu"}>
                         <li className="nav-item">
-                            <NavLink to="/" className={({ isActive }) => "nav-links" + (isActive ? " activated" : "")} onClick = {closeMobileMenu}>
+                            <NavLink to="/home" className={({ isActive }) => "nav-links" + (isActive ? " activated" : "")} onClick = {closeMobileMenu}>
                                 Home
                             </NavLink>
                         </li>
