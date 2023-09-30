@@ -93,7 +93,7 @@
 }
 
 /* Responsive */
-@media screen and (max-width: 960px) {
+@media screen and (max-width: 1024px) {
     .NavbarItems {
         position: relative;
     }
@@ -154,7 +154,7 @@
     }
 }
 
-@media screen and (max-width: 401px) {
+@media screen and (max-width: 416px) {
     .navbar-title
     {
         font-size: 1.5rem;
