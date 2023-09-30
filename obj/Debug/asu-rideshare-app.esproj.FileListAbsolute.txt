@@ -1,0 +1,2 @@
+C:\Users\aeric\Documents\School\Capstone\ASU-Rideshare-App\obj\Debug\asu-rideshare-app.esproj.SuggestedBindingRedirects.cache
+C:\Users\aeric\Documents\School\Capstone\ASU-Rideshare-App\obj\Debug\asu-rideshare-app.esproj.CoreCompileInputs.cache
