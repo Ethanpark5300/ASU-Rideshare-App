@@ -1,11 +1,14 @@
 import { useRef, useState } from 'react';
 import { Account } from '../account/Account';
 import '../styles/Login.css';
+import '../components/Navigation_Bar/Navbar.css';
 import { useAppDispatch } from '../store/hooks';
 import { setAccountStore } from '../store/features/accountSlice';
 import { TextInput } from '../components/Text_Input/TextInput';
 import Navbar from '../components/Navigation_Bar/Navbar';
 import { DatabaseAccessor } from '../databases/DatabaseAccessor';
+import { NavLink } from 'react-router-dom';
+import { Button } from '../components/Buttons/Button';
 
 
 function Login() {
@@ -28,6 +31,7 @@ function Login() {
 			//fail login
 			setLoginFailed(true);
 		}
+		//store account in store, or store undefined if no login made
 		dispatch(setAccountStore(loginAccount));
 		
 	}
@@ -53,6 +57,7 @@ function Login() {
 					regex={undefined}
 					valueRef={passwordRef}
 					enterFunction={setAccount}
+					inputType="password"
 				/>
 			</div>
 			
@@ -63,6 +68,18 @@ function Login() {
 					</p>
 				)
 			}
+			<Button
+				label="login"
+				onClickFn={setAccount}
+			/>
+			<h2>Don't have an account?</h2>
+			<h2>
+				<NavLink to="/register" className={({ isActive }) => "nav-links" + (isActive ? " activated" : "")}>
+					Register
+				</NavLink>
+			</h2>
+
+
 			
         </div>
     );

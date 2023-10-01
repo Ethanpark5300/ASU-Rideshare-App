@@ -12,6 +12,7 @@
     <BuildOutputFolder>$(MSBuildProjectDirectory)\build</BuildOutputFolder>
   </PropertyGroup>
   <ItemGroup>
+    <Folder Include="src\components\Buttons\" />
     <Folder Include="src\components\Text_Input\" />
   </ItemGroup>
 </Project>

@@ -13,14 +13,16 @@ interface TextInputProps {
 	maxLength?: number,
 	/**optional: function that executes when enter is pressed while highlighting the input*/
 	enterFunction?: Function,
+	/**optional: undefined it is type text*/
+	inputType?: string,
 }
 
-export const TextInput: React.FC<TextInputProps> = ({placeholder, regex, valueRef, defaultValue,maxLength, enterFunction }) => {
+export const TextInput: React.FC<TextInputProps> = ({placeholder, regex, valueRef, defaultValue,maxLength, enterFunction, inputType }) => {
 
 	return (
 		<input
 			//name={"allyLevelSet"}
-			type="text"
+			type={inputType ?? "text"}
 			placeholder={placeholder}
 			autoComplete="off"
 			className="UITextInput"

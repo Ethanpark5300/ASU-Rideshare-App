@@ -39,6 +39,26 @@ export class DatabaseAccessor {
 		return account;
 	}
 	/**
+	 * registers an account in the database
+	 * @param email
+	 * @param password
+	 * @param firstName
+	 * @param lastName
+	 * @returns true if successful, false otherwise
+	 */
+	public register(email: string, firstName: string, lastName: string, password: string): boolean {
+		let registerSuccess: boolean = false;
+		//TODO actually put in legit tests
+		if (email.endsWith("@asu.edu")) {
+			registerSuccess = true;
+		}
+
+		//TODO add data to database
+
+		return registerSuccess; //if successful
+	}
+
+	/**
 	 * use this before doing account operations
 	 * @param account Account to be verified
 	 * @returns true if it is a legit account

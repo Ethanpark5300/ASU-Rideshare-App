@@ -9,3 +9,7 @@
     z-index: -1;
     font-family: Arial, Helvetica, sans-serif;
 }
+
+.RegisterError {
+	color: red;
+}
