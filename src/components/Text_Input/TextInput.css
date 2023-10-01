@@ -1,0 +1,7 @@
+.UITextInput {
+	border: 5px solid transparent;
+	padding: 0px;
+/*	border-image: url(./ui_images/UIBox255.png) 5 fill;*/
+	box-sizing: border-box;
+	background-color: rgba(128,128,128,0);
+}
