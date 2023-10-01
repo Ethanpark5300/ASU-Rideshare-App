@@ -19,7 +19,7 @@ export const accountSlice = createSlice({
 	name: 'account',
 	initialState,
 	reducers: {
-		set: {
+		setAccountStore: {
 			// Redux Toolkit allows us to write "mutating" logic in reducers. It
 			// doesn't actually mutate the state because it uses the Immer library,
 			// which detects changes to a "draft state" and produces a brand new
@@ -31,7 +31,7 @@ export const accountSlice = createSlice({
 			},
 
 			//prepare allows for us to have multiple arguments in a dispatch; this formats action
-			prepare: (account:Account) => {
+			prepare: (account:Account|undefined) => {
 				return {
 					payload: {account }
 				};
@@ -41,9 +41,9 @@ export const accountSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { set } = accountSlice.actions
+export const { setAccountStore } = accountSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type
-export const selectAdvancedBuild = (state: RootState) => state.advancedBuild.statBuild
+export const selectAccount = (state: RootState) => state.account
 
 export default accountSlice.reducer
