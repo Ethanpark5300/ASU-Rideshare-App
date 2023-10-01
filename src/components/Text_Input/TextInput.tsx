@@ -3,8 +3,8 @@ import React, { MutableRefObject } from "react";
 interface TextInputProps {
 	/**what displays with no content*/
 	placeholder: string,
-	/**regex limiting usable characters*/
-	regex: RegExp,
+	/**optional: regex limiting usable characters*/
+	regex?: RegExp,
 	/**the ref that will be modified by the input*/
 	valueRef: MutableRefObject<string>,
 	/**optional: default value in input if applicable*/
@@ -31,7 +31,7 @@ export const TextInput: React.FC<TextInputProps> = ({placeholder, regex, valueRe
 			}}
 			defaultValue={defaultValue}
 			onChange={event => {
-				if (event.target.value === '' || regex.test(event.target.value)) {
+				if (event.target.value === '' || (regex !== undefined  ? regex.test(event.target.value) : true)) {
 
 					(valueRef as MutableRefObject<string>).current = event.target.value;
 
