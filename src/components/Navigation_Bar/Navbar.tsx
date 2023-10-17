@@ -3,6 +3,7 @@ import { Link, NavLink } from "react-router-dom";
 import "./Navbar.css";
 import {FaBars, FaTimes} from "react-icons/fa";
 import {IconContext} from "react-icons/lib";
+// import ASU_Logo from "../../images/ASU-Logo.svg";
 
 function Navbar() 
 {
@@ -17,7 +18,7 @@ function Navbar()
             <nav className="navbar">
                 <div className="navbar-container container">
                     <Link to="/" className="navbar-logo" onClick={closeMobileMenu}>
-                        {/* Add logo here */}
+                        {/* TODO: Add ASU Logo on the left side of title */}
                         <div className="navbar-title"> ASU Rideshare App </div>
                     </Link>
                     <div className="menu-icon" onClick={handleClick}> {click ? <FaTimes /> : <FaBars /> } </div>
