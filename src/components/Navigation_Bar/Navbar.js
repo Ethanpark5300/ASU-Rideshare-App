@@ -17,7 +17,7 @@ function Navbar()
             <nav className="navbar">
                 <div className="navbar-container container">
                     <Link to="/" className="navbar-logo" onClick={closeMobileMenu}>
-                        
+                        {/* Add logo here */}
                         <div className="navbar-title"> ASU Rideshare App </div>
                     </Link>
                     <div className="menu-icon" onClick={handleClick}> {click ? <FaTimes /> : <FaBars /> } </div>
@@ -29,27 +29,17 @@ function Navbar()
                         </li>
                         <li className="nav-item">
                             <NavLink to="/requestride" className={({ isActive }) => "nav-links" + (isActive ? " activated" : "")} onClick = {closeMobileMenu}>
-                                Request a Ride
-                            </NavLink>
-                        </li>
-                        <li className="nav-item">
-                            <NavLink to="/trackride" className={({ isActive }) => "nav-links" + (isActive ? " activated" : "")} onClick = {closeMobileMenu}>
-                                Track Ride
-                            </NavLink>
-                        </li>
-                        <li className="nav-item">
-                            <NavLink to="/ridehistory" className={({ isActive }) => "nav-links" + (isActive ? " activated" : "")} onClick = {closeMobileMenu}>
-                                Ride History
-                            </NavLink>
-                        </li>
-                        <li className="nav-item">
-                            <NavLink to="/payment" className={({ isActive }) => "nav-links" + (isActive ? " activated" : "")} onClick = {closeMobileMenu}>
-                                Payment
+                                Ride Request/Rider Request
                             </NavLink>
                         </li>
                         <li className="nav-item">
                             <NavLink to="/profile" className={({ isActive }) => "nav-links" + (isActive ? " activated" : "")} onClick = {closeMobileMenu}>
                                 Profile
+                            </NavLink>
+                        </li>
+                        <li className="nav-item">
+                            <NavLink to="/login" className={({ isActive }) => "nav-links" + (isActive ? " activated" : "")} onClick = {closeMobileMenu}>
+                                Login/Register
                             </NavLink>
                         </li>
                     </ul>
