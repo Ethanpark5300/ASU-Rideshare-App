@@ -1,0 +1,4 @@
+CREATE TABLE FAVORITE_DRIVERS (
+	User_ID int NOT NULL,
+	Driver_ID int NOT NULL
+);
