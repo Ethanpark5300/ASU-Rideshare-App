@@ -74,9 +74,9 @@ function Login() {
 			/>
 			<h2>Don't have an account?</h2>
 			<h2>
-				<NavLink to="/register" className={({ isActive }) => "nav-links" + (isActive ? " activated" : "")}>
-					Register
-				</NavLink>
+			<NavLink to="/register">
+				Register
+            </NavLink>
 			</h2>
 
 
