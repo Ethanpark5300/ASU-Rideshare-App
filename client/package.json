@@ -1,8 +1,7 @@
 {
 	"name": "asu-rideshare-app",
 	"version": "0.1.0",
-	"homepage": "https://Ethanpark5300.github.io/ASU-Rideshare-App",
-	"proxy": "http://localhost:3001",
+	"proxy": "http://localhost:3000",
 	"private": true,
 	"dependencies": {
 		"@reduxjs/toolkit": "^1.9.6",

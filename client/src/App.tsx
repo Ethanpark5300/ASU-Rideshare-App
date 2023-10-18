@@ -61,7 +61,10 @@ const router = createBrowserRouter
                     path: "Profile",
                     element: <Profile />,
                 },
-
+                {
+                    path: "ASU-Rideshare-App",
+                    element: <Home />,
+                },
             ],
         },
     ]
