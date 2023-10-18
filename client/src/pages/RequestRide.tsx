@@ -9,8 +9,9 @@ function RequestRide()
             <Navbar />
             <h1>Request Ride</h1>
             <br/>
-            <h2>Building Search</h2>
-            <BuildingSearch />
+            <div className='building-search'>
+                <BuildingSearch />
+            </div>
         </div>
     );
 }

@@ -40,7 +40,7 @@ function BuildingSearch() {
 
   return (
     <div className="BuildingSearch">
-      <h3>Building Search</h3>
+      <h2>Building Search</h2>
       <Select
         classNamePrefix="search-bar"
         options={buildingOptions}

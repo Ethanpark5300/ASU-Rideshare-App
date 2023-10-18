@@ -1,0 +1,44 @@
+.building-search
+{
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.option {
+    padding: 8px;
+    transition: background-color 0.3s;
+  }
+  
+  .option-focused {
+    padding: 8px;
+    background-color: #f0f0f0;
+    transition: background-color 0.3s;
+  }
+  
+  .Select__menu {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+  }
+  
+  .Select__control {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .Select__placeholder {
+    color: #888;
+  }
+
+  .SelectedBuilding {
+    margin-top: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    background-color: #f5f5f5; /* Light gray background color */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
