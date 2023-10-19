@@ -1,0 +1,17 @@
+.Home {
+    background-color: #8d0e3b; 
+    color: #fdc727;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center; 
+  }
+  
+.Home p {
+    color: #fdc727;
+    font-size: 35px;
+}
+  
+.Home h1 {
+    color: #fdc727; 
+    -webkit-text-stroke: 1px black;
+    font-size: 90px;
+}
