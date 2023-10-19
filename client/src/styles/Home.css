@@ -15,3 +15,14 @@
     -webkit-text-stroke: 1px black;
     font-size: 90px;
 }
+
+#cancelPolicy {
+    font-size: 14px;
+    font-style: italic;
+    text-align: center;
+    margin-top: 50px;
+    opacity: 0.7;
+    color: white;
+    border-top: 1px solid white;
+    padding-top: 10px;
+  }

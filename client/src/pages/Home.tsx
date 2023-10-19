@@ -11,8 +11,8 @@ function Home()
             <p>This is an app designed to help ASU students conveniently share rides. 
                 Whether you need a lift to campus or are offering an open seat in your car, ASU Rideshare makes it easy to request and offer rides within the ASU community.</p>
 
-            <h2>Cancellation Policy</h2>
-            <p>Cancellation Policy</p>
+            <p id="cancelPolicy">Cancellation Policy: If you need to cancel your ride request, please do so at least 2 hours before the scheduled pickup time. 
+                Last minute cancellations leave drivers unable to fill the open seat. To be fair to our community, riders may be banned for repeated last-minute cancellations.</p>
         </div>
     );
 }
