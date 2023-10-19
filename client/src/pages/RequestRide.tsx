@@ -11,6 +11,7 @@ function RequestRide()
             <br/>
             <div className='building-search'>
                 <BuildingSearch />
+                <p>hello there pal</p>
             </div>
         </div>
     );
