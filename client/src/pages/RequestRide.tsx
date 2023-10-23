@@ -7,17 +7,19 @@ function RequestRide()
     return (
         <div className='RequestRide'>
             <Navbar />
-            <div className="left-column">
-                <h1>Request Ride</h1>
-                <br/>
-                <div className='building-search'>
-                    <BuildingSearch />
-                    
+            <div className="container">
+                <div className="left-column">
+                    <h1>Request Ride</h1>
+                    <br/>
+                    <div className='building-search'>
+                        <BuildingSearch />
+                        
+                    </div>
+                    <button>Submit Request</button>
                 </div>
-                <button>Submit Request</button>
-            </div>
-            <div className="right-collumn">
-                <img src="mapfiller.png" alt="filler map" />
+                <div className="right-collumn">
+                    <img src="mapfiller.png" alt="filler map" />
+                </div>
             </div>
         </div>
     );
