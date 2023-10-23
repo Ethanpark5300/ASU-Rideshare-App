@@ -17,9 +17,10 @@ function RequestRide()
                     <div className='building-search'>
                         <BuildingSearch />
                     </div>
+                    <br/>
                     <button>Submit Request</button>
                 </div>
-                <div className="right-collumn">
+                <div className="right-column">
                     <img src={Map_filler} alt="filler map" />
                 </div>
             </div>
