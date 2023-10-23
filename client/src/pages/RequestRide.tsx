@@ -1,6 +1,7 @@
 import '../styles/RequestRide.css';
 import Navbar from "../components/Navigation_Bar/Navbar";
 import BuildingSearch from '../components/Building_Search/BuildingSearch';
+import Map_filler from "../images/mapfiller.png";
 
 function RequestRide() 
 {
@@ -19,7 +20,7 @@ function RequestRide()
                     <button>Submit Request</button>
                 </div>
                 <div className="right-collumn">
-                    <img src="mapfiller.png" alt="filler map" />
+                    <img src={Map_filler} alt="filler map" />
                 </div>
             </div>
         </div>
