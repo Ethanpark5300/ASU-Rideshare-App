@@ -11,9 +11,10 @@ function RequestRide()
                 <div className="left-column">
                     <h1>Request Ride</h1>
                     <br/>
+                    <br/>
+                    <br/>
                     <div className='building-search'>
                         <BuildingSearch />
-                        
                     </div>
                     <button>Submit Request</button>
                 </div>

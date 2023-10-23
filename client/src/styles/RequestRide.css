@@ -1,10 +1,15 @@
 .RequestRide {
-    background-color: #8d0e3b;
+    background-color: #ffffff;
     color: #fdc727;
     font-family: Arial, Helvetica, sans-serif;
-    text-align: center;
     margin: 0;
     padding: 0;
+    text-align: center;
+}
+
+.RequestRide h1{
+    color: black;
+    font-size: 35px;
 }
 
 .container {
@@ -37,7 +42,8 @@ button {
 }
 
 .building-search {
-
+    padding-top: 3em;
+    padding-bottom: 20px;
 }
 
 .right-collumn {
