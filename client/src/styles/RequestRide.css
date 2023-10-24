@@ -1,0 +1,62 @@
+.RequestRide {
+    background-color: #ffffff;
+    color: #fdc727;
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    height: 100%
+}
+
+.RequestRide h1{
+    color: black;
+    font-size: 35px;
+}
+
+.container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 100%;
+    padding-top: 10px;
+}
+
+.left-column {
+    /*flex: 1;*/
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-right: 1em;
+}
+
+button {
+    background-color: #8d0e3b;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: gray;
+}
+
+.building-search {
+    padding-bottom: 20px;
+}
+
+.right-column {
+    flex: 1;
+    padding: 20px;
+    background-color: white;
+    border-radius: 3px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
