@@ -18,11 +18,6 @@
     top: 0;
 }
 
-.navbar-title
-{
-    margin-right: -200px;
-}
-
 .navbar-container {
     display: flex;
     justify-content: space-between;
@@ -32,7 +27,7 @@
 .container {
     z-index: 1;
     width: 100%;
-    max-width: 1200px;
+    /* max-width: 1200px; */
     margin-right: auto;
     margin-left: auto;
     padding-right: 50px;
@@ -96,6 +91,11 @@
 @media screen and (max-width: 1024px) {
     .NavbarItems {
         position: relative;
+    }
+
+    .navbar-title
+    {
+        margin-right: -225px;
     }
 
     .nav-menu {
