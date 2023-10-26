@@ -1,5 +1,5 @@
 import '../styles/Profile.css';
-import Navbar from "../components/Navigation_Bar/Navbar";
+import Navbar from "../components/Navigation_Bars/Rider_Navbar/Navbar";
 import { useAppSelector } from '../store/hooks';
 import { Account } from '../account/Account';
 

@@ -1,5 +1,5 @@
 import '../styles/RequestRide.css';
-import Navbar from "../components/Navigation_Bar/Navbar";
+import Navbar from "../components/Navigation_Bars/Rider_Navbar/Navbar";
 import BuildingSearch from '../components/Building_Search/BuildingSearch';
 import Map_filler from "../images/mapfiller.png";
 

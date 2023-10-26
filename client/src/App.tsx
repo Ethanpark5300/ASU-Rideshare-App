@@ -1,15 +1,15 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import Home from './pages/Home.tsx';
-import Login from './pages/Login.tsx';
-import Payment from './pages/Payment.tsx';
-import Profile from './pages/Profile.tsx';
-import Register from './pages/Register.tsx';
-import RequestRide from './pages/RequestRide.tsx';
-import RideHistory from './pages/RideHistory.tsx';
-import RiderRequest from './pages/RiderRequest.tsx';
-import Settings from './pages/Settings.tsx';
-import TrackRide from './pages/TrackRide.tsx';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Payment from './pages/Payment';
+import Profile from './pages/Profile';
+import Register from './pages/Register';
+import RequestRide from './pages/RequestRide';
+import RideHistory from './pages/RideHistory';
+import RiderRequest from './pages/RiderRequest';
+import Settings from './pages/Settings';
+import TrackRide from './pages/TrackRide';
 
 function App() {
     return (

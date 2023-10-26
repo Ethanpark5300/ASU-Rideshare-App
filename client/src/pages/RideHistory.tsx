@@ -1,5 +1,5 @@
 import '../styles/RideHistory.css';
-import Navbar from "../components/Navigation_Bar/Navbar";
+import Navbar from "../components/Navigation_Bars/Rider_Navbar/Navbar";
 
 function RideHistory() 
 {

@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import Navbar from '../components/Navigation_Bar/Navbar';
+import Navbar from '../components/Navigation_Bars/Rider_Navbar/Navbar';
 import { TextInput } from '../components/Text_Input/TextInput';
 import { DatabaseAccessor } from '../databases/DatabaseAccessor';
 import '../styles/Register.css';

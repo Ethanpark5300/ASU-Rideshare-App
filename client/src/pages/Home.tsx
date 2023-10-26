@@ -1,5 +1,5 @@
 import "../styles/Home.css";
-import Navbar from "../components/Navigation_Bar/Navbar";
+import Navbar from "../components/Navigation_Bars/Rider_Navbar/Navbar";
 
 function Home() {
   return (

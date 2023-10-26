@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { Account } from '../account/Account';
 import '../styles/Login.css';
-import '../components/Navigation_Bar/Navbar.css';
 import { useAppDispatch } from '../store/hooks';
 import { setAccountStore } from '../store/features/accountSlice';
 import { TextInput } from '../components/Text_Input/TextInput';
-import Navbar from '../components/Navigation_Bar/Navbar';
+import Navbar from '../components/Navigation_Bars/Rider_Navbar/Navbar';
 import { DatabaseAccessor } from '../databases/DatabaseAccessor';
 import { NavLink } from 'react-router-dom';
 import { Button } from '../components/Buttons/Button';
