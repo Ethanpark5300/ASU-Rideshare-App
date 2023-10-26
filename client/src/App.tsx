@@ -1,73 +1,33 @@
-import React from "react";
-import { createRoot } from "react-dom/client";
-import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+import React from 'react';
+import { Route, Routes } from 'react-router-dom';
+import Home from './pages/Home.tsx';
+import Login from './pages/Login.tsx';
+import Payment from './pages/Payment.tsx';
+import Profile from './pages/Profile.tsx';
+import Register from './pages/Register.tsx';
+import RequestRide from './pages/RequestRide.tsx';
+import RideHistory from './pages/RideHistory.tsx';
+import RiderRequest from './pages/RiderRequest.tsx';
+import Settings from './pages/Settings.tsx';
+import TrackRide from './pages/TrackRide.tsx';
 
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register"
-import RequestRide from "./pages/RequestRide";
-import TrackRide from "./pages/TrackRide";
-import RideHistory from "./pages/RideHistory";
-import Payment from "./pages/Payment";
-import Profile from "./pages/Profile";
-import ErrorPage from "./pages/ErrorPage";
-
-const AppLayout = () => 
-{
+function App() {
     return (
-        <> 
-            <Outlet />
+        <>
+            <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/Login" element={<Login />} />
+                <Route path="/Payment" element={<Payment />} />
+                <Route path="/Profile" element={<Profile />} />
+                <Route path="/Register" element={<Register />} />
+                <Route path="/RequestRide" element={<RequestRide />} />
+                <Route path="/RideHistory" element={<RideHistory />} />
+                <Route path="/RiderRequest" element={<RiderRequest />} />
+                <Route path="/Settings" element={<Settings />} />
+                <Route path="/TrackRide" element={<TrackRide />} />
+            </Routes>
         </>
     );
-};
+}
 
-const router = createBrowserRouter
-(
-    [
-        {
-            element: <AppLayout />,
-            errorElement: <ErrorPage />,
-            children: 
-            [
-                {
-                    path: "/",
-                    element: <Home />,
-                },
-                {
-                    path: "Login",
-                    element: <Login />,
-                },
-                {
-                    path: "Register",
-                    element: <Register />,
-                },
-                {
-                    path: "RequestRide",
-                    element: <RequestRide />,
-                },
-                {
-                    path: "TrackRide",
-                    element: <TrackRide />,
-                },
-                {
-                    path: "RideHistory",
-                    element: <RideHistory />,
-                },
-                {
-                    path: "Payment",
-                    element: <Payment />,
-                },
-                {
-                    path: "Profile",
-                    element: <Profile />,
-                },
-                {
-                    path: "ASU-Rideshare-App",
-                    element: <Home />,
-                },
-            ],
-        },
-    ]
-);
-
-export default router;
+export default App;
