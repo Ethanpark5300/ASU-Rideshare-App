@@ -3,6 +3,7 @@ import GuestNavbar from "../components/Navigation_Bars/Guest_Navbar/Navbar";
 import RiderNavbar from "../components/Navigation_Bars/Rider_Navbar/Navbar";
 import { useAppSelector } from '../store/hooks';
 import { Account } from '../account/Account';
+import PageTitle from '../components/Page_Title/PageTitle';
 
 function Settings() 
 {
@@ -26,10 +27,12 @@ function Settings()
     }
 
     return (
-        <div className='Settings'>
-            {navbarConditionDisplay()}
-            <h1>Settings</h1>
-        </div>
+        <PageTitle title="Settings">
+            <div className='Settings'>
+                {navbarConditionDisplay()}
+                <h1>Settings</h1>
+            </div>
+        </PageTitle>
     );
 }
 

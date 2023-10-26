@@ -3,6 +3,7 @@ import GuestNavbar from "../components/Navigation_Bars/Guest_Navbar/Navbar";
 import RiderNavbar from "../components/Navigation_Bars/Rider_Navbar/Navbar";
 import { useAppSelector } from '../store/hooks';
 import { Account } from '../account/Account';
+import PageTitle from '../components/Page_Title/PageTitle';
 
 function TrackRide() 
 {
@@ -26,10 +27,12 @@ function TrackRide()
     }
 
     return (
-        <div className='TrackRide'>
-            {navbarConditionDisplay()}
-            <h1>Track Ride</h1>
-        </div>
+        <PageTitle title="Track Ride">
+            <div className='TrackRide'>
+                {navbarConditionDisplay()}
+                <h1>Track Ride</h1>
+            </div>
+        </PageTitle>
     );
 }
 

@@ -1,12 +1,15 @@
 import '../styles/RiderRequest.css';
 import Navbar from "../components/Navigation_Bars/Rider_Navbar/Navbar";
+import PageTitle from '../components/Page_Title/PageTitle';
 
 function RiderRequest() {
     return (
-        <div className='RiderRequest'>
-            <Navbar />
-            <h1>Rider Request</h1>
-        </div>
+        <PageTitle title="Rider Request">
+            <div className='RiderRequest'>
+                <Navbar />
+                <h1>Rider Request</h1>
+            </div>
+        </PageTitle>
     );
 }
 

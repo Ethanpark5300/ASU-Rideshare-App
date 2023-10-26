@@ -3,6 +3,7 @@ import GuestNavbar from "../components/Navigation_Bars/Guest_Navbar/Navbar";
 import RiderNavbar from "../components/Navigation_Bars/Rider_Navbar/Navbar";
 import { useAppSelector } from '../store/hooks';
 import { Account } from '../account/Account';
+import PageTitle from '../components/Page_Title/PageTitle';
 
 function Profile() 
 {
@@ -28,14 +29,17 @@ function Profile()
 		}
 	}
     return (
-        <div className='Profile'>
-			{navbarConditionDisplay()}
-			<h1>Profile</h1>
-			<p>Logged in as: </p>
-			<p>
-				{account !== undefined ? account.email : "not logged in"}
-			</p>
-        </div>
+		<PageTitle title="Profile">
+			<div className='Profile'>
+				
+				{navbarConditionDisplay()}
+				<h1>Profile</h1>
+				<p>Logged in as: </p>
+				<p>
+					{account !== undefined ? account.email : "not logged in"}
+				</p>
+			</div>
+		</PageTitle>
     );
 }
 

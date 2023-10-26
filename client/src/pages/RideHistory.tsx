@@ -3,6 +3,7 @@ import GuestNavbar from "../components/Navigation_Bars/Guest_Navbar/Navbar";
 import RiderNavbar from "../components/Navigation_Bars/Rider_Navbar/Navbar";
 import { useAppSelector } from '../store/hooks';
 import { Account } from '../account/Account';
+import PageTitle from '../components/Page_Title/PageTitle';
 
 function RideHistory() 
 {
@@ -26,10 +27,12 @@ function RideHistory()
     }
 
     return (
-        <div className='RideHistory'>
-            {navbarConditionDisplay()}
-            <h1>Ride History</h1>
-        </div>
+        <PageTitle title="Ride History">
+            <div className='RideHistory'>
+                {navbarConditionDisplay()}
+                <h1>Ride History</h1>
+            </div>
+        </PageTitle>
     );
 }
 

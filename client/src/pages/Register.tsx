@@ -4,6 +4,7 @@ import { TextInput } from '../components/Text_Input/TextInput';
 import { DatabaseAccessor } from '../databases/DatabaseAccessor';
 import '../styles/Register.css';
 import { Button } from '../components/Buttons/Button';
+import PageTitle from '../components/Page_Title/PageTitle';
 
 function Register() {
 	let databaseAccessor: DatabaseAccessor = DatabaseAccessor.getInstance();
@@ -34,80 +35,83 @@ function Register() {
 		}
 	}
     return (
-		<div className='Register'>
-			<Navbar />
-			<h1>Register</h1>
-			<h2>Email:</h2>
-			<div>
-				<TextInput
-					placeholder=""
-					regex={/^[a-zA-Z0-9_@.]+$/}
-					valueRef={emailRef}
-					enterFunction={registerAccount}
-				/>
-			</div>
+		<PageTitle title="Register">
 
-			<h2>First Name:</h2>
-			<div>
-				<TextInput
-					placeholder=""
-					regex={undefined}
-					valueRef={firstNameRef}
-					enterFunction={registerAccount}
-				/>
-			</div>
+			<div className='Register'>
+				<Navbar />
+				<h1>Register</h1>
+				<h2>Email:</h2>
+				<div>
+					<TextInput
+						placeholder=""
+						regex={/^[a-zA-Z0-9_@.]+$/}
+						valueRef={emailRef}
+						enterFunction={registerAccount}
+					/>
+				</div>
 
-			<h2>Last Name:</h2>
-			<div>
-				<TextInput
-					placeholder=""
-					regex={undefined}
-					valueRef={lastNameRef}
-					enterFunction={registerAccount}
-				/>
-			</div>
+				<h2>First Name:</h2>
+				<div>
+					<TextInput
+						placeholder=""
+						regex={undefined}
+						valueRef={firstNameRef}
+						enterFunction={registerAccount}
+					/>
+				</div>
 
-			<h2>Password:</h2>
-			<div>
-				<TextInput
-					placeholder=""
-					regex={undefined}
-					valueRef={passwordRef}
-					enterFunction={registerAccount}
-					inputType="password"
-				/>
-			</div>
-			<h2>Confirm Password:</h2>
-			<div>
-				<TextInput
-					placeholder=""
-					regex={undefined}
-					valueRef={password2Ref}
-					enterFunction={registerAccount}
-					inputType="password"
-				/>
-			</div>
-			{
-				(passwordMatchFail) && (
-					<p className="RegisterError">
-						Passwords do not match!
-					</p>
-				)
-			}
+				<h2>Last Name:</h2>
+				<div>
+					<TextInput
+						placeholder=""
+						regex={undefined}
+						valueRef={lastNameRef}
+						enterFunction={registerAccount}
+					/>
+				</div>
 
-			<Button
-				label="register"
-				onClickFn={registerAccount}
-			/>
+				<h2>Password:</h2>
+				<div>
+					<TextInput
+						placeholder=""
+						regex={undefined}
+						valueRef={passwordRef}
+						enterFunction={registerAccount}
+						inputType="password"
+					/>
+				</div>
+				<h2>Confirm Password:</h2>
+				<div>
+					<TextInput
+						placeholder=""
+						regex={undefined}
+						valueRef={password2Ref}
+						enterFunction={registerAccount}
+						inputType="password"
+					/>
+				</div>
+				{
+					(passwordMatchFail) && (
+						<p className="RegisterError">
+							Passwords do not match!
+						</p>
+					)
+				}
 
-			{
-				(registerFailed) && (
-					<p className="RegisterError">
-						Registration failed!
-					</p>
-				)
-			}
-        </div>
+				<Button
+					label="register"
+					onClickFn={registerAccount}
+				/>
+
+				{
+					(registerFailed) && (
+						<p className="RegisterError">
+							Registration failed!
+						</p>
+					)
+				}
+			</div>
+		</PageTitle>
     );
 }
 
