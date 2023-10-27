@@ -28,8 +28,8 @@ function Payment()
 
     return (
         <PageTitle title="Payment">
+            {navbarConditionDisplay()}
             <div className='Payment'>
-                {navbarConditionDisplay()}
                 <h1>Payment</h1>
             </div>
         </PageTitle>

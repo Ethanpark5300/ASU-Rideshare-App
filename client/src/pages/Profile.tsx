@@ -30,9 +30,8 @@ function Profile()
 	}
     return (
 		<PageTitle title="Profile">
+			{navbarConditionDisplay()}
 			<div className='Profile'>
-				
-				{navbarConditionDisplay()}
 				<h1>Profile</h1>
 				<p>Logged in as: </p>
 				<p>
@@ -42,7 +41,5 @@ function Profile()
 		</PageTitle>
     );
 }
-
-
 
 export default Profile;

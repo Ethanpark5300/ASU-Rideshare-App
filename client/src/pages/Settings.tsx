@@ -28,8 +28,8 @@ function Settings()
 
     return (
         <PageTitle title="Settings">
+            {navbarConditionDisplay()}
             <div className='Settings'>
-                {navbarConditionDisplay()}
                 <h1>Settings</h1>
             </div>
         </PageTitle>

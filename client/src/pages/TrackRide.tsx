@@ -28,8 +28,8 @@ function TrackRide()
 
     return (
         <PageTitle title="Track Ride">
+            {navbarConditionDisplay()}
             <div className='TrackRide'>
-                {navbarConditionDisplay()}
                 <h1>Track Ride</h1>
             </div>
         </PageTitle>

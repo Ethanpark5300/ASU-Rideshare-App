@@ -28,8 +28,8 @@ function RideHistory()
 
     return (
         <PageTitle title="Ride History">
+            {navbarConditionDisplay()}
             <div className='RideHistory'>
-                {navbarConditionDisplay()}
                 <h1>Ride History</h1>
             </div>
         </PageTitle>

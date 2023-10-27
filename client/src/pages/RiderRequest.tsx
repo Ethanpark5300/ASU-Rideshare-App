@@ -5,8 +5,8 @@ import PageTitle from '../components/Page_Title/PageTitle';
 function RiderRequest() {
     return (
         <PageTitle title="Rider Request">
-            <div className='RiderRequest'>
-                <Navbar />
+            <Navbar />
+            <div className='RiderRequest'>  
                 <h1>Rider Request</h1>
             </div>
         </PageTitle>

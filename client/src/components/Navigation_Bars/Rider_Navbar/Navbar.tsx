@@ -1,5 +1,5 @@
 
-import { Link, NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "./Navbar.css";
 import ASU_Logo from "../../../images/ASU-Logo.svg";
 import { useEffect } from "react";

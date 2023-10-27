@@ -8,8 +8,8 @@ function RequestRide()
 {
     return (
         <PageTitle title="Request Ride">
+            <Navbar />
             <div className='RequestRide'>
-                <Navbar />
                 <div className="container">
                     <div className="left-column">
                         <h1>Request Ride</h1>
@@ -28,7 +28,6 @@ function RequestRide()
                 </div>
             </div>
         </PageTitle>
-
     );
 }
 
