@@ -48,14 +48,10 @@ function Navbar()
                         <nav className="nav">
                             <ul className="nav__list">
                                 <li className="nav__item">
-                                    <Link className="btn" to="/Login">
-                                        Login
-                                    </Link>
+                                    <Link className="btn" to="/Login"> Login </Link>
                                 </li>
                                 <li className="nav__item">
-                                    <Link className="btn" to="/Register">
-                                        Register
-                                    </Link>
+                                    <Link className="btn" to="/Register"> Register </Link>
                                 </li>
                             </ul>
                         </nav>
