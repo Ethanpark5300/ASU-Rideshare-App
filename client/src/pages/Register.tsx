@@ -38,7 +38,6 @@ function Register() {
 		<PageTitle title="Register">
 			<Navbar />
 			<div className='Register'>
-				<Navbar />
 				<h1>Register</h1>
 				<h2>Email:</h2>
 				<div>
