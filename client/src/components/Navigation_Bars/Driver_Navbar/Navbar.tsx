@@ -1,53 +1,72 @@
-import {useState} from "react";
+
 import { Link, NavLink } from "react-router-dom";
 import "./Navbar.css";
-import {FaBars, FaTimes} from "react-icons/fa";
-import {IconContext} from "react-icons/lib";
+import ASU_Logo from "../../../images/ASU-Logo.svg";
+import { useEffect } from "react";
 
+function Navbar() {
+    useEffect(() => {
+        const navEl = document.querySelector('.nav') as HTMLElement;
+        const hamburgerEl = document.querySelector('.hamburger') as HTMLElement;
+        const navItemEls = document.querySelectorAll('.nav__item') as NodeListOf<HTMLElement>;
 
-function Navbar() 
-{
-    const [click, setClick] = useState(false)
+        const toggleNav = () => {
+            navEl.classList.toggle('nav--open');
+            hamburgerEl.classList.toggle('hamburger--open');
+        };
 
-    const handleClick = () => setClick(!click)
-    const closeMobileMenu = () => setClick(false)
+        const closeNav = () => {
+            navEl.classList.remove('nav--open');
+            hamburgerEl.classList.remove('hamburger--open');
+        };
+
+        hamburgerEl.addEventListener('click', toggleNav);
+        navItemEls.forEach((navItemEl) => {
+            navItemEl.addEventListener('click', closeNav);
+        });
+
+        // Cleanup function to remove event listeners when the component unmounts
+        return () => {
+            hamburgerEl.removeEventListener('click', toggleNav);
+            navItemEls.forEach((navItemEl) => {
+                navItemEl.removeEventListener('click', closeNav);
+            });
+        };
+    }, []);
 
     return (
-        <>
-        <IconContext.Provider value = {{color: "white"}}>
-            <nav className="navbar">
-                <div className="navbar-container container">
-                    <Link to="/" className="navbar-logo" onClick={closeMobileMenu}>
-                        {/* TODO: Add ASU Logo on the left side of title */}
-                        <div className="navbar-title"> ASU Rideshare App </div>
-                    </Link>
-                    <div className="menu-icon" onClick={handleClick}> {click ? <FaTimes /> : <FaBars /> } </div>
-                    <ul className={click ? "nav-menu active" : "nav-menu"}>
-                        <li className="nav-item">
-                            <NavLink to="/" className={({ isActive }) => "nav-links" + (isActive ? " activated" : "")} onClick = {closeMobileMenu}>
-                                Home
-                            </NavLink>
-                        </li>
-                        <li className="nav-item">
-                            <NavLink to="/requestride" className={({ isActive }) => "nav-links" + (isActive ? " activated" : "")} onClick = {closeMobileMenu}>
-                                Ride Request/Rider Request
-                            </NavLink>
-                        </li>
-                        <li className="nav-item">
-                            <NavLink to="/profile" className={({ isActive }) => "nav-links" + (isActive ? " activated" : "")} onClick = {closeMobileMenu}>
-                                Profile
-                            </NavLink>
-                        </li>
-                        <li className="nav-item">
-                            <NavLink to="/login" className={({ isActive }) => "nav-links" + (isActive ? " activated" : "")} onClick = {closeMobileMenu}>
-                                Login/Register
-                            </NavLink>
-                        </li>
-                    </ul>
+        <div className="navbar">
+            <header className="header">
+                <div className="bottom-bar">
+                    <div className="bottom-bar__content">
+                        <Link to="/" className="logo">
+                            <img className="logo__img" src={ASU_Logo} alt="logo" />
+                            <span className="logo__text">ASU Rideshare App</span>
+                        </Link>
+
+                        <nav className="nav">
+                            <ul className="nav__list">
+                                <li className="nav__item">
+                                    <Link className="nav__link" to="/"> Home </Link>
+                                </li>
+                                <li className="nav__item">
+                                    <Link className="nav__link" to="/Profile"> Profile </Link>
+                                </li>
+                                <li className="nav__item">
+                                    <Link className="btn" to="/RiderRequest"> Rider Requests </Link>
+                                </li>
+                            </ul>
+                        </nav>
+
+                        <div className="hamburger">
+                            <div className="bar"></div>
+                            <div className="bar"></div>
+                            <div className="bar"></div>
+                        </div>
+                    </div>
                 </div>
-            </nav>
-        </IconContext.Provider>
-        </>
+            </header>
+        </div>
     )
 }
 
