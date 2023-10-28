@@ -108,6 +108,7 @@
     cursor: pointer;
     transition: all 0.2s;
     margin-right: -16px;
+    white-space: nowrap;
 }
 
 .btn:hover
