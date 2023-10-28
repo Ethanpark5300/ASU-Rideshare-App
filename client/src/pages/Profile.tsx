@@ -30,9 +30,9 @@ function Profile() {
 		<PageTitle title="Profile">
 			{navbarConditionDisplay()}
 			<section className='profile'>
-				<div className="profile-content profile-margin-top">
+				<div className="profile-content">
 					<div className="profile-row-padding">
-						<div className="profile-container profile-card profile-margin-bottom">
+						<div className="profile-container profile-card profile-margin-bottom profile-margin-top">
 							<div className="profile-container">
 								<div className="center-align">
 									<img className="profile-picture" src={defaultProfilePicture} alt="Avatar" />
