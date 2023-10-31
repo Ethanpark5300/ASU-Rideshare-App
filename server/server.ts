@@ -7,7 +7,19 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/message", (req:any, res:any) => {
-	res.json({ message: "Hello from server!" });
+	
+	res.json({
+		message: "Hello from server!",
+		haha: req.request
+	});
+});
+
+
+app.post("/registration", (req: any, res: any) => {
+	console.log(req.body.user);
+	res.json({
+		registrationSuccess: true,
+	});
 });
 const PORT = 3001
 app.listen(PORT, () => {

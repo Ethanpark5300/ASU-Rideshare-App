@@ -1,7 +1,7 @@
 {
 	"name": "asu-rideshare-app",
 	"version": "0.1.0",
-	"proxy": "http://localhost:3000",
+	"proxy": "http://localhost:3001",
 	"private": true,
 	"dependencies": {
 		"@reduxjs/toolkit": "^1.9.6",

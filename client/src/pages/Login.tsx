@@ -39,9 +39,13 @@ function Login() {
 	const [data, setData] = useState(null);
 
 	useEffect(() => {
-		fetch("/message")
+		fetch(`/registration`, {
+			method: "POST",
+			headers: { 'Content-type': "application/json" },
+			body: JSON.stringify({user: "username", pass: "password"})
+		})
 			.then((res) => res.json())
-			.then((data) => setData(data.message));
+			.then((data) => setData(data.registrationSuccess));
 	}, []);
 
 
@@ -51,7 +55,7 @@ function Login() {
 			<Navbar />
 			<div className='Login'>
 
-				<div>{data ? data : "Loading"}</div>
+				<div>{data ? "Registration success!" : "Loading"}</div>
 
 				<h1>Login</h1>
 				<h2>Email:</h2>
