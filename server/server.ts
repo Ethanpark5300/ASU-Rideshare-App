@@ -14,11 +14,14 @@ app.get("/message", (req:any, res:any) => {
 	});
 });
 
-
+/**
+ * body contains the properties email, firstName, lastName, password
+ */
 app.post("/registration", (req: any, res: any) => {
-	console.log(req.body.user);
+	console.log(req.body.firstName);
 	res.json({
 		registrationSuccess: true,
+		message: "some message or variable",
 	});
 });
 const PORT = 3001

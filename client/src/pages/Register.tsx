@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Navbar from '../components/Navigation_Bars/Guest_Navbar/Navbar';
 import { TextInput } from '../components/Text_Input/TextInput';
 import { DatabaseAccessor } from '../databases/DatabaseAccessor';
@@ -16,6 +16,49 @@ function Register() {
 
 	const [registerFailed, setRegisterFailed] = useState<boolean>(false);
 	const [passwordMatchFail, setPasswordMatchFail] = useState<boolean>(false);
+
+	const [isSending, setIsSending] = useState(false)
+	//object i dont know what props it has
+	const [registerMessage, setRegisterMessage] = useState<string|undefined>();
+
+
+	const registerRequest = useCallback(async () => {
+		console.log("register request");
+
+		//basic checks
+		/**@todo do more checks*/
+		if (passwordRef.current !== password2Ref.current) {
+			setPasswordMatchFail(true);
+			setRegisterFailed(true);
+			return;
+		} else {
+			setPasswordMatchFail(false);
+		}
+
+
+		// don't send again while we are sending
+		if (isSending) return
+		// update state
+		setIsSending(true)
+
+
+		console.log("fetched");
+
+		fetch(`/registration`, {
+			method: "POST",
+			headers: { 'Content-type': "application/json" },
+			body: JSON.stringify({
+				email: emailRef.current,
+				firstName: firstNameRef.current,
+				lastName: lastNameRef.current,
+				password: passwordRef.current
+			})
+		})
+			.then((res) => res.json())
+			.then((data) => { setRegisterMessage(data.message); setRegisterFailed(data.registrationFailed) });
+		setIsSending(false)
+
+	}, [isSending]);
 
 	function registerAccount() {
 
@@ -99,13 +142,20 @@ function Register() {
 
 				<Button
 					label="register"
-					onClickFn={registerAccount}
+					onClickFn={registerRequest}
 				/>
 
 				{
 					(registerFailed) && (
 						<p className="RegisterError">
 							Registration failed!
+						</p>
+					)
+				}
+				{
+					(registerMessage !== undefined) && (
+						<p className="RegisterError">
+							{registerMessage}
 						</p>
 					)
 				}
