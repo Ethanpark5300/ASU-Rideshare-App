@@ -15,26 +15,38 @@ function Register() {
 	const password2Ref = useRef<string>("");
 
 	const [registerFailed, setRegisterFailed] = useState<boolean>(false);
-	const [passwordMatchFail, setPasswordMatchFail] = useState<boolean>(false);
+	const [errorMsg, setErrorMsg] = useState<string | undefined>(undefined);
 
 	const [isSending, setIsSending] = useState(false)
-	//object i dont know what props it has
+	
 	const [registerMessage, setRegisterMessage] = useState<string|undefined>();
 
 
 	const registerRequest = useCallback(async () => {
-		console.log("register request");
-
+		//console.log("register request");
+		setErrorMsg(undefined);
+		setRegisterFailed(false);
+		setRegisterMessage(undefined);
 		//basic checks
-		/**@todo do more checks*/
-		if (passwordRef.current !== password2Ref.current) {
-			setPasswordMatchFail(true);
+		if (!emailRef.current.endsWith("@asu.edu")) {
 			setRegisterFailed(true);
+			setErrorMsg("Email is not an ASU email!");
 			return;
-		} else {
-			setPasswordMatchFail(false);
 		}
 
+		if (firstNameRef.current === "" || lastNameRef.current === "" || emailRef.current === "" || passwordRef.current === "" || password2Ref.current === "") {
+			setRegisterFailed(true);
+			setErrorMsg("All inputs should be filled out.");
+			return;
+		}
+
+		if (passwordRef.current !== password2Ref.current) {
+			setRegisterFailed(true);
+			setErrorMsg("Passwords do not match!");
+			return;
+		}
+
+		
 
 		// don't send again while we are sending
 		if (isSending) return
@@ -42,7 +54,7 @@ function Register() {
 		setIsSending(true)
 
 
-		console.log("fetched");
+		//console.log("fetched");
 
 		fetch(`/registration`, {
 			method: "POST",
@@ -60,23 +72,7 @@ function Register() {
 
 	}, [isSending]);
 
-	function registerAccount() {
-
-		if (passwordRef.current !== password2Ref.current) {
-			setPasswordMatchFail(true);
-			setRegisterFailed(true);
-			return;
-		} else {
-			setPasswordMatchFail(false);
-		}
-
-		let registerSuccess: boolean = databaseAccessor.register(emailRef.current, firstNameRef.current, lastNameRef.current, passwordRef.current);
-		if (registerSuccess) {
-			setRegisterFailed(false);
-		} else {
-			setRegisterFailed(true);
-		}
-	}
+	/**@todo highlight which inputs errored*/
     return (
 		<PageTitle title="Register">
 			<Navbar />
@@ -88,7 +84,7 @@ function Register() {
 						placeholder=""
 						regex={/^[a-zA-Z0-9_@.]+$/}
 						valueRef={emailRef}
-						enterFunction={registerAccount}
+						enterFunction={registerRequest}
 					/>
 				</div>
 
@@ -98,7 +94,7 @@ function Register() {
 						placeholder=""
 						regex={undefined}
 						valueRef={firstNameRef}
-						enterFunction={registerAccount}
+						enterFunction={registerRequest}
 					/>
 				</div>
 
@@ -108,7 +104,7 @@ function Register() {
 						placeholder=""
 						regex={undefined}
 						valueRef={lastNameRef}
-						enterFunction={registerAccount}
+						enterFunction={registerRequest}
 					/>
 				</div>
 
@@ -118,7 +114,7 @@ function Register() {
 						placeholder=""
 						regex={undefined}
 						valueRef={passwordRef}
-						enterFunction={registerAccount}
+						enterFunction={registerRequest}
 						inputType="password"
 					/>
 				</div>
@@ -128,18 +124,24 @@ function Register() {
 						placeholder=""
 						regex={undefined}
 						valueRef={password2Ref}
-						enterFunction={registerAccount}
+						enterFunction={registerRequest}
 						inputType="password"
 					/>
 				</div>
 				{
-					(passwordMatchFail) && (
+					(errorMsg) && (
 						<p className="RegisterError">
-							Passwords do not match!
+							{errorMsg}
 						</p>
 					)
 				}
-
+				{
+					(registerMessage) && (
+						<p className="RegisterError">
+							{registerMessage}
+						</p>
+					)
+				}
 				<Button
 					label="register"
 					onClickFn={registerRequest}
@@ -152,13 +154,7 @@ function Register() {
 						</p>
 					)
 				}
-				{
-					(registerMessage !== undefined) && (
-						<p className="RegisterError">
-							{registerMessage}
-						</p>
-					)
-				}
+				
 			</div>
 		</PageTitle>
     );
