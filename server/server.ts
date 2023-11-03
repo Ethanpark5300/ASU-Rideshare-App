@@ -33,7 +33,7 @@ app.get("/message", (req: any, res: any) => {
 app.post("/registration", (req: any, res: any) => {
 	console.log(req.body.firstName);
 	const new_user = user_info.prepare(fs.readFileSync(__dirname + '/Tables/New_User.sql').toString());
-	new_user.run([req.body.firstName, req.body.lastName, req.body.password, req.body.email])
+	new_user.run([req.body.firstName, req.body.lastName, req.body.password, req.body.email], cb);
 	res.json({
 		registrationSuccess: !hadError,
 		message: message,
@@ -43,7 +43,7 @@ app.post("/registration", (req: any, res: any) => {
 function cb(err: Error | null) {
 	if (err) {
 		hadError = true;
-	  message = err.message;
+		message = err.message;
 	} else {
 		hadError = false;
 	  message = undefined;
