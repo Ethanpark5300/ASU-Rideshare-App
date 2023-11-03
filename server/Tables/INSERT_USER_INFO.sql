@@ -23,26 +23,26 @@ VALUES
 	(20,'meaningfully','off','meaningfullyoff','11131','meaningfullyoff@asu.edu',NULL,4.8);
 */	
 --assuming auto INCREMENT works then this should be code since we do not need to worry about User_id
-INSERT INTO USER_INFO(First_Name,Last_Name,Username,Password,Email,Rating_Passenger,Rating_Driver)
+INSERT INTO USER_INFO(First_Name,Last_Name,Password,Email,Rating_Passenger,Rating_Driver)
 VALUES 
-	('zeal','smeal','zealsmeal','11111','zealsmeal@asu.edu',4.5,4.0),
-	('accidentally','demolish','accidentallydemolish','11112','accidentallydemolish@asu.edu',NULL,3.6),
-	('fictionalize','splatter','fictionalizesplatter','11113','fictionalizesplatter@asu.edu',2.2,2.4),
-	('propagandize','famously','propagandizefamously','11114','propagandizefamously@asu.edu',1.0,0.8),
-	('collectivize','provided','collectivizeprovided','11115','collectivizeprovided@asu.edu',3.8,3.5),
-	('hmincidentally','during','hmincidentallyduring','11116','hmincidentallyduring@asu.edu',2.8,2.8),
-	('pathogenesis','skeleton','pathogenesisskeleton','11117','pathogenesisskeleton@asu.edu',4.1,NULL),
-	('malnutrition','straddle','malnutritionstraddle','11118','malnutritionstraddle@asu.edu',4.2,3.2),
-	('aboutthan','accessorize','aboutthanaccessorize','11119','aboutthanaccessorize@asu.edu',1,NULL),
-	('conscientise','paginate','conscientisepaginate','11120','conscientisepaginate@asu.edu',0.1,0.4),
-	('howconserervation','never','howconservationnever','11121','howconservationnever@asu.edu',4.1,NULL),
-	('conventional','too','conventionaltoo','11122','conventionaltoo@asu.edu',1.5,3.6),
-	('underachieve','ack','underachieveack','11123','underachieveack@asu.edu',1.1,0.0),
-	('above','evangelize','aboveevangelize','11124','aboveevangelize@asu.edu',3.5,NULL),
-	('consequently','why','consequentlywhy','11125','consequentlywhy@asu.edu',NULL,4.6),
-	('hmp','hupliftingly','hmphupliftingly','11126','hmphupliftingly@asu.edu',4.7,3.4),
-	('over','exertionaha','overexertionaha','11127','overexertionaha@asu.edu',3.3,2.6),
-	('boohoo','treasured','boohootreasured','11128','boohootreasured@asu.edu',4.5,4.6),
-	('underneath','throughout','underneaththroughout','11129','underneaththroughout@asu.edu',2,1.2),
-	('mechanically','gah','mechanicallygah','11130','mechanicallygah@asu.edu',2,NULL),
-	('meaningfully','off','meaningfullyoff','11131','meaningfullyoff@asu.edu',NULL,4.8);
+	('zeal','smeal','11111','zealsmeal@asu.edu',4.5,4.0),
+	('accidentally','demolish','11112','accidentallydemolish@asu.edu',NULL,3.6),
+	('fictionalize','splatter','11113','fictionalizesplatter@asu.edu',2.2,2.4),
+	('propagandize','famously','11114','propagandizefamously@asu.edu',1.0,0.8),
+	('collectivize','provided','11115','collectivizeprovided@asu.edu',3.8,3.5),
+	('hmincidentally','during','11116','hmincidentallyduring@asu.edu',2.8,2.8),
+	('pathogenesis','skeleton','11117','pathogenesisskeleton@asu.edu',4.1,NULL),
+	('malnutrition','straddle','11118','malnutritionstraddle@asu.edu',4.2,3.2),
+	('aboutthan','accessorize','11119','aboutthanaccessorize@asu.edu',1,NULL),
+	('conscientise','paginate','11120','conscientisepaginate@asu.edu',0.1,0.4),
+	('howconserervation','never','11121','howconservationnever@asu.edu',4.1,NULL),
+	('conventional','too','11122','conventionaltoo@asu.edu',1.5,3.6),
+	('underachieve','ack','11123','underachieveack@asu.edu',1.1,0.0),
+	('above','evangelize','11124','aboveevangelize@asu.edu',3.5,NULL),
+	('consequently','why','11125','consequentlywhy@asu.edu',NULL,4.6),
+	('hmp','hupliftingly','11126','hmphupliftingly@asu.edu',4.7,3.4),
+	('over','exertionaha','11127','overexertionaha@asu.edu',3.3,2.6),
+	('boohoo','treasured','11128','boohootreasured@asu.edu',4.5,4.6),
+	('underneath','throughout','11129','underneaththroughout@asu.edu',2,1.2),
+	('mechanically','gah','11130','mechanicallygah@asu.edu',2,NULL),
+	('meaningfully','off','11131','meaningfullyoff@asu.edu',NULL,4.8);
