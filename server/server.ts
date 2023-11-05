@@ -40,6 +40,19 @@ app.post("/registration", (req: any, res: any) => {
 	});
 });
 
+/**
+ * body contains the properties email, password
+ */
+app.post("/login", (req: any, res: any) => {
+	console.log(req.body.email);
+	const existing_user = user_info.prepare(fs.readFileSync(__dirname + '/Tables/login.sql').toString())
+	existing_user.run([req.body.email, req.body.password], cb);
+	res.json({
+		registrationSuccess: !hadError,
+		message: message,
+	});
+});
+
 function cb(err: Error | null) {
 	if (err) {
 		hadError = true;
