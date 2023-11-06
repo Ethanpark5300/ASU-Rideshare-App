@@ -1,4 +1,4 @@
-.grid-container {
+.profile {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
@@ -6,25 +6,61 @@
     height: 100vh;
 }
 
-img {
-    grid-column: 2/2;
-    grid-row: 1/2;
+.profileFiller {
     border: 2px solid black;
     border-radius: 50%;
 }
 
-.profileInfo {
+.picture {
     grid-column: 1/2;
     grid-row: 1/2;
+    padding-left: 50px;
+    padding-bottom: 50px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.profileInfo {
+    grid-column: 2/2;
+    grid-row: 1/2;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.profileInfo h2 {
+    text-align: center;
+}
+
+.profileInfo p {
+    font-size: 20px;
+    padding-left: 20px;
+    padding-bottom: 20px;
+}
+
+.profileInfo button {
+    color: #fff;
+    background-color: maroon;
+    padding: 8px 20px;
+    border-radius: 1000px;
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-right: -16px;
+    white-space: nowrap;
+    margin-left: 10px;
 }
 
 .paymentInfo {
     grid-column: 1/2;
     grid-row: 2/2;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
 }
 
 .rideHistory {
     grid-column: 2/2;
     grid-row: 2/2;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
 }
 

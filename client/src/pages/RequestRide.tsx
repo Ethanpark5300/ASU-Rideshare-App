@@ -23,7 +23,7 @@ function RequestRide()
                         <button>Submit Request</button>
                     </div>
                     <div className="right-column">
-                        <img src={Map_filler} alt="filler map" />
+                        <img src={Map_filler} alt="filler map" className="map"/>
                     </div>
                 </div>
             </div>
