@@ -8,6 +8,7 @@ import PageTitle from '../components/Page_Title/PageTitle';
 import defaultProfilePicture from "../images/blank-profile-picture.png"
 import { AiOutlineArrowRight } from "react-icons/ai";
 import React from 'react';
+import profile_filler from "../images/profile.png";
 
 function Profile() {
 	let account: Account | undefined = useAppSelector((state) => state.account.account);
@@ -51,7 +52,7 @@ function Profile() {
 			<div className= "profile">
 				<h1>Account Page</h1>
 
-				<img src= "profile.jpg" alt= "profile picture" className= "profilepic" />
+				<img src= {profile_filler} alt= "profile picture" />
 
 				<div className= "profileInfo">
 					<h2>Account Info</h2>
