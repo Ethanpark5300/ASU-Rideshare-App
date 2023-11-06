@@ -10,7 +10,7 @@ function RequestRide()
         <PageTitle title="Request Ride">
             <Navbar />
             <div className='RequestRide'>
-                <div className="container">
+                <div className="requestcontainer">
                     <div className="left-column">
                         <h1>Request Ride</h1>
                         <br/>
