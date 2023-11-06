@@ -82,7 +82,7 @@ function Register() {
       <Navbar />
       <div className="Register">
         <h1>Join the Rideshare Community</h1>
-        <div className="container">
+        <div className="register-container">
           <h2>Email:</h2>
           <div>
             <TextInput
