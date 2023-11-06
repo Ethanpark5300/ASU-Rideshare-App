@@ -14,7 +14,7 @@ interface ProfileProps {
 	name: string;
 	label: string;
 	address: string;
-	age: string;
+	asuid: string;
 	email: string;
 	phonenum: string;
 	cardnum: number;
@@ -47,18 +47,23 @@ const Profile: React.FC<ProfileProps> = (props) => {
 		<PageTitle title="Profile">
 			{navbarConditionDisplay()}
 			<div className="profile">
-				<h1>Account Page</h1>
-
-				<img src={profile_filler} alt="profile picture" />
-
+				<div className="picture">
+					<h1>Account Page</h1>
+					<br/>
+					<br/>
+					<img src={profile_filler} alt="profile picture" className="profileFiller"/>
+				</div>
 				<div className="profileInfo">
 					<h2>Account Info</h2>
-					<p><strong>Name: </strong> {props.name}</p>
+					<div className="name">
+						<p><strong>Full Name: </strong> {props.name}</p>
+					</div>
+					<p><strong>ASU ID: </strong> {props.asuid}</p>
 					<p><strong>Type: </strong> {props.label}</p>
 					<p><strong>Address: </strong> {props.address}</p>
-					<p><strong>Birth Date: </strong> {props.age}</p>
 					<p><strong>E-Mail: </strong> {props.email}</p>
 					<p><strong>Phone Number: </strong> {props.phonenum}</p>
+					<button>Save</button>
 				</div>
 
 				<div className="paymentInfo">
@@ -67,11 +72,13 @@ const Profile: React.FC<ProfileProps> = (props) => {
 					<p><strong>Name on Card: </strong> {props.cardname}</p>
 					<p><strong>Expiration Date: </strong> {props.expdate}</p>
 					<p><strong>Security Code: </strong> {props.securitycode}</p>
+					<button>Save</button>
 				</div>
 
 				<div className="rideHistory">
 					<h2>Ride History</h2>
 					{/* filler box here for where we would put info */}
+					<button>Save</button>
 				</div>
 			</div>
 		</PageTitle>
