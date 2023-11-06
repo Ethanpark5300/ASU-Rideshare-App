@@ -18,7 +18,7 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/Login" element={<Login />} />
                 <Route path="/Payment" element={<Payment />} />
-                <Route path="/Profile" element={<Profile />} />
+                <Route path="/Profile" element={<Profile name={''} label={''} address={''} age={''} email={''} phonenum={''} cardnum={0} cardname={''} expdate={''} securitycode={0} />} />
                 <Route path="/Register" element={<Register />} />
                 <Route path="/RequestRide" element={<RequestRide />} />
                 <Route path="/RideHistory" element={<RideHistory />} />
