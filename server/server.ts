@@ -5,10 +5,14 @@ const cors = require("cors");
 const app = express();
 const Database = sqlite3.Database;
 
+
+const PORT = process.env.PORT || 3001
+
 let message: string | undefined;
 let hadError: boolean;
 app.use(cors());
 app.use(express.json());
+
 
 //creating the table and storing it in
 const user_info = new Database("user_info.db");
@@ -63,7 +67,6 @@ function cb(err: Error | null) {
   }
 }
 
-const PORT = 3001
 app.listen(PORT, () => {
 	console.log(`Server is running on port ${PORT}.`);
 });
