@@ -71,7 +71,7 @@ function Register() {
       .then((res) => res.json())
       .then((data) => {
         setRegisterMessage(data.message);
-        setRegisterFailed(data.registrationFailed);
+        setRegisterFailed(!data.registrationSuccess);
       });
     setIsSending(false);
   }, [isSending]);

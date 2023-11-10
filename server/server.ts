@@ -54,18 +54,19 @@ app.post("/login", (req: any, res: any) => {
 	};
 	const existing_user = user_info.prepare(fs.readFileSync(__dirname + '/Tables/login.sql').toString())
 	existing_user.run([req.body.email, req.body.password], cb);
+	//sends the user to the next screen after login(home screen)
+	if (!hadError) {
+		res.cookie('name', 'user type here', options);
+	}
 	res.json({
 
-		registrationSuccess: !hadError,
+		loginSuccess: !hadError,
 		message: message,
 
 	});
-	//sends the user to the next screen after login(home screen)
-	if (!hadError) {
-		res.cookie('name', 'user type here', options).send({ screen: '/' });
-	}
+	
 });
-app.get('/read-cookie', (req, res) => {
+app.get('/read-cookie', (req:any, res:any) => {
 	console.log(req.signedCookies);
 	res.send({ screen: '/' });
 });
