@@ -46,7 +46,7 @@ function Login() {
 				headers: { "Content-type": "application/json" },
 				body: JSON.stringify({
 					email: emailRef.current,
-					pass: passwordRef.current
+					password: passwordRef.current
 				}),
 			})
 				.then((res) => res.json())
@@ -75,6 +75,18 @@ function Login() {
 
 		}
 	};
+
+	const eatCookie = async () => {
+		try {
+			fetch(`/clear-cookie`, {
+				method: "GET",
+				headers: { "Content-type": "application/json" },
+			})
+
+		} catch {
+
+		}
+	}
 
   return (
     <PageTitle title="Login">
@@ -115,6 +127,7 @@ function Login() {
 						<p className="RegisterError">Login failed!</p>
 					)}
 					<Button label="Check Cookie" onClickFn={readCookie} />
+					<Button label="Nom Cookie" onClickFn={eatCookie} />
           <h2>Don't have an account?</h2>
           <h2>
             {" "}

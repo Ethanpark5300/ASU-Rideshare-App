@@ -48,27 +48,47 @@ app.post("/registration", (req: any, res: any) => {
  */
 app.post("/login", (req: any, res: any) => {
 	console.log(req.body.email);
+	console.log(req.body.password);
 	const options = {
 		httpOnly: true,
 		signed: true,
 	};
-	const existing_user = user_info.prepare(fs.readFileSync(__dirname + '/Tables/login.sql').toString())
-	existing_user.run([req.body.email, req.body.password], cb);
-	//sends the user to the next screen after login(home screen)
-	if (!hadError) {
-		res.cookie('name', 'user type here', options);
-	}
-	res.json({
+	user_info.get(fs.readFileSync(__dirname + '/Tables/login.sql').toString(), [req.body.email, req.body.password], (err:Error, rows:any) => {
+		if (rows=== undefined) {
+			hadError = true; message = "Email or Password is incorrect";
+		}else if (err) {
+			hadError = true; message = err.message;
+		} else {
+			hadError = false;
+			message = undefined;
+		}
+		if (!hadError) {
+			/**@todo add verification token to cookie*/
+			res.cookie('name', 'user type here', options);
+		}
+		
+		console.log(rows)
+		res.json({
 
-		loginSuccess: !hadError,
-		message: message,
+			loginSuccess: !hadError,
+			message: message,
 
+		});
 	});
+	//sends the user to the next screen after login(home screen)
+	//if (!hadError) {
+	//	res.cookie('name', 'user type here', options);
+	//}
+	
 	
 });
 app.get('/read-cookie', (req:any, res:any) => {
 	console.log(req.signedCookies);
 	res.send({ screen: '/' });
+});
+
+app.get('/clear-cookie', (req:any, res:any) => {
+	res.clearCookie('name').end();
 });
 
 function cb(err: Error | null) {
