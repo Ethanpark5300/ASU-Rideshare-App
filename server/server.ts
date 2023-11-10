@@ -1,10 +1,10 @@
 const fs = require("fs");
-const sqlite3= require ("sqlite3");
+const sqlite3 = require("sqlite3");
 const express = require("express");
 const cors = require("cors");
 const app = express();
 const Database = sqlite3.Database;
-
+const cookieParser = require('cookie-parser');
 
 const PORT = process.env.PORT || 3001
 
@@ -12,7 +12,7 @@ let message: string | undefined;
 let hadError: boolean;
 app.use(cors());
 app.use(express.json());
-
+app.use(cookieParser('p3ufucaj55bi2kiy6lsktnm23z4c18xy'));
 
 //creating the table and storing it in
 const user_info = new Database("user_info.db");
@@ -24,7 +24,6 @@ const user_info = new Database("user_info.db");
 //user_info.exec(fs.readFileSync(__dirname + '/Tables/INSERT_USER_INFO.sql').toString());
 
 app.get("/message", (req: any, res: any) => {
-
 	res.json({
 		message: "Hello from server!",
 		haha: req.request
@@ -49,12 +48,26 @@ app.post("/registration", (req: any, res: any) => {
  */
 app.post("/login", (req: any, res: any) => {
 	console.log(req.body.email);
+	const options = {
+		httpOnly: true,
+		signed: true,
+	};
 	const existing_user = user_info.prepare(fs.readFileSync(__dirname + '/Tables/login.sql').toString())
 	existing_user.run([req.body.email, req.body.password], cb);
 	res.json({
+
 		registrationSuccess: !hadError,
 		message: message,
+
 	});
+	//sends the user to the next screen after login(home screen)
+	if (!hadError) {
+		res.cookie('name', 'user type here', options).send({ screen: '/' });
+	}
+});
+app.get('/read-cookie', (req, res) => {
+	console.log(req.signedCookies);
+	res.send({ screen: '/' });
 });
 
 function cb(err: Error | null) {
@@ -63,8 +76,8 @@ function cb(err: Error | null) {
 		message = err.message;
 	} else {
 		hadError = false;
-	  message = undefined;
-  }
+		message = undefined;
+	}
 }
 
 app.listen(PORT, () => {
