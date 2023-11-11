@@ -1,9 +1,13 @@
-const fs = require("fs");
-const sqlite3 = require("sqlite3");
-const express = require("express");
+import fs from 'fs';
+import { Database } from 'sqlite3';
+import express from 'express';
+
+//const fs = require("fs");
+//const sqlite3 = require("sqlite3");
+//const Database = sqlite3.Database;
+//const express = require("express");
 const cors = require("cors");
 const app = express();
-const Database = sqlite3.Database;
 const cookieParser = require('cookie-parser');
 
 const PORT = process.env.PORT || 3001
