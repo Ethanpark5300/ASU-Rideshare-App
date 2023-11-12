@@ -68,7 +68,8 @@ app.post("/login", (req: any, res: any) => {
 		}
 		if (!hadError) {
 			/**@todo add verification token to cookie*/
-			res.cookie('name', 'user type here', options);
+			//cookie(name of cookie, value of cookie, options of cookie)
+			res.cookie('loggedIn', 'user type here', options);
 		}
 		
 		console.log(rows)
@@ -92,7 +93,7 @@ app.get('/read-cookie', (req:any, res:any) => {
 });
 
 app.get('/clear-cookie', (req:any, res:any) => {
-	res.clearCookie('name').end();
+	res.clearCookie('loggedIn').end();
 });
 
 function cb(err: Error | null) {
