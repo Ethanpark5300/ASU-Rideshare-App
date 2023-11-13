@@ -51,11 +51,13 @@ app.post("/registration", (req: any, res: any) => {
  * body contains the properties email, password
  */
 app.post("/login", (req: any, res: any) => {
-	console.log(req.body.email);
-	console.log(req.body.password);
+	//console.log(req.body.email);
+	//console.log(req.body.password);
 	const options = {
 		httpOnly: true,
 		signed: true,
+		sameSite: 'lax',
+		/**@todo expiration by Max-Age*/
 	};
 	user_info.get(fs.readFileSync(__dirname + '/Tables/login.sql').toString(), [req.body.email, req.body.password], (err:Error, rows:any) => {
 		if (rows=== undefined) {
@@ -67,17 +69,19 @@ app.post("/login", (req: any, res: any) => {
 			message = undefined;
 		}
 		if (!hadError) {
-			/**@todo add verification token to cookie*/
+			/**@todo make more secure*/
 			//cookie(name of cookie, value of cookie, options of cookie)
-			res.cookie('loggedIn', 'user type here', options);
+			res.cookie('loggedIn', rows.Email, options);
 		}
 		
-		console.log(rows)
+		//console.log(rows);
 		res.json({
 
 			loginSuccess: !hadError,
 			message: message,
-
+			account: {
+				Email: rows.Email,
+			}
 		});
 	});
 	//sends the user to the next screen after login(home screen)
@@ -87,11 +91,22 @@ app.post("/login", (req: any, res: any) => {
 	
 	
 });
+/**
+ * @todo return user info for account storing(email, first, last)
+ * @returns user info
+ */
 app.get('/read-cookie', (req:any, res:any) => {
 	console.log(req.signedCookies);
-	res.send({ screen: '/' });
-});
+	//console.log(req.signedCookies.loggedIn);
 
+	//cookie should store something and we can get the user info afterwards
+	res.json({
+		Email: req.signedCookies.loggedIn,
+	});
+});
+/**
+ * logout
+ */
 app.get('/clear-cookie', (req:any, res:any) => {
 	res.clearCookie('loggedIn').end();
 });

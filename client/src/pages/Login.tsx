@@ -22,23 +22,6 @@ function Login() {
 	const [loginFailed, setLoginFailed] = useState<boolean>(false);
 	const [loginMessage, setLoginMessage] = useState<string>();
 
-	function setAccount() {
-		let loginAccount: Account | undefined = databaseAccessor.login(
-			emailRef.current,
-			passwordRef.current
-		);
-		if (loginAccount !== undefined) {
-			//success login
-			setLoginFailed(false);
-		} else {
-			//fail login
-			setLoginFailed(true);
-		}
-		//store account in store, or store undefined if no login made
-		dispatch(setAccountStore(loginAccount));
-	}
-
-
 	const loginRequest = async () => {
 		try {
 			fetch(`/login`, {
@@ -53,12 +36,17 @@ function Login() {
 				.then((data) => {
 					setLoginMessage(data.message);
 					setLoginFailed(!data.loginSuccess);
+					if (data.loginSuccess) {
+						dispatch(setAccountStore(new Account(data.account.Email)));
+					} else {
+						dispatch(setAccountStore(undefined));
+					}
 				});
 		} catch (e: any) {
 			console.log(e);
 		}
-		
-		
+
+
 	};
 
 	const readCookie = async () => {
@@ -67,10 +55,14 @@ function Login() {
 				method: "GET",
 				headers: { "Content-type": "application/json" },
 			})
-				//.then((res) => res.json())
-				//.then((data) => {
-				//
-				//});
+				.then((res) => res.json())
+				.then((data) => {
+					if (data.Email !== undefined) {
+						dispatch(setAccountStore(new Account(data.Email)));
+					} else {
+						dispatch(setAccountStore(undefined));
+					}
+				});
 		} catch {
 
 		}
@@ -82,43 +74,43 @@ function Login() {
 				method: "GET",
 				headers: { "Content-type": "application/json" },
 			})
-
+			dispatch(setAccountStore(undefined));
 		} catch {
 
 		}
 	}
 
-  return (
-    <PageTitle title="Login">
-      <Navbar />
-      <div className="Login">
+	return (
+		<PageTitle title="Login">
+			<Navbar />
+			<div className="Login">
 
-        <h1>Log In to Rideshare</h1>
-        <div className="login-container">
-          <h2>Email:</h2>
-          <div>
-            <TextInput
-              placeholder=""
-              regex={/^[a-zA-Z0-9_@.]+$/}
-              valueRef={emailRef}
+				<h1>Log In to Rideshare</h1>
+				<div className="login-container">
+					<h2>Email:</h2>
+					<div>
+						<TextInput
+							placeholder=""
+							regex={/^[a-zA-Z0-9_@.]+$/}
+							valueRef={emailRef}
 							enterFunction={loginRequest}
-            />
-          </div>
+						/>
+					</div>
 
-          <h2>Password:</h2>
-          <div>
-            <TextInput
-              placeholder=""
-              regex={undefined}
-              valueRef={passwordRef}
-              enterFunction={loginRequest}
-              inputType="password"
-            />
-          </div>
+					<h2>Password:</h2>
+					<div>
+						<TextInput
+							placeholder=""
+							regex={undefined}
+							valueRef={passwordRef}
+							enterFunction={loginRequest}
+							inputType="password"
+						/>
+					</div>
 
-          {loginFailed && (
-            <p className="LoginError">email or password is incorrect</p>
-          )}
+					{loginFailed && (
+						<p className="LoginError">email or password is incorrect</p>
+					)}
 					<Button label="Login" onClickFn={loginRequest} />
 					{loginMessage && (
 						<p className="RegisterError">{loginMessage}</p>
@@ -127,16 +119,16 @@ function Login() {
 						<p className="RegisterError">Login failed!</p>
 					)}
 					<Button label="Check Cookie" onClickFn={readCookie} />
-					<Button label="Nom Cookie" onClickFn={eatCookie} />
-          <h2>Don't have an account?</h2>
-          <h2>
-            {" "}
-            <Link to="/Register"> Register </Link>{" "}
-          </h2>
-        </div>
-      </div>
-    </PageTitle>
-  );
+					<Button label="Nom Cookie(logout)" onClickFn={eatCookie} />
+					<h2>Don't have an account?</h2>
+					<h2>
+						{" "}
+						<Link to="/Register"> Register </Link>{" "}
+					</h2>
+				</div>
+			</div>
+		</PageTitle>
+	);
 }
 
 export default Login;

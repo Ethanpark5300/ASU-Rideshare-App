@@ -3,69 +3,93 @@ import { Link } from "react-router-dom";
 import "./Navbar.css";
 import ASU_Logo from "../../../images/ASU-Logo.svg";
 import { useEffect } from "react";
+import { useAppSelector } from "../../../store/hooks";
+import { Account } from "../../../account/Account";
 
-function Navbar() 
-{
-    useEffect(() => {
-        const navEl = document.querySelector('.nav') as HTMLElement;
-        const hamburgerEl = document.querySelector('.hamburger') as HTMLElement;
-        const navItemEls = document.querySelectorAll('.nav__item') as NodeListOf<HTMLElement>;
+function Navbar() {
+	useEffect(() => {
+		const navEl = document.querySelector('.nav') as HTMLElement;
+		const hamburgerEl = document.querySelector('.hamburger') as HTMLElement;
+		const navItemEls = document.querySelectorAll('.nav__item') as NodeListOf<HTMLElement>;
 
-        const toggleNav = () => {
-            navEl.classList.toggle('nav--open');
-            hamburgerEl.classList.toggle('hamburger--open');
-        };
+		const toggleNav = () => {
+			navEl.classList.toggle('nav--open');
+			hamburgerEl.classList.toggle('hamburger--open');
+		};
 
-        const closeNav = () => {
-            navEl.classList.remove('nav--open');
-            hamburgerEl.classList.remove('hamburger--open');
-        };
+		const closeNav = () => {
+			navEl.classList.remove('nav--open');
+			hamburgerEl.classList.remove('hamburger--open');
+		};
 
-        hamburgerEl.addEventListener('click', toggleNav);
-        navItemEls.forEach((navItemEl) => {
-            navItemEl.addEventListener('click', closeNav);
-        });
+		hamburgerEl.addEventListener('click', toggleNav);
+		navItemEls.forEach((navItemEl) => {
+			navItemEl.addEventListener('click', closeNav);
+		});
 
-        // Cleanup function to remove event listeners when the component unmounts
-        return () => {
-            hamburgerEl.removeEventListener('click', toggleNav);
-            navItemEls.forEach((navItemEl) => {
-                navItemEl.removeEventListener('click', closeNav);
-            });
-        };
-    }, []);
+		// Cleanup function to remove event listeners when the component unmounts
+		return () => {
+			hamburgerEl.removeEventListener('click', toggleNav);
+			navItemEls.forEach((navItemEl) => {
+				navItemEl.removeEventListener('click', closeNav);
+			});
+		};
+	}, []);
 
-    return (
-        <div className="navbar">
-            <header className="header">
-                <div className="bottom-bar">
-                    <div className="bottom-bar__content">
-                        <Link to="/" className="logo">
-                            <img className="logo__img" src={ASU_Logo} alt="logo" />
-                            <span className="logo__text">ASU Rideshare App</span>
-                        </Link>
+	const account = useAppSelector((state)=>state.account);
 
-                        <nav className="nav">
-                            <ul className="nav__list">
-                                <li className="nav__item">
-                                    <Link className="btn" to="/Login"> Login </Link>
-                                </li>
-                                <li className="nav__item">
-                                    <Link className="btn" to="/Register"> Register </Link>
-                                </li>
-                            </ul>
-                        </nav>
+	return (
+		<div className="navbar">
+			<header className="header">
+				<div className="bottom-bar">
+					<div className="bottom-bar__content">
+						<Link to="/" className="logo">
+							<img className="logo__img" src={ASU_Logo} alt="logo" />
+							<span className="logo__text">ASU Rideshare App</span>
+						</Link>
 
-                        <div className="hamburger">
-                            <div className="bar"></div>
-                            <div className="bar"></div>
-                            <div className="bar"></div>
-                        </div>
-                    </div>
-                </div>
-            </header>
-        </div>
-    )
+						<nav className="nav">
+							{ 
+								(account.account) && (
+									<ul className="nav__list">
+										<li className="nav__item">
+											<span className="logo__text">
+												Logged in as {account.account.email}
+											</span>
+										</li>
+										<li className="nav__item">
+											<span className="logo__text">
+												Insert logout button here
+											</span>
+										</li>
+									</ul>
+								)
+							}
+							{
+								(!account.account) && (
+									<ul className="nav__list">
+										<li className="nav__item">
+											<Link className="btn" to="/Login"> Login </Link>
+										</li>
+										<li className="nav__item">
+											<Link className="btn" to="/Register"> Register </Link>
+										</li>
+									</ul>
+								)
+							}
+							
+						</nav>
+
+						<div className="hamburger">
+							<div className="bar"></div>
+							<div className="bar"></div>
+							<div className="bar"></div>
+						</div>
+					</div>
+				</div>
+			</header>
+		</div>
+	)
 }
 
 export default Navbar;

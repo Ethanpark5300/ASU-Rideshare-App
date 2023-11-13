@@ -22,9 +22,9 @@ export const store = configureStore({
 			// Ignore these paths in the state
 			//ignoredPaths: ['items.dates'],
 
-			//ignoredActionPaths:['payload','payload.hovered', 'payload.extra'],
+			ignoredActionPaths:['payload.account'],
 
-			//ignoredPaths: ['advancedBuild.statBuild', 'advancedBuild.champ', 'ttHover.hovered', 'ttHover.extra'],
+			ignoredPaths: ['account.account'],
 		},
 	}),
 })
