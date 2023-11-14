@@ -51,7 +51,7 @@ function App() {
 				<Route path="/RiderRequest" element={<RiderRequest />} />
 				<Route path="/Settings" element={<Settings />} />
 				<Route path="/TrackRide" element={<TrackRide />} />
-				<Route path="/Rating" element={<Rating />} />
+				<Route path="/Rating" element={<Rating name={''}/>} />
 			</Routes>
 		</>
 	);

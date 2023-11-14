@@ -6,8 +6,6 @@ import DriverNavbar from "../components/Navigation_Bars/Driver_Navbar/Navbar";
 import { useAppSelector } from '../store/hooks';
 import { Account } from '../account/Account';
 import PageTitle from '../components/Page_Title/PageTitle';
-import defaultProfilePicture from "../images/blank-profile-picture.png";
-import { AiOutlineArrowRight } from "react-icons/ai";
 import profile_filler from "../images/profile.png";
 
 interface ProfileProps {

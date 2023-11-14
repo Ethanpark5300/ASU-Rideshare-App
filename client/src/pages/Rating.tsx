@@ -6,13 +6,18 @@ import { useAppSelector } from '../store/hooks';
 import { Account } from '../account/Account';
 import PageTitle from '../components/Page_Title/PageTitle';
 
+interface RatingProps {
+    name: string;
+    
+}
+
 interface RatingFormState {
     rating: number | null;
     comment: string;
     favorite: boolean | null;
 }
 
-const Rating: React.FC = () => {
+const Rating: React.FC<RatingProps> = (props) => {
     let account: Account | undefined = useAppSelector((state) => state.account.account);
 
     /** 
@@ -69,7 +74,7 @@ const Rating: React.FC = () => {
         <PageTitle title="Rating">
             {navbarConditionDisplay()}
             <div className='rating-container'>
-                <h1 className="rating-heading">Rate</h1>
+                <h1 className="rating-heading">Rate {props.name}</h1>
                 <form onSubmit={handleSubmit}>
                     <div className="stars-container">
                         <label className="label">Rating:</label>
