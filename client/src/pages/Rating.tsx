@@ -1,4 +1,4 @@
-import '../styles/Rate.css';
+import '../styles/Rating.css';
 import GuestNavbar from "../components/Navigation_Bars/Guest_Navbar/Navbar";
 import RiderNavbar from "../components/Navigation_Bars/Rider_Navbar/Navbar";
 import { useAppSelector } from '../store/hooks';
