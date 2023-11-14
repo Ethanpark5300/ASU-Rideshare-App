@@ -69,7 +69,7 @@ const Rating: React.FC = () => {
         <PageTitle title="Rating">
             {navbarConditionDisplay()}
             <div className='rating-container'>
-                <h1 className="rating-heading">Rating App</h1>
+                <h1 className="rating-heading">Rate</h1>
                 <form onSubmit={handleSubmit}>
                     <div className="stars-container">
                         <label className="label">Rating:</label>

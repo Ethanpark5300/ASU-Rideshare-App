@@ -1,0 +1,89 @@
+/* RatingForm.css */
+
+.rating-container {
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    font-family: Arial, sans-serif;
+    margin-top: 16px;
+}
+
+.rating-heading {
+    text-align: center;
+    color: #333;
+}
+
+.label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.stars-container {
+    margin-bottom: 15px;
+}
+
+.star {
+    cursor: pointer;
+    color: #ddd;
+    font-size: 24px;
+}
+
+.star.active {
+    color: gold;
+}
+
+.comment-container {
+    margin-bottom: 15px;
+}
+
+.comment-input {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.submit-button {
+    background-color: #4caf50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.submit-button:hover {
+    background-color: darkgreen;
+}
+
+.results-container {
+    display: none;
+    margin-top: 20px;
+    background-color: lightgray;
+    padding-top: 1px;
+    padding-bottom: 16px;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+.results-container.show {
+    display: block;
+}
+
+.results-heading {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.result-item {
+    margin-bottom: 8px;
+}
+
+.favorite-container {
+    margin-bottom: 16px;
+}
+
+.favorite-container label {
+    margin-right: 16px;
+}
