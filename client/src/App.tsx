@@ -13,6 +13,7 @@ import Settings from './pages/Settings';
 import TrackRide from './pages/TrackRide';
 import { setAccountStore } from './store/features/accountSlice';
 import { useAppDispatch, useAppSelector } from './store/hooks';
+import Rating from './pages/Rating';
 
 function App() {
 	const dispatch = useAppDispatch();
@@ -50,6 +51,7 @@ function App() {
 				<Route path="/RiderRequest" element={<RiderRequest />} />
 				<Route path="/Settings" element={<Settings />} />
 				<Route path="/TrackRide" element={<TrackRide />} />
+				<Route path="/Rating" element={<Rating />} />
 			</Routes>
 		</>
 	);
