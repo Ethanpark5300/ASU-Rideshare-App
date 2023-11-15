@@ -10,7 +10,7 @@ import RequestRide from './pages/RequestRide';
 import RideHistory from './pages/RideHistory';
 import RiderRequest from './pages/RiderRequest';
 import Settings from './pages/Settings';
-import TrackRide from './pages/TrackRide';
+import RideinProgress from './pages/RideinProgress';
 import { setAccountStore } from './store/features/accountSlice';
 import { useAppDispatch, useAppSelector } from './store/hooks';
 import Rating from './pages/Rating';
@@ -73,7 +73,7 @@ function App() {
 				<Route path="/RideHistory" element={<RideHistory />} />
 				<Route path="/RiderRequest" element={<RiderRequest />} />
 				<Route path="/Settings" element={<Settings />} />
-				<Route path="/TrackRide" element={<TrackRide />} />
+				<Route path="/RideinProgress" element={<RideinProgress />} />
 				<Route path="/Rating" element={<Rating name={''} />} />
 			</Routes>
 		</>
