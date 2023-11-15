@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import "./Navbar.css";
-import ASU_Logo from "../../images/ASU-Logo.svg";
+import ASU_Logo from "../../images/ASU_Logo.png";
 import { useEffect } from "react";
 import { useAppSelector } from "../../store/hooks";
 import { Account } from "../../account/Account";
@@ -44,7 +44,7 @@ function Navbar() {
                     <div className="bottom-bar__content">
                         <Link to="/" className="logo">
                             <img className="logo__img" src={ASU_Logo} alt="logo" />
-                            <span className="logo__text">ASU Rideshare App</span>
+                            <span className="logo__text">Rideshare</span>
                         </Link>
 
                         <nav className="nav">
