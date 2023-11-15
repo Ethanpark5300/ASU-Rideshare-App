@@ -4,6 +4,7 @@ import PageTitle from '../components/Page_Title/PageTitle';
 
 function RideinProgress() 
 {
+    /* TODO: Add emergency features and a report button */
     return (
         <PageTitle title="Ride in Progress">
             <Navbar />
