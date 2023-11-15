@@ -81,7 +81,7 @@
     border-bottom: solid 8px gold;
     padding-top: 16px;
     transform: scaleX(0);
-    transition: transform 250ms ease-in-out;
+    transition: transform 125ms ease-in-out;
 }
 
 .nav__button-item, .nav__link {
@@ -97,8 +97,8 @@
 }
 
 .btn {
-    color: maroon;
-    background-color: gold;
+    color: white;
+    background-color: maroon;
     padding: 8px 20px;
     border-radius: 1000px;
     text-transform: uppercase;
@@ -111,7 +111,7 @@
 }
 
 .btn:hover {
-    background-color: lightgray;
+    background-color: #a60000;
 }
 
 .hamburger {
