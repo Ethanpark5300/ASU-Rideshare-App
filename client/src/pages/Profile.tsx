@@ -22,28 +22,11 @@ interface ProfileProps {
 }
 
 const Profile: React.FC<ProfileProps> = (props) => {
-	const account: Account | undefined = useAppSelector((state) => state.account.account);
 
-	/**
-	 * @returns Specific navbar based on their login status and user type
-	 */
-	function navbarConditionDisplay() {
-		// Show rider navbar if the user is signed in and a rider
-		if (account !== undefined) {
-			return <RiderNavbar />;
-		} 
-		// else if (account === undefined) {
-		// 	return <DriverNavbar />;
-		// } 
-		else {
-			// Show guest navbar if the user is not signed in
-			return <GuestNavbar />;
-		}
-	}
+	const account = useAppSelector((state) => state.account);
 
 	return (
 		<PageTitle title="Profile">
-			{navbarConditionDisplay()}
 			<div className="profile">
 				<div className="picture">
 					<h1>Account Page</h1>
@@ -58,7 +41,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
 					</div>
 					<p><strong>ASU ID: </strong> {props.asuid}</p>
 					<p><strong>Type: </strong> {props.label}</p>
-					<p><strong>Address: </strong> {props.address}</p>
+					<p><strong>Address: </strong> </p>
 					<p><strong>E-Mail: </strong> {props.email}</p>
 					<p><strong>Phone Number: </strong> {props.phonenum}</p>
 					<button>Save</button>
