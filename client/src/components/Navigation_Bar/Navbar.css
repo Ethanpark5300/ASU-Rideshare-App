@@ -73,7 +73,6 @@
     color: black;
     transition: all 0.2s;
     display: inline-block;
-    margin-top: 16px;
 }
 
 .nav__link:after {
@@ -85,16 +84,16 @@
     transition: transform 250ms ease-in-out;
 }
 
+.nav__button-item, .nav__link {
+    margin-top: 17px;
+}
+
 .nav__link:hover:after {
     transform: scaleX(1);
 }
 
 .nav__link.fromLeft:after {
     transform-origin: 0% 50%;
-}
-
-.nav__button-item {
-    margin-top: 16px;
 }
 
 .btn {
@@ -107,7 +106,7 @@
     font-weight: 900;
     cursor: pointer;
     transition: all 0.2s;
-    margin-right: -16px;
+    /* margin-right: -16px; */
     white-space: nowrap;
 }
 
