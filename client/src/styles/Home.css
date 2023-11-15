@@ -1,15 +1,25 @@
 .Home {
-  background-color: maroon;
-  color: gold;
+  background-color: #f2f2f2;
+  color: black;
   font-family: Arial, Helvetica, sans-serif;
   text-align: center;
 }
 
-.Home p {
-  color: gold;
+.heroText {
+  color: white;
+  -webkit-text-stroke: 1px black;
+  position: absolute;
+  top: 10%;
+}
+
+.heroText p {
   font-size: 35px;
 }
 
+.heroText h1 {
+  font-size: 90px;
+  margin: 10px;
+}
 .hero {
   background: url("../images/tempe-hero.jpg") no-repeat center center;
   background-size: cover;
@@ -21,20 +31,13 @@
   text-align: center;
 }
 
-.hero h1 {
-  color: gold;
-  -webkit-text-stroke: 1px black;
-  font-size: 90px;
-  margin: 10px;
-}
-
 .cancelPolicy {
-  font-size: 14px;
+  font-size: 25px;
   font-style: italic;
   text-align: center;
   margin-top: 50px;
   opacity: 0.7;
-  color: white;
+  color: grey;
   border-top: 1px solid white;
   padding-top: 10px;
 }
@@ -42,27 +45,29 @@
 .instructions-container {
   display: flex;
   justify-content: center;
+  height: 50vh;
 }
 
-.rider-container {
-  margin: 30px;
-}
-
+.rider-container,
 .driver-container {
-  margin: 30px;
+  border: 1px solid #ccc;
+  border-radius: 30px;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 50px;
 }
 
 .Home h3 {
+  font-size: 35px;
   text-decoration: underline;
   margin-bottom: 10px;
 }
 
 .rider-steps {
   padding-right: 50px;
-  font-size: 20px;
+  font-size: 35px;
 }
 
 .driver-steps {
   padding-left: 50px;
-  font-size: 20px;
+  font-size: 35px;
 }
