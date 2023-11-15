@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import '../styles/Rating.css';
-import GuestNavbar from "../components/Navigation_Bars/Guest_Navbar/Navbar";
-import RiderNavbar from "../components/Navigation_Bars/Rider_Navbar/Navbar";
-import { useAppSelector } from '../store/hooks';
-import { Account } from '../account/Account';
+import Navbar from "../components/Navigation_Bar/Navbar";
 import PageTitle from '../components/Page_Title/PageTitle';
 
 interface RatingProps {
@@ -17,26 +14,8 @@ interface RatingFormState {
     favorite: boolean | null;
 }
 
-const Rating: React.FC<RatingProps> = (props) => {
-    let account: Account | undefined = useAppSelector((state) => state.account.account);
-
-    /** 
-    * @returns Specific navbar based on their login status and user type
-    */
-    function navbarConditionDisplay() {
-        //Show rider navbar if the user is signed in and a rider
-        if (account !== undefined) {
-            return <RiderNavbar />
-        }
-
-        //TODO: Show driver navbar if the user is signed in and a driver
-
-        //Show guest navbar if the user is not signed in
-        else {
-            return <GuestNavbar />
-        }
-    }
-
+const Rating: React.FC<RatingProps> = (props) => 
+{
     const [formData, setFormData] = useState<RatingFormState>({
         rating: null,
         comment: '',
@@ -72,7 +51,7 @@ const Rating: React.FC<RatingProps> = (props) => {
 
     return (
         <PageTitle title="Rating">
-            {navbarConditionDisplay()}
+            <Navbar />
             <div className='rating-container'>
                 <h1 className="rating-heading">Rate {props.name}</h1>
                 <form onSubmit={handleSubmit}>

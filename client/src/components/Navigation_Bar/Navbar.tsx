@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 import "./Navbar.css";
 import ASU_Logo from "../../../images/ASU-Logo.svg";
 import { useEffect } from "react";
-import { useAppSelector } from "../../../store/hooks";
-import { Account } from "../../../account/Account";
+import { useAppSelector } from "../../store/hooks";
+import { Account } from "../../account/Account";
 
 function Navbar() {
 	useEffect(() => {

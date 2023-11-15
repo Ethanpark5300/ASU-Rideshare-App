@@ -1,5 +1,5 @@
 import '../styles/RiderRequest.css';
-import Navbar from "../components/Navigation_Bars/Rider_Navbar/Navbar";
+import Navbar from "../components/Navigation_Bar/Navbar";
 import PageTitle from '../components/Page_Title/PageTitle';
 
 function RiderRequest() {
