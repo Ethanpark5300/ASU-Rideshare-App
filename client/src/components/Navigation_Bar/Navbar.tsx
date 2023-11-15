@@ -49,22 +49,27 @@ function Navbar() {
 						</Link>
 
 						<nav className="nav">
+							{/* Signed in Navbar */}
 							{ 
 								(account.account) && (
-									<ul className="nav__list">
-										<li className="nav__item">
-											<span className="logo__text">
-												Logged in as {account.account.email}
-											</span>
-										</li>
-										<li className="nav__item">
-											<span className="logo__text">
-												Insert logout button here
-											</span>
-										</li>
-									</ul>
+									
+									
+									// <ul className="nav__list">
+									// 	<li className="nav__item">
+									// 		<span className="logo__text">
+									// 			Logged in as {account.account.email}
+									// 		</span>
+									// 	</li>
+									// 	<li className="nav__item">
+									// 		<span className="logo__text">
+									// 			Insert logout button here
+									// 		</span>
+									// 	</li>
+									// </ul>
 								)
 							}
+
+							{/* Guest Navbar */}
 							{
 								(!account.account) && (
 									<ul className="nav__list">

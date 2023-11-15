@@ -20,8 +20,6 @@ interface ProfileProps {
 
 const Profile: React.FC<ProfileProps> = (props) => {
 
-    const account = useAppSelector((state) => state.account);
-
     return (
         <PageTitle title="Profile">
             <Navbar />
@@ -44,6 +42,8 @@ const Profile: React.FC<ProfileProps> = (props) => {
                     <p><strong>Phone Number: </strong> {props.phonenum}</p>
                     <button>Save</button>
                 </div>
+                
+                {/* TODO: Add signout button */}
 
                 <div className="paymentInfo">
                     <h2>Payment Info</h2>
