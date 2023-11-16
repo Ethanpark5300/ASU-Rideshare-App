@@ -1,4 +1,4 @@
-import '../styles/ChnagePayment.css';
+import '../styles/ChangePayment.css';
 import Navbar from "../components/Navigation_Bar/Navbar";
 import PageTitle from '../components/Page_Title/PageTitle';
 

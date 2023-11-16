@@ -14,6 +14,9 @@ import RideinProgress from './pages/RideinProgress';
 import { setAccountStore } from './store/features/accountSlice';
 import { useAppDispatch, useAppSelector } from './store/hooks';
 import Rating from './pages/Rating';
+import ChooseDriver from './pages/ChooseDriver';
+import ChooseRider from './pages/ChooseRider';
+import ChangePayment from './pages/ChangePayment';
 
 function App() {
 	const dispatch = useAppDispatch();
@@ -74,6 +77,9 @@ function App() {
 				<Route path="/RiderRequest" element={<RiderRequest />} />
 				<Route path="/Settings" element={<Settings />} />
 				<Route path="/RideinProgress" element={<RideinProgress />} />
+				<Route path="/ChooseDriver" element={<ChooseDriver />} />
+				<Route path="/ChooseRider" element={<ChooseRider />} />
+				<Route path="/ChangePayment" element={<ChangePayment />} />
 				<Route path="/Rating" element={<Rating name={''} />} />
 			</Routes>
 		</>
