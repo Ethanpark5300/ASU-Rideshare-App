@@ -6,7 +6,8 @@ CREATE TABLE USER_INFO (
     Password varchar(500) NOT NULL,
     Email varchar(500) NOT NULL UNIQUE,
     Rating_Passenger real,
-    Rating_Driver real
+    Rating_Driver real,
+	Birthday date
 );
 
 
