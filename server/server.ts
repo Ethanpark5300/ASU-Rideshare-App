@@ -80,7 +80,7 @@ app.post("/login", (req: any, res: any) => {
 			loginSuccess: !hadError,
 			message: message,
 			account: {
-				Email: rows.Email,
+				Email: rows?.Email ?? undefined,
 			}
 		});
 	});
