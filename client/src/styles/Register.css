@@ -1,31 +1,23 @@
 .Register {
-  /* position: fixed; 
-    top: 0px; 
-    left: 0px; 
-    width: 100%; 
-    height: 100%; 
-    background: lightgray;
-    z-index: -1;
-    font-family: Arial, Helvetica, sans-serif; */
-  font-family: Arial, Helvetica, sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  row-gap: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 20px;
 }
 
 .RegisterError {
-  color: red;
+    color: red;
 }
 
 .register-container {
-  max-width: 500px;
-  margin: 50 px auto 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  row-gap: 20px;
-  background: lightgray;
-  border: 2px solid black;
-  padding: 20px;
+    max-width: 500px;
+    margin: 50 px auto 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 20px;
+    background: lightgray;
+    border: 2px solid black;
+    padding: 20px;
 }
