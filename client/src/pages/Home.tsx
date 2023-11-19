@@ -11,9 +11,8 @@ function Home() {
           <div className="heroText">
             <h1>Better Commuting for Sun Devils</h1>
             <p>
-              Whether you need a lift to campus or are offering an open seat in
-              your car, ASU Rideshare makes it easy to request and offer rides
-              within the ASU community.
+              ASU Rideshare makes it easy to request and offer rides within the
+              ASU community.
             </p>
           </div>
         </section>
