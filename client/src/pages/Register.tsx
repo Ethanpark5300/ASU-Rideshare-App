@@ -84,7 +84,7 @@ function Register() {
         <h1>Join the Rideshare Community</h1>
         <div className="register-container">
           <div className="regfield-container">
-            <h2 className="regfield-text">Email:</h2>
+            <h2 className="regfield-text">Email</h2>
             <div>
               <TextInput
                 placeholder=""
@@ -96,7 +96,7 @@ function Register() {
           </div>
 
           <div className="regfield-container">
-            <h2 className="regfield-text">First Name:</h2>
+            <h2 className="regfield-text">First Name</h2>
             <div>
               <TextInput
                 placeholder=""
@@ -108,7 +108,7 @@ function Register() {
           </div>
 
           <div className="regfield-container">
-            <h2 className="regfield-text">Last Name:</h2>
+            <h2 className="regfield-text">Last Name</h2>
             <div>
               <TextInput
                 placeholder=""
@@ -120,7 +120,7 @@ function Register() {
           </div>
 
           <div className="regfield-container">
-            <h2 className="regfield-text">Password:</h2>
+            <h2 className="regfield-text">Password</h2>
             <div>
               <TextInput
                 placeholder=""
@@ -133,7 +133,7 @@ function Register() {
           </div>
 
           <div className="regfield-container">
-            <h2 className="regfield-text">Confirm Password:</h2>
+            <h2 className="regfield-text">Confirm Password</h2>
             <div>
               <TextInput
                 placeholder=""
