@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/Rating.css';
 import Navbar from '../components/Navigation_Bar/Navbar';
 import PageTitle from '../components/Page_Title/PageTitle';
@@ -44,14 +44,25 @@ const Rating: React.FC<RatingProps> = (props) => {
         event.preventDefault();
         setFormData({ ...formChanges });
         setShowResults(true);
-        console.log('Rating:', formData.rating);
-        console.log('Comment:', formData.comment);
-        console.log('Favorite:', formData.favorite);
     };
+
+    useEffect(() => {
+        if (showResults) {
+            console.log('Rating:', formData.rating);
+            console.log('Comment:', formData.comment);
+            console.log('Favorite:', formData.favorite);
+        }
+    }, [showResults, formData]);
 
     const handleClear = () => {
         setFormChanges({ rating: null, comment: '', favorite: null });
+        setFormData({ rating: null, comment: '', favorite: null });
         setShowResults(false);
+
+        // Log null values to the console
+        console.log('Rating:', null);
+        console.log('Comment:', null);
+        console.log('Favorite:', null);
     };
 
     const handleReport = () => {
@@ -59,7 +70,7 @@ const Rating: React.FC<RatingProps> = (props) => {
         // Add a delay to wait for the user to acknowledge the alert
         setTimeout(() => {
             setShowResults(false);
-        }, 100);
+        }, -100);
     };
 
     const handleBlock = () => {
@@ -67,7 +78,7 @@ const Rating: React.FC<RatingProps> = (props) => {
         // Add a delay to wait for the user to acknowledge the alert
         setTimeout(() => {
             setShowResults(false);
-        }, 100);
+        }, -100);
     };
 
     return (
@@ -79,7 +90,7 @@ const Rating: React.FC<RatingProps> = (props) => {
                     <form onSubmit={handleSubmit}>
                         <div className="stars-container">
                             <label className="label">Rating:</label>
-                            <div>
+                            <div className="stars-wrapper">
                                 {[1, 2, 3, 4, 5].map((star) => (
                                     <span
                                         key={star}
@@ -92,6 +103,7 @@ const Rating: React.FC<RatingProps> = (props) => {
                             </div>
                         </div>
                         <div className="comment-container">
+                            {/* Comment input */}
                             <label className="label">Comment:</label>
                             <textarea
                                 value={formChanges.comment}
@@ -102,6 +114,7 @@ const Rating: React.FC<RatingProps> = (props) => {
                             />
                         </div>
                         <div className="favorite-container">
+                            {/* Favorite driver radio buttons */}
                             <label className="label">Favorite driver?</label>
                             <div>
                                 <label>
@@ -127,6 +140,7 @@ const Rating: React.FC<RatingProps> = (props) => {
                             </div>
                         </div>
                         <div className="buttons-container">
+                            {/* Submit, Report, Block buttons */}
                             <button type="submit" className="submit-button">
                                 Submit
                             </button>
@@ -139,7 +153,7 @@ const Rating: React.FC<RatingProps> = (props) => {
                         </div>
                     </form>
 
-                    {/* Display results below the form if showResults is true */}
+                    {/* Results container */}
                     <div className={`results-container ${showResults ? 'show' : ''}`}>
                         <h2 className="results-heading">Results</h2>
                         <p className="result-item">Rating: {formData.rating}</p>
