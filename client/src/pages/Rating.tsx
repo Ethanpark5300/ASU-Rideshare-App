@@ -20,22 +20,29 @@ const Rating: React.FC<RatingProps> = (props) => {
         favorite: null,
     });
 
+    const [formChanges, setFormChanges] = useState<RatingFormState>({
+        rating: null,
+        comment: '',
+        favorite: null,
+    });
+
     const [showResults, setShowResults] = useState(false);
 
     const handleRatingChange = (newRating: number | null) => {
-        setFormData({ ...formData, rating: newRating });
+        setFormChanges({ ...formChanges, rating: newRating });
     };
 
     const handleCommentChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setFormData({ ...formData, comment: event.target.value });
+        setFormChanges({ ...formChanges, comment: event.target.value });
     };
 
     const handleFavoriteChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({ ...formData, favorite: event.target.value === 'yes' });
+        setFormChanges({ ...formChanges, favorite: event.target.value === 'yes' });
     };
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
+        setFormData({ ...formChanges });
         setShowResults(true);
         console.log('Rating:', formData.rating);
         console.log('Comment:', formData.comment);
@@ -43,7 +50,7 @@ const Rating: React.FC<RatingProps> = (props) => {
     };
 
     const handleClear = () => {
-        setFormData({ rating: null, comment: '', favorite: null });
+        setFormChanges({ rating: null, comment: '', favorite: null });
         setShowResults(false);
     };
 
@@ -68,7 +75,7 @@ const Rating: React.FC<RatingProps> = (props) => {
             <Navbar />
             <div className="gray-box">
                 <div className="rating-container">
-                    <h1 className="rating-heading">Rate [props.name]</h1>
+                    <h1 className="rating-heading">Rate {props.name}</h1>
                     <form onSubmit={handleSubmit}>
                         <div className="stars-container">
                             <label className="label">Rating:</label>
@@ -77,7 +84,7 @@ const Rating: React.FC<RatingProps> = (props) => {
                                     <span
                                         key={star}
                                         onClick={() => handleRatingChange(star)}
-                                        className={`star ${star <= (formData.rating || 0) ? 'active' : ''}`}
+                                        className={`star ${star <= (formChanges.rating || 0) ? 'active' : ''}`}
                                     >
                                         &#9733;
                                     </span>
@@ -87,7 +94,7 @@ const Rating: React.FC<RatingProps> = (props) => {
                         <div className="comment-container">
                             <label className="label">Comment:</label>
                             <textarea
-                                value={formData.comment}
+                                value={formChanges.comment}
                                 onChange={handleCommentChange}
                                 rows={4}
                                 className="comment-input"
@@ -102,7 +109,7 @@ const Rating: React.FC<RatingProps> = (props) => {
                                         type="radio"
                                         name="favorite"
                                         value="yes"
-                                        checked={formData.favorite === true}
+                                        checked={formChanges.favorite === true}
                                         onChange={handleFavoriteChange}
                                     />{' '}
                                     Yes
@@ -112,7 +119,7 @@ const Rating: React.FC<RatingProps> = (props) => {
                                         type="radio"
                                         name="favorite"
                                         value="no"
-                                        checked={formData.favorite === false}
+                                        checked={formChanges.favorite === false}
                                         onChange={handleFavoriteChange}
                                     />{' '}
                                     No
