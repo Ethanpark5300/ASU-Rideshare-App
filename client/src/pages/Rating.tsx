@@ -8,27 +8,27 @@ interface RatingProps {
 }
 
 interface RatingFormState {
-    rating: number | null;
+    rating: number;
     comment: string;
     favorite: boolean | null;
 }
 
 const Rating: React.FC<RatingProps> = (props) => {
     const [formData, setFormData] = useState<RatingFormState>({
-        rating: null,
+        rating: 0,
         comment: '',
         favorite: null,
     });
 
     const [formChanges, setFormChanges] = useState<RatingFormState>({
-        rating: null,
+        rating: 0,
         comment: '',
         favorite: null,
     });
 
     const [showResults, setShowResults] = useState(false);
 
-    const handleRatingChange = (newRating: number | null) => {
+    const handleRatingChange = (newRating: number) => {
         setFormChanges({ ...formChanges, rating: newRating });
     };
 
@@ -55,19 +55,18 @@ const Rating: React.FC<RatingProps> = (props) => {
     }, [showResults, formData]);
 
     const handleClear = () => {
-        setFormChanges({ rating: null, comment: '', favorite: null });
-        setFormData({ rating: null, comment: '', favorite: null });
+        setFormChanges({ rating: 0, comment: '', favorite: null });
+        setFormData({ rating: 0, comment: '', favorite: null });
         setShowResults(false);
 
-        // Log null values to the console
-        console.log('Rating:', null);
-        console.log('Comment:', null);
+        // Log the default values to the console
+        console.log('Rating:', 0);
+        console.log('Comment:', '');
         console.log('Favorite:', null);
     };
 
     const handleReport = () => {
         alert('User reported!');
-        // Add a delay to wait for the user to acknowledge the alert
         setTimeout(() => {
             setShowResults(false);
         }, -100);
@@ -75,7 +74,6 @@ const Rating: React.FC<RatingProps> = (props) => {
 
     const handleBlock = () => {
         alert('User blocked!');
-        // Add a delay to wait for the user to acknowledge the alert
         setTimeout(() => {
             setShowResults(false);
         }, -100);
@@ -158,7 +156,7 @@ const Rating: React.FC<RatingProps> = (props) => {
                         <h2 className="results-heading">Results</h2>
                         <p className="result-item">Rating: {formData.rating}</p>
                         <p className="result-item">Comment: {formData.comment}</p>
-                        <p className="result-item">Favorite driver: {formData.favorite ? 'Yes' : 'No'}</p>
+                        <p className="result-item">Favorite driver: {formData.favorite === null ? 'Not selected' : formData.favorite ? 'Yes' : 'No'}</p>
                         <button onClick={handleClear} className="submit-button">
                             Clear
                         </button>
