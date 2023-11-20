@@ -70,3 +70,23 @@
     text-align: center;
 }
 
+/* change to a flex display to allow for each box to encompass each element
+this will allow it to be only that size
+it will also improve overall look 
+do this soon */
+
+/*example:
+.profile {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.profile-pic, 
+.account-info,
+.ride-history,
+.card-info {
+  width: 45%;
+  margin: 10px;
+  border: 1px solid #ddd;
+  padding: 10px;
+}*/
