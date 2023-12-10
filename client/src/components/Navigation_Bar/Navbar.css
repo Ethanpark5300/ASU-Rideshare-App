@@ -3,11 +3,17 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* CSS global variables */
+:root {
+    --brand-maroon: #8C1D40;
+    --brand-gold: #FFC627;
 }
 
 /* Navbar styles */
 .navbar {
-    font-family: Arial, Helvetica, sans-serif;
     padding-bottom: 60px;
 }
 
@@ -24,10 +30,10 @@
     width: 100%;
 }
 
-.icon {
+/* .icon {
     margin-right: 3px;
     color: rgba(255, 255, 255, 0.17);
-}
+} */
 
 .bottom-bar {
     background-color: white;
@@ -56,7 +62,7 @@
 
 .logo__text {
     font-size: 20px;
-    color: black;
+    color: var(--brand-maroon);
     font-weight: 600;
 }
 
@@ -78,7 +84,7 @@
 .nav__link:after {
     display: block;
     content: '';
-    border-bottom: solid 8px gold;
+    border-bottom: solid 8px var(--brand-gold);
     padding-top: 16px;
     transform: scaleX(0);
     transition: transform 125ms ease-in-out;
@@ -98,7 +104,7 @@
 
 .btn {
     color: white;
-    background-color: maroon;
+    background-color: var(--brand-maroon);
     padding: 8px 20px;
     border-radius: 1000px;
     text-transform: uppercase;
@@ -110,7 +116,7 @@
 }
 
 .btn:hover {
-    background-color: #a60000;
+    background-color: maroon;
 }
 
 .hamburger {
@@ -121,7 +127,7 @@
 .bar {
     height: 2px;
     width: 27px;
-    background-color: maroon;
+    background-color: var(--brand-maroon);
     margin: 5px 0;
     opacity: 0.8;
     transition: all 0.3s ease-in-out;
@@ -150,7 +156,7 @@
         top: 60px;
         left: -100%;
         transform: translateX(-50%);
-        background-color: white;
+        background-color: whitesmoke;
         width: 100%;
         padding: 10px 0 25px;
     }

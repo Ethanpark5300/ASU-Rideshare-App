@@ -43,8 +43,8 @@ function Navbar() {
                 <div className="bottom-bar">
                     <div className="bottom-bar__content">
                         <Link to="/" className="logo">
-                            <img className="logo__img" src={ASU_Logo} alt="logo" />
-                            <span className="logo__text">Rideshare</span>
+                            {/* <img className="logo__img" src={ASU_Logo} alt="logo" /> */}
+                            <span className="logo__text">ASU Rideshare App</span>
                         </Link>
 
                         <nav className="nav">
