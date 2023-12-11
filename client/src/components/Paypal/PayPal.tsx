@@ -33,7 +33,6 @@ const PayPal: React.FC<PayPalProps> = ({ driverEmail, cost }) => {
                 console.log('Payment captured:', details);
 
                 /** @TODO Perfom additional actions */
-                console.log(cost)
             })
 
             // Display errors during the capture process

@@ -3,17 +3,13 @@ import '../styles/Rating.css';
 import Navbar from '../components/Navigation_Bar/Navbar';
 import PageTitle from '../components/Page_Title/PageTitle';
 
-interface RatingProps {
-    name: string;
-}
-
 interface RatingFormState {
     rating: number;
     comment: string;
     favorite: boolean | null;
 }
 
-const Rating: React.FC<RatingProps> = (props) => {
+const Rating: React.FC = (props) => {
     const [formData, setFormData] = useState<RatingFormState>({
         rating: 0,
         comment: '',
@@ -85,7 +81,7 @@ const Rating: React.FC<RatingProps> = (props) => {
             <section id="Rating">
                 <div className="gray-box">
                     <div className="rating-container">
-                        <h1 className="rating-heading">Rate {props.name}</h1>
+                        <h1 className="rating-heading">Rate </h1>
                         <form onSubmit={handleSubmit}>
                             <div className="stars-container">
                                 <label className="label">Rating:</label>

@@ -1,6 +1,10 @@
 import React, { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { Account } from './account/Account';
+import { setAccountStore } from './store/features/accountSlice';
+import { useAppDispatch, useAppSelector } from './store/hooks';
+
+//Pages
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Payment from './pages/Payment';
@@ -11,12 +15,11 @@ import RideHistory from './pages/RideHistory';
 import RiderRequest from './pages/RiderRequest';
 import Settings from './pages/Settings';
 import RideinProgress from './pages/RideinProgress';
-import { setAccountStore } from './store/features/accountSlice';
-import { useAppDispatch, useAppSelector } from './store/hooks';
 import Rating from './pages/Rating';
 import ChooseDriver from './pages/ChooseDriver';
 import ChooseRider from './pages/ChooseRider';
 import ChangePayment from './pages/ChangePayment';
+import Report from './pages/Report';
 
 function App() {
 	const dispatch = useAppDispatch();
@@ -80,7 +83,8 @@ function App() {
 				<Route path="/ChooseDriver" element={<ChooseDriver />} />
 				<Route path="/ChooseRider" element={<ChooseRider />} />
 				<Route path="/ChangePayment" element={<ChangePayment />} />
-				<Route path="/Rating" element={<Rating name={''} />} />
+				<Route path="/Rating" element={<Rating />} />
+				<Route path="/Report" element={<Report />} />
 			</Routes>
 		</>
 	);
