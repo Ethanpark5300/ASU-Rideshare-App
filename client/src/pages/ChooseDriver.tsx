@@ -6,9 +6,9 @@ function ChooseDriver() {
     return (
         <PageTitle title="Choose Driver">
             <Navbar />
-            <div className='ChooseDriver'>
+            <section id="ChooseDriver">
                 <h1>Choose a Driver</h1>
-            </div>
+            </section>
         </PageTitle>
     );
 }

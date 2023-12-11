@@ -6,9 +6,9 @@ function ChooseRider() {
     return (
         <PageTitle title="Choose Rider">
             <Navbar />
-            <div className='ChooseRider'>
+            <section id="ChooseRider">
                 <h1>Choose a Rider</h1>
-            </div>
+            </section>
         </PageTitle>
     );
 }

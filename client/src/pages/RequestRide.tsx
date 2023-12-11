@@ -9,7 +9,7 @@ function RequestRide()
     return (
         <PageTitle title="Request Ride">
             <Navbar />
-            <div className='RequestRide'>
+            <section id='RequestRide'>
                 <div className="requestcontainer">
                     <div className="left-column">
                         <h1>Request Ride</h1>
@@ -26,7 +26,7 @@ function RequestRide()
                         <img src={Map_filler} alt="filler map" className="map"/>
                     </div>
                 </div>
-            </div>
+            </section>
         </PageTitle>
     );
 }

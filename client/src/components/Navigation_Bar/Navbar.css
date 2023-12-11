@@ -15,6 +15,7 @@
 /* Navbar styles */
 .navbar {
     padding-bottom: 60px;
+    z-index: 10000;
 }
 
 .navbar ul {
@@ -156,7 +157,7 @@
         top: 60px;
         left: -100%;
         transform: translateX(-50%);
-        background-color: whitesmoke;
+        background-color: white;
         width: 100%;
         padding: 10px 0 25px;
     }

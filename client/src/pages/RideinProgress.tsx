@@ -18,7 +18,7 @@ function RideinProgress() {
     return (
         <PageTitle title="Ride in Progress">
             <Navbar />
-            {/* <div className='RideinProgress'>
+            {/* <section id='RideinProgress'>
                 <h1>Ride in Progress</h1>
                 <div className="map-container">
                     <img src={Map_filler} alt="filler map" className="map" />
@@ -33,7 +33,7 @@ function RideinProgress() {
                         Report Driver
                     </button>
                 </div>
-            </div> */}
+            </section> */}
         </PageTitle>
     );
 }
