@@ -2,7 +2,7 @@ import React from 'react';
 import '../styles/Payment.css';
 import Navbar from "../components/Navigation_Bar/Navbar";
 import PageTitle from '../components/Page_Title/PageTitle';
-import PayPal from '../components/Paypal/PayPalComponent';
+import PayPal from '../components/Paypal/PayPal';
 
 const Payment: React.FC = () => {
     /**
