@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
+import "./PayPal.css"
 
 interface PayPalProps {
     driverEmail: string;
@@ -57,7 +58,7 @@ const PayPal: React.FC<PayPalProps> = ({ driverEmail, cost }) => {
                 <PayPalButtons
                     createOrder={createOrder}
                     onApprove={onApprove}
-                    /** @TODO Finalize button styles https://developer.paypal.com/docs/multiparty/checkout/standard/customize/buttons-style-guide/ */
+                    /** @TODO Button styles https://developer.paypal.com/docs/multiparty/checkout/standard/customize/buttons-style-guide/ */
                     style={{}}
                 />
             </div>
