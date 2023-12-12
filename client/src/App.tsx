@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import { Account } from './account/Account';
 import { setAccountStore } from './store/features/accountSlice';
 import { useAppDispatch, useAppSelector } from './store/hooks';
+import "./App.css"
 
 //Pages
 import Home from './pages/Home';

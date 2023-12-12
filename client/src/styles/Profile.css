@@ -37,7 +37,7 @@
 
 .profileInfo button {
     color: #fff;
-    background-color: maroon;
+    background-color: var(--brand-maroon);
     padding: 8px 20px;
     border-radius: 1000px;
     text-transform: uppercase;
@@ -47,13 +47,13 @@
     transition: all 0.2s;
     white-space: nowrap;
     margin-left: 10px;
-    border: solid 1px maroon;
+    border: solid 1px var(--brand-maroon);
 }
 
 .profileInfo button:hover
 {
-    background-color: lightgray;
-    border: solid 1px lightgray;
+    background-color: maroon;
+    border: solid 1px maroon;
 }
 
 .paymentInfo {

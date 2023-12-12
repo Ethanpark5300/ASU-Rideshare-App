@@ -1,22 +1,6 @@
-/* Reset styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-/* CSS global variables */
-:root {
-    --brand-maroon: #8C1D40;
-    --brand-gold: #FFC627;
-}
-
-/* Navbar styles */
-.navbar {
+/* .navbar {
     padding-bottom: 60px;
-    z-index: 10000;
-}
+} */
 
 .navbar ul {
     list-style: none;
@@ -27,7 +11,7 @@
 }
 
 .header {
-    position: fixed;
+    /* position: fixed; */
     width: 100%;
 }
 
