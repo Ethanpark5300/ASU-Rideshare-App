@@ -1,15 +1,15 @@
-.navbar {
+#navbar {
     position: sticky;
     top: 0;
     z-index: 999 !important;
     width: 100%;
 }
 
-.navbar ul {
+#navbar ul {
     list-style: none;
 }
 
-.navbar a {
+#navbar a {
     text-decoration: none;
 }
 
@@ -24,7 +24,7 @@
 
 .bottom-bar {
     background-color: white;
-    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
 }
 
 .bottom-bar__content {
@@ -78,7 +78,8 @@
     transition: transform 125ms ease-in-out;
 }
 
-.nav__button-item, .nav__link {
+.nav__button-item,
+.nav__link {
     margin-top: 17px;
 }
 
@@ -90,21 +91,24 @@
     transform-origin: 0% 50%;
 }
 
-.btn {
+#navbar button {
     color: white;
-    background-color: var(--brand-maroon);
+    background: var(--brand-maroon);
+    border: 1px solid var(--brand-maroon);
     padding: 8px 20px;
     border-radius: 1000px;
     text-transform: uppercase;
     font-size: 12px;
     font-weight: bold;
     cursor: pointer;
-    transition: all 0.2s;
+    /* transition: all 0.2s; */
     white-space: nowrap;
 }
 
-.btn:hover {
-    background-color: maroon;
+#navbar button:hover {
+    background: maroon;
+    border: 1px solid maroon;
+    transform: scale(1.033);
 }
 
 .hamburger {
@@ -137,6 +141,10 @@
     transform: translateY(-7px) rotate(-45deg);
 }
 
+.requestride-button {
+    margin-top: 13px;
+}
+
 /* Media Queries */
 @media (max-width: 650px) {
     .nav {
@@ -159,7 +167,7 @@
         font-size: 14px;
     }
 
-    .btn {
+    #navbar button {
         font-size: 11px;
         padding: 7px 17px;
     }
@@ -175,5 +183,13 @@
 
     .nav__link:after {
         padding-top: 0;
+    }
+
+    .requestride-button {
+        margin-top: 0px;
+    }
+
+    .nav__link:after {
+        border-bottom: solid 6px var(--brand-gold);
     }
 }

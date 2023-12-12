@@ -53,3 +53,23 @@
         margin-bottom: 10px;
     }
 }
+
+#Register button {
+    color: white;
+    background: var(--brand-maroon);
+    border: 1px solid var(--brand-maroon);
+    padding: 8px 20px;
+    border-radius: 1000px;
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    /* transition: all 0.2s; */
+    white-space: nowrap;
+}
+
+#Register button:hover {
+    background: maroon;
+    border: 1px solid maroon;
+    transform: scale(1.033);
+}

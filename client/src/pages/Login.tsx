@@ -47,33 +47,6 @@ function Login() {
         }
     };
 
-    const readCookie = async () => {
-        try {
-            fetch(`/read-cookie`, {
-                method: "GET",
-                headers: { "Content-type": "application/json" },
-            })
-                .then((res) => res.json())
-                .then((data) => {
-                    if (data.Email !== undefined) {
-                        dispatch(setAccountStore(new Account(data.Email)));
-                    } else {
-                        dispatch(setAccountStore(undefined));
-                    }
-                });
-        } catch { }
-    };
-
-    const eatCookie = async () => {
-        try {
-            fetch(`/clear-cookie`, {
-                method: "GET",
-                headers: { "Content-type": "application/json" },
-            });
-            dispatch(setAccountStore(undefined));
-        } catch { }
-    };
-
     return (
         <PageTitle title="Login">
             <Navbar />
@@ -110,14 +83,13 @@ function Login() {
                     <Button label="Login" onClickFn={loginRequest} />
                     {loginMessage && <p className="RegisterError">{loginMessage}</p>}
                     {loginFailed && <p className="RegisterError">Login failed!</p>}
-                    <Button label="Check Cookie" onClickFn={readCookie} />
-                    <Button label="Nom Cookie(logout)" onClickFn={eatCookie} />
+                    
                     <div className="reglinkContainer">
-                        <h2>Don't have an account?</h2>
-                        <h2>
+                        <h3>Don't have an account?</h3>
+                        <h3>
                             {" "}
                             <Link to="/Register"> Register </Link>{" "}
-                        </h2>
+                        </h3>
                     </div>
                 </div>
             </section>

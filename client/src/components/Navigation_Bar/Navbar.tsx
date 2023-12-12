@@ -35,10 +35,10 @@ function Navbar() {
         };
     }, []);
 
-    const account = useAppSelector((state)=>state.account);
+    const account = useAppSelector((state) => state.account);
 
     return (
-        <div className="navbar">
+        <div id="navbar">
             <header className="header">
                 <div className="bottom-bar">
                     <div className="bottom-bar__content">
@@ -49,7 +49,7 @@ function Navbar() {
 
                         <nav className="nav">
                             {/* Signed in Navbar */}
-                            { 
+                            {
                                 (account.account) && (
                                     <ul className="nav__list">
                                         <li className="nav__item">
@@ -58,8 +58,10 @@ function Navbar() {
                                         <li className="nav__item">
                                             <Link className="nav__link fromLeft" to="/Profile"> Profile </Link>
                                         </li>
-                                        <li className="nav__button-item">
-                                            <Link className="btn" to="/RequestRide"> Request Ride </Link>
+                                        <li>
+                                            <Link to="/RequestRide">
+                                                <button className="requestride-button">Request Ride</button>
+                                            </Link>
                                         </li>
                                     </ul>
                                 )
@@ -69,16 +71,20 @@ function Navbar() {
                             {
                                 (!account.account) && (
                                     <ul className="nav__list">
-                                        <li className="nav__item">
-                                            <Link className="btn" to="/Login"> Login </Link>
+                                        <li>
+                                            <Link to="/Login">
+                                                <button>Login</button>
+                                            </Link>
                                         </li>
-                                        <li className="nav__item">
-                                            <Link className="btn" to="/Register"> Register </Link>
+                                        <li>
+                                            <Link to="/Register">
+                                                <button>Register</button>
+                                            </Link>
                                         </li>
                                     </ul>
                                 )
                             }
-                            
+
                         </nav>
 
                         <div className="hamburger">

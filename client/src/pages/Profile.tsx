@@ -4,6 +4,10 @@ import Navbar from "../components/Navigation_Bar/Navbar";
 import { useAppSelector } from '../store/hooks';
 import PageTitle from '../components/Page_Title/PageTitle';
 import profile_filler from "../images/profile.png";
+import { Button } from "../components/Buttons/Button";
+import { useAppDispatch } from "../store/hooks";
+import { setAccountStore } from "../store/features/accountSlice";
+import { Account } from "../account/Account";
 
 interface ProfileProps {
     name: string;
@@ -19,6 +23,35 @@ interface ProfileProps {
 }
 
 const Profile: React.FC<ProfileProps> = (props) => {
+    
+    const dispatch = useAppDispatch();
+
+    const readCookie = async () => {
+        try {
+            fetch(`/read-cookie`, {
+                method: "GET",
+                headers: { "Content-type": "application/json" },
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    if (data.Email !== undefined) {
+                        dispatch(setAccountStore(new Account(data.Email)));
+                    } else {
+                        dispatch(setAccountStore(undefined));
+                    }
+                });
+        } catch { }
+    };
+
+    const eatCookie = async () => {
+        try {
+            fetch(`/clear-cookie`, {
+                method: "GET",
+                headers: { "Content-type": "application/json" },
+            });
+            dispatch(setAccountStore(undefined));
+        } catch { }
+    };
 
     return (
         <PageTitle title="Profile">
@@ -26,24 +59,22 @@ const Profile: React.FC<ProfileProps> = (props) => {
             <section id="Profile">
                 <div className="picture">
                     <h1>Account Page</h1>
-                    <br/>
-                    <br/>
-                    <img src={profile_filler} alt="profile picture" className="profileFiller"/>
+                    <br />
+                    <br />
+                    <img src={profile_filler} alt="profile picture" className="profileFiller" />
                 </div>
                 <div className="profileInfo">
                     <h2>Account Info</h2>
-                    <div className="name">
-                        <p><strong>Full Name: </strong> {props.name}</p>
-                    </div>
+                    <p><strong>Full Name: </strong> {props.name}</p>
                     <p><strong>ASU ID: </strong> {props.asuid}</p>
                     <p><strong>Type: </strong> {props.label}</p>
                     <p><strong>Address: </strong> </p>
                     <p><strong>E-Mail: </strong> {props.email}</p>
                     <p><strong>Phone Number: </strong> {props.phonenum}</p>
                     <button>Save</button>
+                    <Button label="Check Cookie" onClickFn={readCookie} />
+                    <Button label="Nom Cookie(logout)" onClickFn={eatCookie} />
                 </div>
-                
-                {/* TODO: Add signout button */}
 
                 <div className="paymentInfo">
                     <h2>Payment Info</h2>

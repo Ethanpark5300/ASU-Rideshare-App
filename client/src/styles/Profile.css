@@ -35,25 +35,24 @@
     padding-bottom: 20px;
 }
 
-.profileInfo button {
-    color: #fff;
-    background-color: var(--brand-maroon);
+#Profile button {
+    color: white;
+    background: var(--brand-maroon);
+    border: 1px solid var(--brand-maroon);
     padding: 8px 20px;
     border-radius: 1000px;
     text-transform: uppercase;
     font-size: 12px;
-    font-weight: 500;
+    font-weight: bold;
     cursor: pointer;
-    transition: all 0.2s;
+    /* transition: all 0.2s; */
     white-space: nowrap;
-    margin-left: 10px;
-    border: solid 1px var(--brand-maroon);
 }
 
-.profileInfo button:hover
-{
-    background-color: maroon;
-    border: solid 1px maroon;
+#Profile button:hover {
+    background: maroon;
+    border: 1px solid maroon;
+    transform: scale(1.033);
 }
 
 .paymentInfo {
