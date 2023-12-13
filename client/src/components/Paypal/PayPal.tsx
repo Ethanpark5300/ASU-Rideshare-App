@@ -51,7 +51,7 @@ const PayPal: React.FC<PayPalProps> = ({ driverEmail, cost }) => {
     return (
         <PayPalScriptProvider
             options={{
-                'client-id': 'AZ9VS710-C_5VvkPJxpLYMnkrGW3qmkFU80opkWfPF4ahh9d6Xitx8rRdyLRaaAaXyMZjNWj5Ouv5eQ1',
+                clientId: 'AZ9VS710-C_5VvkPJxpLYMnkrGW3qmkFU80opkWfPF4ahh9d6Xitx8rRdyLRaaAaXyMZjNWj5Ouv5eQ1',
             }}
         >
             <div>
