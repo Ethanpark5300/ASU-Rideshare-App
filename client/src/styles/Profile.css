@@ -38,7 +38,7 @@
 #Profile button {
     color: white;
     background: var(--brand-maroon);
-    border: 1px solid var(--brand-maroon);
+    border: transparent;
     padding: 8px 20px;
     border-radius: 1000px;
     text-transform: uppercase;
@@ -51,8 +51,6 @@
 
 #Profile button:hover {
     background: maroon;
-    border: 1px solid maroon;
-    transform: scale(1.033);
 }
 
 .paymentInfo {

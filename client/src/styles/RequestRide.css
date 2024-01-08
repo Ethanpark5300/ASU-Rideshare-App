@@ -41,12 +41,11 @@
     cursor: pointer;
     transition: all 0.2s;
     white-space: nowrap;
-    border: solid 1px var(--brand-maroon);
+    border: transparent;
 }
 
 .left-column button:hover {
     background-color: maroon;
-    border: solid 1px maroon;
 }
 
 .building-search {

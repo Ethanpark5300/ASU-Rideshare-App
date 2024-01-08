@@ -7,7 +7,7 @@ import { Account } from "../../account/Account";
 
 function Navbar() {
     useEffect(() => {
-        const navEl = document.querySelector('.nav') as HTMLElement;
+        const navEl = document.querySelector('.navbar-links') as HTMLElement;
         const hamburgerEl = document.querySelector('.hamburger') as HTMLElement;
         const navItemEls = document.querySelectorAll('.nav__item') as NodeListOf<HTMLElement>;
 
@@ -38,64 +38,60 @@ function Navbar() {
     const account = useAppSelector((state) => state.account);
 
     return (
-        <div id="navbar">
-            <header className="header">
-                <div className="bottom-bar">
-                    <div className="bottom-bar__content">
-                        <Link to="/" className="logo">
-                            {/* <img className="logo__img" src={ASU_Logo} alt="logo" /> */}
-                            <span className="logo__text">ASU Rideshare App</span>
-                        </Link>
+        <nav>
+            <div className="navbar-content">
+                <Link to="/" className="navbar-logo">
+                    {/* <img className="logo__img" src={ASU_Logo} alt="logo" /> */}
+                    <span className="logo__text">ASU Rideshare App</span>
+                </Link>
 
-                        <nav className="nav">
-                            {/* Signed in Navbar */}
-                            {
-                                (account.account) && (
-                                    <ul className="nav__list">
-                                        <li className="nav__item">
-                                            <Link className="nav__link fromLeft" to="/"> Home </Link>
-                                        </li>
-                                        <li className="nav__item">
-                                            <Link className="nav__link fromLeft" to="/Profile"> Profile </Link>
-                                        </li>
-                                        <li>
-                                            <Link to="/RequestRide">
-                                                <button className="requestride-button">Request Ride</button>
-                                            </Link>
-                                        </li>
-                                    </ul>
-                                )
-                            }
+                <div className="navbar-links">
+                    {/* Signed in Navbar */}
+                    {
+                        (account.account) && (
+                            <ul className="nav__list">
+                                <li className="nav__item">
+                                    <Link className="nav__link fromLeft" to="/"> Home </Link>
+                                </li>
+                                <li className="nav__item">
+                                    <Link className="nav__link fromLeft" to="/Profile"> Profile </Link>
+                                </li>
+                                <li>
+                                    <Link to="/RequestRide">
+                                        <button className="requestride-button">Request Ride</button>
+                                    </Link>
+                                </li>
+                            </ul>
+                        )
+                    }
 
-                            {/* Guest Navbar */}
-                            {
-                                (!account.account) && (
-                                    <ul className="nav__list">
-                                        <li>
-                                            <Link to="/Login">
-                                                <button>Login</button>
-                                            </Link>
-                                        </li>
-                                        <li>
-                                            <Link to="/Register">
-                                                <button>Register</button>
-                                            </Link>
-                                        </li>
-                                    </ul>
-                                )
-                            }
+                    {/* Guest Navbar */}
+                    {
+                        (!account.account) && (
+                            <ul className="nav__list">
+                                <li>
+                                    <Link to="/Login">
+                                        <button>Login</button>
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link to="/Register">
+                                        <button>Register</button>
+                                    </Link>
+                                </li>
+                            </ul>
+                        )
+                    }
 
-                        </nav>
-
-                        <div className="hamburger">
-                            <div className="bar"></div>
-                            <div className="bar"></div>
-                            <div className="bar"></div>
-                        </div>
-                    </div>
                 </div>
-            </header>
-        </div>
+
+                <div className="hamburger">
+                    <div className="bar"></div>
+                    <div className="bar"></div>
+                    <div className="bar"></div>
+                </div>
+            </div>
+        </nav>
     )
 }
 

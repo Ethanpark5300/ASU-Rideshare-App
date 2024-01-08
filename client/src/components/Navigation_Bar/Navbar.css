@@ -1,20 +1,17 @@
-#navbar {
+nav {
     position: sticky;
     top: 0;
     z-index: 999 !important;
-    width: 100%;
+    background-color: white;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
 }
 
-#navbar ul {
+nav ul {
     list-style: none;
 }
 
-#navbar a {
+nav a {
     text-decoration: none;
-}
-
-.header {
-    width: 100%;
 }
 
 /* .icon {
@@ -22,12 +19,7 @@
     color: rgba(255, 255, 255, 0.17);
 } */
 
-.bottom-bar {
-    background-color: white;
-    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
-}
-
-.bottom-bar__content {
+.navbar-content {
     min-height: 60px;
     max-width: 1200px;
     padding: 0 30px;
@@ -37,7 +29,7 @@
     align-items: center;
 }
 
-.logo {
+.navbar-logo {
     vertical-align: middle;
     display: flex;
     column-gap: 10px;
@@ -51,10 +43,10 @@
 .logo__text {
     font-size: 20px;
     color: var(--brand-maroon);
-    font-weight: 600;
+    font-weight: 900;
 }
 
-.nav {
+.navbar-links {
     transition: all 0.3s ease-in-out;
 }
 
@@ -91,24 +83,20 @@
     transform-origin: 0% 50%;
 }
 
-#navbar button {
+nav button {
     color: white;
     background: var(--brand-maroon);
-    border: 1px solid var(--brand-maroon);
+    border: transparent;
     padding: 8px 20px;
     border-radius: 1000px;
     text-transform: uppercase;
     font-size: 12px;
     font-weight: bold;
     cursor: pointer;
-    /* transition: all 0.2s; */
-    white-space: nowrap;
 }
 
-#navbar button:hover {
+nav button:hover {
     background: maroon;
-    border: 1px solid maroon;
-    transform: scale(1.033);
 }
 
 .hamburger {
@@ -147,7 +135,7 @@
 
 /* Media Queries */
 @media (max-width: 650px) {
-    .nav {
+    .navbar-links {
         position: fixed;
         top: 60px;
         left: -100%;
@@ -167,7 +155,7 @@
         font-size: 14px;
     }
 
-    #navbar button {
+    nav button {
         font-size: 11px;
         padding: 7px 17px;
     }
