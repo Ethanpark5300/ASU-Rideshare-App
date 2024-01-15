@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { Database } from 'sqlite3';
 import express from 'express';
-
+import { Request, Response } from "express";
 //const fs = require("fs");
 //const sqlite3 = require("sqlite3");
 //const Database = sqlite3.Database;
@@ -27,17 +27,19 @@ const user_info = new Database("user_info.db");
 //inserting data
 //user_info.exec(fs.readFileSync(__dirname + '/Tables/INSERT_USER_INFO.sql').toString());
 
-app.get("/message", (req: any, res: any) => {
-	res.json({
-		message: "Hello from server!",
-		haha: req.request
-	});
-});
+
+//app.get("/message", (req: Request, res: Response) => {
+//	res.json({
+//		message: "Hello from server!",
+//		haha: req.request
+//	});
+//});
+
 
 /**
  * body contains the properties email, firstName, lastName, password
  */
-app.post("/registration", (req: any, res: any) => {
+app.post("/registration", (req: Request, res: Response) => {
 	console.log(req.body.firstName);
 	const new_user = user_info.prepare(fs.readFileSync(__dirname + '/Tables/New_User.sql').toString());
 	new_user.run([req.body.firstName, req.body.lastName, req.body.password, req.body.email], cb);
@@ -50,14 +52,15 @@ app.post("/registration", (req: any, res: any) => {
 /**
  * body contains the properties email, password
  */
-app.post("/login", (req: any, res: any) => {
+app.post("/login", (req: Request, res: Response) => {
 	//console.log(req.body.email);
 	//console.log(req.body.password);
 	const options = {
 		httpOnly: true,
 		signed: true,
-		sameSite: 'lax',
-		/**@todo expiration by Max-Age*/
+		/**@todo figure out if this is needed, and if it is, fix it*/
+		//sameSite: "lax",
+		/**@todo expiration by Max-Age/expires, if a timer beyond browser life wanted*/
 	};
 	user_info.get(fs.readFileSync(__dirname + '/Tables/login.sql').toString(), [req.body.email, req.body.password], (err:Error, rows:any) => {
 		if (rows=== undefined) {
@@ -95,7 +98,7 @@ app.post("/login", (req: any, res: any) => {
  * @todo return user info for account storing(email, first, last)
  * @returns user info
  */
-app.get('/read-cookie', (req:any, res:any) => {
+app.get('/read-cookie', (req:Request, res:Response) => {
 	console.log(req.signedCookies);
 	//console.log(req.signedCookies.loggedIn);
 
@@ -107,7 +110,7 @@ app.get('/read-cookie', (req:any, res:any) => {
 /**
  * logout
  */
-app.get('/clear-cookie', (req:any, res:any) => {
+app.get('/clear-cookie', (req:Request, res:Response) => {
 	res.clearCookie('loggedIn').end();
 });
 

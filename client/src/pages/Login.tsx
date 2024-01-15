@@ -77,9 +77,9 @@ function Login() {
                         />
                     </div>
 
-                    {loginFailed && (
+                    {/*loginFailed && (
                         <p className="LoginError">email or password is incorrect</p>
-                    )}
+                    )*/}
                     <Button label="Login" onClickFn={loginRequest} />
                     {loginMessage && <p className="RegisterError">{loginMessage}</p>}
                     {loginFailed && <p className="RegisterError">Login failed!</p>}
