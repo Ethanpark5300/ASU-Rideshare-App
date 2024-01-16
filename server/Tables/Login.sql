@@ -6,4 +6,4 @@
 --END
 --FROM USER_INFO;
 SELECT Email, Password FROM USER_INFO
-WHERE Email = ? AND Password = ?;
+WHERE Email = ?;-- AND Password = ?;

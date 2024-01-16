@@ -2,6 +2,7 @@ import fs from 'fs';
 import { Database } from 'sqlite3';
 import express from 'express';
 import { Request, Response } from "express";
+import bcrypt from "bcryptjs";
 //const fs = require("fs");
 //const sqlite3 = require("sqlite3");
 //const Database = sqlite3.Database;
@@ -10,6 +11,7 @@ const cors = require("cors");
 const app = express();
 const cookieParser = require('cookie-parser');
 
+
 const PORT = process.env.PORT || 3001
 
 let message: string | undefined;
@@ -17,6 +19,9 @@ let hadError: boolean;
 app.use(cors());
 app.use(express.json());
 app.use(cookieParser('p3ufucaj55bi2kiy6lsktnm23z4c18xy'));
+
+const saltRounds: number = 10;
+
 
 //creating the table and storing it in
 const user_info = new Database("user_info.db");
@@ -38,11 +43,19 @@ const user_info = new Database("user_info.db");
 
 /**
  * body contains the properties email, firstName, lastName, password
+ * @todo failed registrations don't display errors at first. FIXME
  */
-app.post("/registration", (req: Request, res: Response) => {
-	console.log(req.body.firstName);
+app.post("/registration", async (req: Request, res: Response) => {
+	//console.log(req.body.firstName);
+	const salt: string = await bcrypt.genSalt(saltRounds);
+	const hashedPassword: string = await bcrypt.hash(req.body.password, salt)
+	//console.log("Hash: " + hashedPassword);
+
 	const new_user = user_info.prepare(fs.readFileSync(__dirname + '/Tables/New_User.sql').toString());
-	new_user.run([req.body.firstName, req.body.lastName, req.body.password, req.body.email], cb);
+	new_user.run([req.body.firstName, req.body.lastName, hashedPassword, req.body.email], cb);
+
+	//console.log(message + " | " + req.body.email);
+
 	res.json({
 		registrationSuccess: !hadError,
 		message: message,
@@ -62,30 +75,55 @@ app.post("/login", (req: Request, res: Response) => {
 		//sameSite: "lax",
 		/**@todo expiration by Max-Age/expires, if a timer beyond browser life wanted*/
 	};
-	user_info.get(fs.readFileSync(__dirname + '/Tables/login.sql').toString(), [req.body.email, req.body.password], (err:Error, rows:any) => {
+
+	const emailPassWrong: string = "Email or Password is incorrect";
+
+	user_info.get(fs.readFileSync(__dirname + '/Tables/login.sql').toString(), [req.body.email], (err:Error, rows:any) => {
 		if (rows=== undefined) {
-			hadError = true; message = "Email or Password is incorrect";
+			hadError = true; message = emailPassWrong;
 		}else if (err) {
 			hadError = true; message = err.message;
 		} else {
 			hadError = false;
 			message = undefined;
 		}
+
+
 		if (!hadError) {
-			/**@todo make more secure*/
-			//cookie(name of cookie, value of cookie, options of cookie)
-			res.cookie('loggedIn', rows.Email, options);
+			//console.log("Comparing: " + req.body.password + " + " + rows.Password)
+			bcrypt
+				.compare(req.body.password, rows.Password)
+				.then(result => {
+					//console.log(result);
+					if (result) {
+						//cookie(name of cookie, value of cookie, options of cookie)
+						res.cookie('loggedIn', rows.Email, options);
+					} else {
+						hadError = true;
+						message = emailPassWrong;
+					}
+					res.json({
+
+						loginSuccess: !hadError,
+						message: message,
+						account: {
+							Email: rows?.Email ?? undefined,
+						}
+					});
+
+				})
+				.catch(err => { hadError = true; message = err.message; });
+		} else {
+			res.json({
+
+				loginSuccess: !hadError,
+				message: message,
+				account: {
+					Email: rows?.Email ?? undefined,
+				}
+			});
 		}
 		
-		//console.log(rows);
-		res.json({
-
-			loginSuccess: !hadError,
-			message: message,
-			account: {
-				Email: rows?.Email ?? undefined,
-			}
-		});
 	});
 	//sends the user to the next screen after login(home screen)
 	//if (!hadError) {
