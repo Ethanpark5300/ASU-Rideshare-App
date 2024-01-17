@@ -108,6 +108,9 @@ app.post("/login", (req: Request, res: Response) => {
 						message: message,
 						account: {
 							Email: rows?.Email ?? undefined,
+							FirstName:rows?.First_Name ?? undefined,
+							LastName:rows?.Last_Name ?? undefined,
+							PhoneNumber:rows?.Phone_Number ?? undefined,
 						}
 					});
 
@@ -140,9 +143,15 @@ app.get('/read-cookie', (req:Request, res:Response) => {
 	console.log(req.signedCookies);
 	//console.log(req.signedCookies.loggedIn);
 
+
 	//cookie should store something and we can get the user info afterwards
+
+	/**@todo do fetch*/
 	res.json({
-		Email: req.signedCookies.loggedIn,
+		account: {
+			Email: req.signedCookies.loggedIn,
+
+		}
 	});
 });
 /**

@@ -1,13 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Navbar from "../components/Navigation_Bar/Navbar";
 import { TextInput } from "../components/Text_Input/TextInput";
-import { DatabaseAccessor } from "../databases/DatabaseAccessor";
 import "../styles/Register.css";
 import { Button } from "../components/Buttons/Button";
 import PageTitle from "../components/Page_Title/PageTitle";
 
 function Register() {
-    let databaseAccessor: DatabaseAccessor = DatabaseAccessor.getInstance();
     const emailRef = useRef<string>("");
     const firstNameRef = useRef<string>("");
     const lastNameRef = useRef<string>("");

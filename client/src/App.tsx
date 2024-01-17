@@ -38,7 +38,7 @@ function App() {
 				.then((res) => res.json())
 				.then((data) => {
 					if (data.Email !== undefined) {
-						const accountData = new Account(data.Email);
+						const accountData = new Account(data.account.Email, data.account.FirstName, data.account.LastName, data.account.PhoneNumber);
 						dispatch(setAccountStore(accountData));
 					} else {
 						dispatch(setAccountStore(undefined));
