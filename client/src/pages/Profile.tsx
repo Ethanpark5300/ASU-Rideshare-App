@@ -10,37 +10,34 @@ import { setAccountStore } from "../store/features/accountSlice";
 import { Account } from "../account/Account";
 
 interface ProfileProps {
-    name: string;
+    firstName: string;
+    lastName: string;
     label: string;
     address: string;
     asuid: string;
     email: string;
     phonenum: string;
-    cardnum: number;
-    cardname: string;
-    expdate: string;
-    securitycode: number;
+    paypalEmail: string;
 }
 
 const Profile: React.FC<ProfileProps> = (props) => {
-    
+
     const dispatch = useAppDispatch();
 
     const readCookie = async () => {
-        try {
-            fetch(`/read-cookie`, {
-                method: "GET",
-                headers: { "Content-type": "application/json" },
-            })
-                .then((res) => res.json())
-                .then((data) => {
-                    if (data.Email !== undefined) {
-                        dispatch(setAccountStore(new Account(data.Email)));
-                    } else {
-                        dispatch(setAccountStore(undefined));
-                    }
-                });
-        } catch { }
+        fetch(`/read-cookie`, {
+            method: "GET",
+            headers: { "Content-type": "application/json" },
+        })
+
+        .then((res) => res.json())
+        .then((data) => {
+            if (data.Email !== undefined) {
+                dispatch(setAccountStore(new Account(data.email, data.firstName, data.lastName, data.phoneNumber)));
+            } else {
+                dispatch(setAccountStore(undefined));
+            }
+        });
     };
 
     const eatCookie = async () => {
@@ -65,7 +62,8 @@ const Profile: React.FC<ProfileProps> = (props) => {
                 </div>
                 <div className="profileInfo">
                     <h2>Account Info</h2>
-                    <p><strong>Full Name: </strong> {props.name}</p>
+                    <p><strong>First Name: </strong> {props.firstName} </p>
+                    <p><strong>Last Name: </strong> {props.lastName} </p>
                     <p><strong>ASU ID: </strong> {props.asuid}</p>
                     <p><strong>Type: </strong> {props.label}</p>
                     <p><strong>Address: </strong> </p>
@@ -78,10 +76,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
 
                 <div className="paymentInfo">
                     <h2>Payment Info</h2>
-                    <p><strong>Card Number: </strong> {props.cardnum}</p>
-                    <p><strong>Name on Card: </strong> {props.cardname}</p>
-                    <p><strong>Expiration Date: </strong> {props.expdate}</p>
-                    <p><strong>Security Code: </strong> {props.securitycode}</p>
+                    <p><strong>Card Number: </strong> {props.paypalEmail}</p>
                     <button>Save</button>
                 </div>
 

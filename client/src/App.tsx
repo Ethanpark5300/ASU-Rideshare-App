@@ -62,16 +62,14 @@ function App() {
 					path="/Profile"
 					element={
 						<Profile
-							name={''}
+                            firstName={account?.account?.firstName || ''}
+                            lastName={account?.account?.lastName || ''}
 							label={''}
 							address={''}
 							asuid={''}
 							email={account?.account?.email || ''}
-							phonenum={''}
-							cardnum={0}
-							cardname={''}
-							expdate={''}
-							securitycode={0}
+                            phonenum={account?.account?.firstName || ''}
+							paypalEmail={''}
 						/>
 					}
 				/>

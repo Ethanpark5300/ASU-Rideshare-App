@@ -5,7 +5,7 @@ import { useAppDispatch } from "../store/hooks";
 import { setAccountStore } from "../store/features/accountSlice";
 import { TextInput } from "../components/Text_Input/TextInput";
 import Navbar from "../components/Navigation_Bar/Navbar";
-import { DatabaseAccessor } from "../databases/DatabaseAccessor";
+// import { DatabaseAccessor } from "../databases/DatabaseAccessor";
 import { Link } from "react-router-dom";
 import { Button } from "../components/Buttons/Button";
 import PageTitle from "../components/Page_Title/PageTitle";
@@ -13,7 +13,7 @@ import PageTitle from "../components/Page_Title/PageTitle";
 //maybe do axios stuff here
 
 function Login() {
-    let databaseAccessor: DatabaseAccessor = DatabaseAccessor.getInstance();
+    // let databaseAccessor: DatabaseAccessor = DatabaseAccessor.getInstance();
     const dispatch = useAppDispatch();
 
     const emailRef = useRef<string>("");
