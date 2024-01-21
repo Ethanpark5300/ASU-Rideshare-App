@@ -14,7 +14,7 @@
 
 /* Make all buttons' border transparent */
 button {
-    border: transparent;
+    border-color: transparent;
 }
 
 /*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */

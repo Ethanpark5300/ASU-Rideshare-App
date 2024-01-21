@@ -70,9 +70,8 @@ nav a {
     transition: transform 125ms ease-in-out;
 }
 
-.nav__button-item,
 .nav__link {
-    margin-top: 17px;
+    margin-top: 24px;
 }
 
 .nav__link:hover:after {
@@ -128,7 +127,7 @@ nav button:hover {
 }
 
 .requestride-button {
-    margin-top: 13px;
+    margin-top: 17px;
 }
 
 /* Media Queries */
