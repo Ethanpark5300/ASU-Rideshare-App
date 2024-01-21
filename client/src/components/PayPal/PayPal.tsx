@@ -26,27 +26,27 @@ const PayPal: React.FC<PayPalProps> = ({ driverEmail, cost }) => {
     };
 
     const onApprove = (data: any, actions: any) => {
-        // Capture the funds and complete the transaction
+        //Capture the funds and complete the transaction
         return actions.order.capture()
 
-            // Payment was successful
+            //Payment was successful
+            /** @TODO Perfom additional actions */
             .then((details: any) => {
                 console.log('Payment captured:', details);
-
-                /** @TODO Perfom additional actions */
             })
 
-            // Display errors during the capture process
+            //Payment was unsuccessful
+            /** @TODO Perfom additional actions */
             .catch((err: any) => {
                 console.error('Capture error:', err);
             });
     };
 
-    const onError = (err: any) => {
-        console.error('PayPal SDK Error:', err);
-        setError('An error occurred while processing your payment. Please try again later.');
-        /** @TODO Take additional actions here, such as showing a user-friendly error message or logging the error */
-    };
+    // const onError = (err: any) => {
+    //     console.error('PayPal SDK Error:', err);
+    //     setError('An error occurred while processing your payment. Please try again later.');
+    //     /** @TODO Take additional actions here, such as showing a user-friendly error message or logging the error */
+    // };
 
     return (
         <PayPalScriptProvider

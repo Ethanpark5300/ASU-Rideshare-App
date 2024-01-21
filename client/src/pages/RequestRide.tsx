@@ -25,7 +25,7 @@ function RequestRide() {
                         <button className='request-ride-button'>Request Ride</button>
                     </div>
                 </aside>
-                
+
                 <MapContainer />
 
                 {/* Request Ride Sidebar */}
@@ -33,8 +33,6 @@ function RequestRide() {
                     <h1>Results</h1>
                 </aside>
             </main>
-
-
         </PageTitle>
     );
 }

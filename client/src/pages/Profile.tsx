@@ -16,7 +16,7 @@ interface ProfileProps {
     address: string;
     asuid: string;
     email: string;
-    phonenum: string;
+    phoneNumber: string;
     paypalEmail: string;
 }
 
@@ -64,11 +64,11 @@ const Profile: React.FC<ProfileProps> = (props) => {
                     <h2>Account Info</h2>
                     <p><strong>First Name: </strong> {props.firstName} </p>
                     <p><strong>Last Name: </strong> {props.lastName} </p>
-                    <p><strong>ASU ID: </strong> {props.asuid}</p>
                     <p><strong>Type: </strong> {props.label}</p>
-                    <p><strong>Address: </strong> </p>
+                    <p><strong>Address: </strong> {props.address} </p>
+                    <p><strong>ASU ID: </strong> {props.asuid}</p>
                     <p><strong>E-Mail: </strong> {props.email}</p>
-                    <p><strong>Phone Number: </strong> {props.phonenum}</p>
+                    <p><strong>Phone Number: </strong> {props.phoneNumber}</p>
                     <button>Save</button>
                     <Button label="Check Cookie" onClickFn={readCookie} />
                     <Button label="Nom Cookie(logout)" onClickFn={eatCookie} />
@@ -76,7 +76,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
 
                 <div className="paymentInfo">
                     <h2>Payment Info</h2>
-                    <p><strong>Card Number: </strong> {props.paypalEmail}</p>
+                    <p><strong>PayPal Email: </strong> {props.paypalEmail}</p>
                     <button>Save</button>
                 </div>
 

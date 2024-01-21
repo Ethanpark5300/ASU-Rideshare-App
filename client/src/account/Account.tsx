@@ -1,9 +1,8 @@
-
 export class Account {
 	public readonly email: string;
 	public readonly firstName: string;
 	public readonly lastName: string;
-	public readonly phoneNumber: string | undefined;
+	public readonly phoneNumber: string;
 
 	//do not store password
 	//or do, as long as we don't store the hashed password
