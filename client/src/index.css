@@ -10,6 +10,7 @@
 :root {
     --brand-maroon: #8C1D40;
     --brand-gold: #FFC627;
+    --navbar-height: 64px;
 }
 
 /* Make all buttons' border transparent */
