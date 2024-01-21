@@ -18,6 +18,9 @@ function RideinProgress() {
     return (
         <PageTitle title="Ride in Progress">
             <Navbar />
+            <main id="ride-in-progress">
+                
+            </main>
             {/* <section id='RideinProgress'>
                 <h1>Ride in Progress</h1>
                 <div className="map-container">

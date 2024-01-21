@@ -6,9 +6,9 @@ function ChangePayment() {
     return (
         <PageTitle title="Change Payment">
             <Navbar />
-            <section id="ChangePayment">
+            <main id="change-payment">
                 <h1>Change Payment Information</h1>
-            </section>
+            </main>
         </PageTitle>
     );
 }

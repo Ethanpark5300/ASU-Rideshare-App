@@ -7,9 +7,9 @@ function RideHistory()
     return (
         <PageTitle title="Ride History">
             <Navbar />
-            <section id='RideHistory'>
+            <main id='ride-history'>
                 <h1>Ride History</h1>
-            </section>
+            </main>
         </PageTitle>
     );
 }

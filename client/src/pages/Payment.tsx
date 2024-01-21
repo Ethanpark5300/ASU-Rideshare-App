@@ -20,13 +20,13 @@ const Payment: React.FC = () => {
     return (
         <PageTitle title="Payment">
             <Navbar />
-            <section id="Payment">
+            <main id="payment">
                 <h1>Payment</h1>
                 <br/>
                 <h3>Rider Email: {driverEmail}</h3>
                 <h3>Ride Cost: ${cost}</h3>
                 <PayPal driverEmail={driverEmail} cost={cost} />
-            </section>
+            </main>
         </PageTitle>
     );
 };

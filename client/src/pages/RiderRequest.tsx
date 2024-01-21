@@ -6,9 +6,9 @@ function RiderRequest() {
     return (
         <PageTitle title="Rider Request">
             <Navbar />
-            <section id='RiderRequest'>  
+            <main id='rider-request'>  
                 <h1>Rider Request</h1>
-            </section>
+            </main>
         </PageTitle>
     );
 }

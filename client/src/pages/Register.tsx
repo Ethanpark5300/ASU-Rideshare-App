@@ -78,7 +78,7 @@ function Register() {
     return (
         <PageTitle title="Register">
             <Navbar />
-            <section id="Register">
+            <main id="register">
                 <h1>Join the Rideshare Community</h1>
                 <div className="register-container">
                     <div className="regfield-container">
@@ -151,7 +151,7 @@ function Register() {
                         <p className="RegisterError">Registration failed!</p>
                     )}
                 </div>
-            </section>
+            </main>
         </PageTitle>
     );
 }

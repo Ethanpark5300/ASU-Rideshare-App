@@ -6,9 +6,9 @@ function ChooseRider() {
     return (
         <PageTitle title="Choose Rider">
             <Navbar />
-            <section id="ChooseRider">
+            <main id="choose-rider">
                 <h1>Choose a Rider</h1>
-            </section>
+            </main>
         </PageTitle>
     );
 }

@@ -5,11 +5,11 @@ import PageTitle from '../components/Page_Title/PageTitle';
 function Report()
 {
     return (
-        <PageTitle title="Report">
+        <PageTitle title="report">
             <Navbar />
-            <div className="Report">
+            <main id="report">
                 <h1> Report User</h1>
-            </div>
+            </main>
         </PageTitle>
     )
 }

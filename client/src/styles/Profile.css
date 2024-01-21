@@ -1,4 +1,4 @@
-#Profile {
+#profile {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
@@ -35,10 +35,9 @@
     padding-bottom: 20px;
 }
 
-#Profile button {
+#profile button {
     color: white;
     background: var(--brand-maroon);
-    border: transparent;
     padding: 8px 20px;
     border-radius: 1000px;
     text-transform: uppercase;
@@ -49,7 +48,7 @@
     white-space: nowrap;
 }
 
-#Profile button:hover {
+#profile button:hover {
     background: maroon;
 }
 

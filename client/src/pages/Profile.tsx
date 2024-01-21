@@ -53,7 +53,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
     return (
         <PageTitle title="Profile">
             <Navbar />
-            <section id="Profile">
+            <main id="profile">
                 <div className="picture">
                     <h1>Account Page</h1>
                     <br />
@@ -85,7 +85,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
                     {/* filler box here for where we would put info */}
                     <button>Save</button>
                 </div>
-            </section>
+            </main>
         </PageTitle>
     );
 }

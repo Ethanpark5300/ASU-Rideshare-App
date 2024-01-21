@@ -86,7 +86,6 @@ nav a {
 nav button {
     color: white;
     background: var(--brand-maroon);
-    border: transparent;
     padding: 8px 20px;
     border-radius: 1000px;
     text-transform: uppercase;

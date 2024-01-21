@@ -50,7 +50,7 @@ function Login() {
     return (
         <PageTitle title="Login">
             <Navbar />
-            <section id="Login">
+            <main id="login">
                 <h1>Log In to Rideshare</h1>
                 <div className="login-container">
                     <div className="loginLabelContainer">
@@ -92,7 +92,7 @@ function Login() {
                         </h3>
                     </div>
                 </div>
-            </section>
+            </main>
         </PageTitle>
     );
 }

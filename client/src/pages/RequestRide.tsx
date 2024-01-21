@@ -10,29 +10,12 @@ function RequestRide() {
     return (
         <PageTitle title="Request Ride">
             <Navbar />
-            <section id='RequestRide'>
+            <main id='request-ride'>
                 <h1>Request Ride</h1>
                 <MapContainer />
-            </section>
+            </main>
         </PageTitle>
     );
 }
 
 export default RequestRide;
-
-{/* <div className="requestcontainer">
-                    <div className="left-column">
-                        <h1>Request Ride</h1>
-                        <br/>
-                        <br/>
-                        <br/>
-                        <div className='building-search'>
-                            <BuildingSearch />
-                        </div>
-                        <br/>
-                        <button>Submit Request</button>
-                    </div>
-                    <div className="right-column">
-                        <img src={Map_filler} alt="filler map" className="map"/>
-                    </div>
-                </div> */}

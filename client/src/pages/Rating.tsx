@@ -78,7 +78,7 @@ const Rating: React.FC = (props) => {
     return (
         <PageTitle title="Rating">
             <Navbar />
-            <section id="Rating">
+            <main id="rating">
                 <div className="gray-box">
                     <div className="rating-container">
                         <h1 className="rating-heading">Rate </h1>
@@ -160,7 +160,7 @@ const Rating: React.FC = (props) => {
                         </div>
                     </div>
                 </div>
-            </section>
+            </main>
         </PageTitle>
     );
 };

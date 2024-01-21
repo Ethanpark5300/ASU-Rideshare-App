@@ -6,7 +6,7 @@ function Home() {
     return (
         <PageTitle title="Home">
             <Navbar />
-            <section id="Home">
+            <main id="home">
                 <section className="hero">
                     <div className="heroText">
                         <h1>Better Commuting for Sun Devils</h1>
@@ -46,7 +46,7 @@ function Home() {
                         cancellations.
                     </p>
                 </section>
-            </section>
+            </main>
         </PageTitle>
     );
 }

@@ -1,4 +1,4 @@
-#RequestRide {
+#request-ride {
     background-color: #ffffff;
     color: var(--brand-gold);
     margin: 0;
@@ -7,7 +7,7 @@
     height: 100%
 }
 
-#RequestRide h1{
+#request-ride h1{
     color: black;
     font-size: 35px;
 }
@@ -41,7 +41,6 @@
     cursor: pointer;
     transition: all 0.2s;
     white-space: nowrap;
-    border: transparent;
 }
 
 .left-column button:hover {
