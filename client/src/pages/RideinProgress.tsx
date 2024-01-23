@@ -1,5 +1,4 @@
 import '../styles/RideinProgress.css';
-import Navbar from "../components/Navigation_Bar/Navbar";
 import PageTitle from '../components/Page_Title/PageTitle';
 import Map_filler from "../images/mapfiller.png";
 import { useState, useEffect } from 'react';
@@ -17,7 +16,6 @@ function RideinProgress() {
 
     return (
         <PageTitle title="Ride in Progress">
-            <Navbar />
             <main id="ride-in-progress">
                 
             </main>

@@ -35,7 +35,7 @@
     border: 2px solid black;
 }
 
-.btn {
+#request-ride .btn {
     border-radius: 1000px;
     cursor: pointer;
     padding: 8px 24px;

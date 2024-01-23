@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { GoogleMap, LoadScript, MarkerF, DirectionsRenderer, Autocomplete } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, Marker, DirectionsRenderer, Autocomplete } from '@react-google-maps/api';
 import '../styles/RequestRide.css';
-import Navbar from "../components/Navigation_Bar/Navbar";
-import PageTitle from "../components/Page_Title/PageTitle";
+import PageTitle from '../components/Page_Title/PageTitle';
 
 const libraries = ['places'] as any;
 
@@ -16,6 +15,7 @@ const RequestRide: React.FC = () => {
     const [directions, setDirections] = useState<any>(null);
     const [distance, setDistance] = useState<string>('');
     const [duration, setDuration] = useState<string>('');
+
     const originAutocomplete = useRef<google.maps.places.Autocomplete>(null);
     const destinationAutocomplete = useRef<google.maps.places.Autocomplete>(null);
 
@@ -96,7 +96,6 @@ const RequestRide: React.FC = () => {
         if (originAutocomplete.current) {
             const place = originAutocomplete.current.getPlace();
 
-            //Check if place is defined
             if (place && place.formatted_address) {
                 setOrigin(place.formatted_address);
             }
@@ -107,7 +106,6 @@ const RequestRide: React.FC = () => {
         if (destinationAutocomplete.current) {
             const place = destinationAutocomplete.current.getPlace();
 
-            //Check if place is defined
             if (place && place.formatted_address) {
                 setDestination(place.formatted_address);
             }
@@ -119,16 +117,15 @@ const RequestRide: React.FC = () => {
         setDestination('');
     };
 
-    /** @TODO Send pick-up and drop-off location to Rider Request Page */
     const handleSubmit = () => {
+        /**@TODO Send pick-up and drop-off location to rider request page */
         console.log('Pick-up Location:', origin);
         console.log('Drop-off Location:', destination);
     };
 
     return (
-        <PageTitle title="Request Ride">
-            <Navbar />
-            <main className='request-ride'>
+        <PageTitle title='Request Ride'>
+            <main id='request-ride'>
                 <aside className="search-bar">
                     <h1>Request Ride</h1>
                     <LoadScript
@@ -162,16 +159,15 @@ const RequestRide: React.FC = () => {
                             <button className='btn current-location-btn' onClick={handleUseCurrentLocation}>Use Current Location</button>
                             <button className='btn preview-btn' onClick={handlePreview}>Preview</button>
                             <button className='btn clear-btn' onClick={handleClear}>Clear</button>
-                            <button className='btn request-btn' onClick={handleSubmit}>Request Ride</button>
+                            <button className='btn request-btn' onClick={handleSubmit}>Submit</button>
                         </div>
-
-                        {distance && duration && (
-                            <div className='request-results-container'>
-                                <p>Distance: {distance}</p>
-                                <p>Duration: {duration}</p>
-                            </div>
-                        )}
                     </LoadScript>
+                    {distance && duration && (
+                        <div className='request-results-container'>
+                            <p>Distance: {distance}</p>
+                            <p>Duration: {duration}</p>
+                        </div>
+                    )}
                 </aside>
 
                 {error ? (
@@ -183,7 +179,7 @@ const RequestRide: React.FC = () => {
                                 <div className="map-container">
                                     <GoogleMap mapContainerStyle={{ height: '100%', width: '100%' }} zoom={13} center={mapCenter}>
                                         {/* Marker for the user's current location */}
-                                        <MarkerF position={currentPosition} />
+                                        <Marker position={currentPosition} />
 
                                         {/* DirectionsRenderer for the searched directions */}
                                         {directions && <DirectionsRenderer directions={directions} />}

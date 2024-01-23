@@ -1,6 +1,5 @@
 import React from 'react';
 import '../styles/Payment.css';
-import Navbar from "../components/Navigation_Bar/Navbar";
 import PageTitle from '../components/Page_Title/PageTitle';
 import PayPal from '../components/PayPal/PayPal';
 
@@ -19,7 +18,6 @@ const Payment: React.FC = () => {
 
     return (
         <PageTitle title="Payment">
-            <Navbar />
             <main id="payment">
                 <h1>Payment</h1>
                 <br/>
