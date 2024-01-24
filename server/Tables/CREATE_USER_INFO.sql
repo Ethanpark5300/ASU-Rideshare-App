@@ -1,6 +1,8 @@
 --Use IDENTITY(0,1) if AUTO_INCREMENT does not work
 CREATE TABLE USER_INFO (
 	User_ID int IDENTITY(0,1) PRIMARY KEY,
+	Driver_ID int , -- need to ask if i need random generated or not
+	Rider_ID int ,
     First_Name varchar(500) NOT NULL,
     Last_Name varchar(500) NOT NULL,
     Password varchar(500) NOT NULL,
