@@ -21,23 +21,31 @@ function Report() {
     <PageTitle title="Report User">
       <main id="report">
         <h1> Report User</h1>
+        <div className="reportContainer">
+          {/* Dropdown menu */}
+          <label className="reportLabel" htmlFor="reason">
+            Select a reason for reporting:
+          </label>
+          <select
+            id="reason"
+            name="reason"
+            className="reportSelect"
+            onChange={handleReasonChange}
+            value={selectedReason}
+          >
+            <option value="">-----</option>
+            <option value="inappropriate_behavior">
+              Inappropriate Behavior
+            </option>
+            <option value="harassment">Harassment</option>
+            <option value="unsafe_driving">Unsafe Driving</option>
+            {/* Add more options as needed */}
+          </select>
 
-        {/* Dropdown menu */}
-        <label htmlFor="reason">Select a reason for reporting:</label>
-        <select
-          id="reason"
-          name="reason"
-          onChange={handleReasonChange}
-          value={selectedReason}
-        >
-          <option value="">Select a reason</option>
-          <option value="inappropriate_behavior">Inappropriate Behavior</option>
-          <option value="harassment">Harassment</option>
-          <option value="unsafe_driving">Unsafe Driving</option>
-          {/* Add more options as needed */}
-        </select>
-
-        <button onClick={handleSubmitReport}>Submit Report </button>
+          <button className="reportButton" onClick={handleSubmitReport}>
+            Submit Report{" "}
+          </button>
+        </div>
       </main>
     </PageTitle>
   );
