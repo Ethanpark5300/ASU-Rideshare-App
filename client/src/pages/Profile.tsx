@@ -1,6 +1,5 @@
 import React from 'react';
 import '../styles/Profile.css';
-import Navbar from "../components/Navigation_Bar/Navbar";
 import { useAppSelector } from '../store/hooks';
 import PageTitle from '../components/Page_Title/PageTitle';
 import profile_filler from "../images/profile.png";
@@ -52,7 +51,6 @@ const Profile: React.FC<ProfileProps> = (props) => {
 
     return (
         <PageTitle title="Profile">
-            <Navbar />
             <main id="profile">
                 <div className="picture">
                     <h1>Account Page</h1>

@@ -4,6 +4,7 @@ import { Account } from './account/Account';
 import { setAccountStore } from './store/features/accountSlice';
 import { useAppDispatch, useAppSelector } from './store/hooks';
 import "./App.css"
+import Navbar from './components/Navigation_Bar/Navbar';
 
 //Pages
 import Home from './pages/Home';
@@ -53,6 +54,7 @@ function App() {
 
 	return (
 		<>
+		<Navbar></Navbar>
 			<Routes>
 				<Route path="/" element={<Home />} />
 				<Route path="/Login" element={<Login />} />

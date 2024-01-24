@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Rating.css';
-import Navbar from '../components/Navigation_Bar/Navbar';
 import PageTitle from '../components/Page_Title/PageTitle';
 
 interface RatingFormState {
@@ -77,7 +76,6 @@ const Rating: React.FC = (props) => {
 
     return (
         <PageTitle title="Rating">
-            <Navbar />
             <main id="rating">
                 <div className="gray-box">
                     <div className="rating-container">

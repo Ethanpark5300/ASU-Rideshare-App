@@ -4,7 +4,6 @@ import "../styles/Login.css";
 import { useAppDispatch } from "../store/hooks";
 import { setAccountStore } from "../store/features/accountSlice";
 import { TextInput } from "../components/Text_Input/TextInput";
-import Navbar from "../components/Navigation_Bar/Navbar";
 // import { DatabaseAccessor } from "../databases/DatabaseAccessor";
 import { Link } from "react-router-dom";
 import { Button } from "../components/Buttons/Button";
@@ -49,7 +48,6 @@ function Login() {
 
     return (
         <PageTitle title="Login">
-            <Navbar />
             <main id="login">
                 <h1>Log In to Rideshare</h1>
                 <div className="login-container">

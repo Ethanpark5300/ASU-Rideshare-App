@@ -1,11 +1,9 @@
 import "../styles/Home.css";
-import Navbar from "../components/Navigation_Bar/Navbar";
 import PageTitle from "../components/Page_Title/PageTitle";
 
 function Home() {
     return (
         <PageTitle title="Home">
-            <Navbar />
             <main id="home">
                 <section className="hero">
                     <div className="heroText">

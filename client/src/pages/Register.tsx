@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import Navbar from "../components/Navigation_Bar/Navbar";
 import { TextInput } from "../components/Text_Input/TextInput";
 import "../styles/Register.css";
 import { Button } from "../components/Buttons/Button";
@@ -77,7 +76,6 @@ function Register() {
     /**@todo highlight which inputs errored*/
     return (
         <PageTitle title="Register">
-            <Navbar />
             <main id="register">
                 <h1>Join the Rideshare Community</h1>
                 <div className="register-container">

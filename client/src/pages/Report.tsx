@@ -1,5 +1,4 @@
 import "../styles/Report.css";
-import Navbar from "../components/Navigation_Bar/Navbar";
 import PageTitle from "../components/Page_Title/PageTitle";
 import React, { useState } from "react";
 
@@ -20,8 +19,6 @@ function Report() {
 
   return (
     <PageTitle title="Report User">
-      <Navbar />
-
       <main id="report">
         <h1> Report User</h1>
 
@@ -33,7 +30,7 @@ function Report() {
           onChange={handleReasonChange}
           value={selectedReason}
         >
-          <option value="null">-----</option>
+          <option value="">Select a reason</option>
           <option value="inappropriate_behavior">Inappropriate Behavior</option>
           <option value="harassment">Harassment</option>
           <option value="unsafe_driving">Unsafe Driving</option>
