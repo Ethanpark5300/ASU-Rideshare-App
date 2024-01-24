@@ -33,7 +33,7 @@ function Report() {
           onChange={handleReasonChange}
           value={selectedReason}
         >
-          <option value="">Select a reason</option>
+          <option value="null">-----</option>
           <option value="inappropriate_behavior">Inappropriate Behavior</option>
           <option value="harassment">Harassment</option>
           <option value="unsafe_driving">Unsafe Driving</option>
