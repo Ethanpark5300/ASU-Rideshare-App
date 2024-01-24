@@ -8,7 +8,8 @@ CREATE TABLE USER_INFO (
     Rating_Passenger real,
     Rating_Driver real,
 	Birthday date,
-	Phone_Number varchar(500)
+	Phone_Number varchar(500),
+	Pay_Pal varchar(500)
 );
 
 
