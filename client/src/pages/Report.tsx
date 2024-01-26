@@ -6,15 +6,27 @@ function Report() {
   //state to store selected reason
   const [selectedReason, setSelectedReason] = useState("");
 
+  //state to store selected comment
+  const [comments, setComments] = useState("");
+
+  //placeholder variable, change later
+  const reportedUser = "[Var]";
+
   //function to handle change in dropdown selection
   const handleReasonChange = (event) => {
     setSelectedReason(event.target.value);
+  };
+
+  // Function to handle changes in the comments textarea
+  const handleCommentsChange = (event) => {
+    setComments(event.target.value);
   };
 
   // Function to handle submitting the report
   const handleSubmitReport = () => {
     // Here, you can save the selectedReason to your database or take any other action
     console.log("Selected Reason:", selectedReason);
+    console.log("Comments:", comments);
   };
 
   return (
@@ -22,6 +34,8 @@ function Report() {
       <main id="report">
         <h1> Report User</h1>
         <div className="reportContainer">
+          <h2>You are reporting: {reportedUser}</h2>
+
           {/* Dropdown menu */}
           <label className="reportLabel" htmlFor="reason">
             Select a reason for reporting:
@@ -41,6 +55,16 @@ function Report() {
             <option value="unsafe_driving">Unsafe Driving</option>
             {/* Add more options as needed */}
           </select>
+
+          {/* Text area for extra comments */}
+          <label htmlFor="comments">Extra Comments:</label>
+          <textarea
+            id="comments"
+            name="comments"
+            rows={4} // You can adjust the number of rows as needed
+            onChange={handleCommentsChange}
+            value={comments}
+          ></textarea>
 
           <button className="reportButton" onClick={handleSubmitReport}>
             Submit Report{" "}
