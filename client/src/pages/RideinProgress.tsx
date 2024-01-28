@@ -6,6 +6,7 @@ import PageTitle from '../components/Page_Title/PageTitle';
 import Map_filler from "../images/mapfiller.png";
 import { Link } from "react-router-dom";
 import { GoogleMap, LoadScript, Marker, DirectionsRenderer, Autocomplete } from '@react-google-maps/api';
+import MapContainer from "../components/Google_Maps/MapContainer";
 
 /*need a way to identify which ride is happening*/
  //import { Driver, Ride } from './models'; 
@@ -26,7 +27,8 @@ function RideinProgress() {
             {<section id='RideinProgress'>
                 <h1>Ride in Progress</h1>
                 <div className="map-container">
-                    <img src={Map_filler} alt="filler map" className="map" />
+                    <MapContainer/>
+                    //change this ask ethan
                 </div>
 
                 <div className="ride-info">
@@ -39,17 +41,19 @@ function RideinProgress() {
                         </p>
                         <br />
                     </div>
-                    <Link to="/Report">
-                        <button>Report</button>
-                    </Link>
-                    //potentially replace with danger icon
-                    <a href="tel: 911">
-                        <button>Emergency Help</button>
-                    </a>
-                    //replace with phone icon and driver by number
-                    <a href="tel: 000-000-0000">
-                        <button>Phone</button>
-                    </a>
+                    <div className="ridebuttons">
+                        <Link to="/Report">
+                            <button>Report</button>
+                        </Link>
+                        //potentially replace with danger icon
+                        <a href="tel: 911">
+                            <button>Emergency Help</button>
+                        </a>
+                        //replace with phone icon and driver by number
+                        <a href="tel: 000-000-0000">
+                            <button>Phone</button>
+                        </a>
+                    </div>
                 </div>
             </section>}
         </PageTitle>

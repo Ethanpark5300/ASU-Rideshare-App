@@ -1,9 +1,11 @@
 .ride-in-progress {
     display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
   
 .map-container {
-    flex: 1; 
+    align-self: flex-start; 
 }
   
 .ride-info {
@@ -11,12 +13,23 @@
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
+    align-self: flex-end;
 }
   
 .progress {
     /* styles */
+    font-size: 12px;
+    align-self: flex-start;
 }
-  
+
+.ridebuttons {
+    align-self: flex-end;
+}
+
 .ride-info button {
-    /* styles */  
+    background-color: var(--brand-gold);
+}
+
+.ride-info button:hover {
+    background-color: gold;
 }
