@@ -1,15 +1,19 @@
+import { useEffect } from "react";
+//import { useAppSelector } from "../../store/hooks";
+//import { Account } from "../../account/Account";
 import '../styles/RideinProgress.css';
 import PageTitle from '../components/Page_Title/PageTitle';
 import Map_filler from "../images/mapfiller.png";
-import { useState, useEffect } from 'react';
+import { Link } from "react-router-dom";
+import { GoogleMap, LoadScript, Marker, DirectionsRenderer, Autocomplete } from '@react-google-maps/api';
 
 /*need a way to identify which ride is happening*/
-// import { Driver, Ride } from './models'; 
+ //import { Driver, Ride } from './models'; 
 
-// interface Props {
-//     driver: Driver;
-//     ride: Ride;
-// }
+ //interface Props {
+   //driver: Driver;
+    // ride: Ride;
+ //}
 
 function RideinProgress() {
     /* TODO: Add emergency features and a report button */
@@ -19,7 +23,7 @@ function RideinProgress() {
             <main id="ride-in-progress">
                 
             </main>
-            {/* <section id='RideinProgress'>
+            {<section id='RideinProgress'>
                 <h1>Ride in Progress</h1>
                 <div className="map-container">
                     <img src={Map_filler} alt="filler map" className="map" />
@@ -27,33 +31,29 @@ function RideinProgress() {
 
                 <div className="ride-info">
                     <div className="progress">
-                        <span>{rideProgress}%</span>
+                        // Filler features
+                        /*find a way to display current driver here as well*/
+                        <p>
+                            Your driver is navigating to your destination.
+                            Your estimated time left is 15 mins.
+                        </p>
+                        <br />
                     </div>
-
-                    <button onClick={handleReportDriver}>
-                        Report Driver
-                    </button>
+                    <Link to="/Report">
+                        <button>Report</button>
+                    </Link>
+                    //potentially replace with danger icon
+                    <a href="tel: 911">
+                        <button>Emergency Help</button>
+                    </a>
+                    //replace with phone icon and driver by number
+                    <a href="tel: 000-000-0000">
+                        <button>Phone</button>
+                    </a>
                 </div>
-            </section> */}
+            </section>}
         </PageTitle>
     );
 }
 
 export default RideinProgress;
-
-// export default function RideInProgress({ driver, ride }: Props) {
-
-//     const [rideProgress, setRideProgress] = useState(0);
-
-//     useEffect(() => {
-//         const interval = setInterval(() => {
-//             // update rideProgress...
-//             setRideProgress(updatedProgress);
-//         }, 1000);
-//         return () => clearInterval(interval);
-//     }, []);
-
-//     function handleReportDriver() {
-//         // logic to report driver
-//     }
-// }
