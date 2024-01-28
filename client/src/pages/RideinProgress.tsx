@@ -18,7 +18,6 @@ import MapContainer from "../components/Google_Maps/MapContainer";
 
 function RideinProgress() {
     /* TODO: Add emergency features and a report button */
-
     return (
         <PageTitle title="Ride in Progress">
             <main id="ride-in-progress">
@@ -28,15 +27,17 @@ function RideinProgress() {
                 <h1>Ride in Progress</h1>
                 <div className="map-container">
                     <MapContainer/>
-                    //change this ask ethan
+                    {/*change this ask ethan*/}
                 </div>
 
                 <div className="ride-info">
                     <div className="progress">
-                        // Filler features
-                        /*find a way to display current driver here as well*/
+                        {/* Filler features
+                        /*find a way to display current driver here as well*/}
+                        
+                        <h2>Your driver is navigating to your destination.</h2>
+                            <br />
                         <p>
-                            Your driver is navigating to your destination.
                             Your estimated time left is 15 mins.
                         </p>
                         <br />
@@ -45,11 +46,11 @@ function RideinProgress() {
                         <Link to="/Report">
                             <button>Report</button>
                         </Link>
-                        //potentially replace with danger icon
+                        {/*potentially replace with danger icon*/}
                         <a href="tel: 911">
                             <button>Emergency Help</button>
                         </a>
-                        //replace with phone icon and driver by number
+                        {/*replace with phone icon and driver by number*/}
                         <a href="tel: 000-000-0000">
                             <button>Phone</button>
                         </a>

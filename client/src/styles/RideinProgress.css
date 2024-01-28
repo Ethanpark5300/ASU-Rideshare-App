@@ -2,31 +2,53 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin: 20px;
 }
-  
+
+#RideinProgress{
+    display: flex;
+    justify-content: space-between;
+    margin: 20px;
+}
+
 .map-container {
+    z-index: 1;
     align-self: flex-start; 
 }
   
 .ride-info {
+    z-index: 2;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
     align-self: flex-end;
+    border: 2px black;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
 }
   
 .progress {
     /* styles */
-    font-size: 12px;
+    font-size: 25px;
     align-self: flex-start;
+    
 }
 
 .ridebuttons {
-    align-self: flex-end;
+    align-self: end;
+    padding-right: 20px;
+    padding-bottom: 100px;
 }
 
 .ride-info button {
+    border-radius: 1000px;
+    cursor: pointer;
+    padding: 8px 24px;
+    font-weight: 700;
+    transition: 0.1s;
+    margin: 5px;
+    margin-right: 22px;
+    margin-top: 10px;
     background-color: var(--brand-gold);
 }
 
