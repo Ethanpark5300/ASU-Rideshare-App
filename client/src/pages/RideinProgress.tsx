@@ -3,9 +3,7 @@ import { useEffect } from "react";
 //import { Account } from "../../account/Account";
 import '../styles/RideinProgress.css';
 import PageTitle from '../components/Page_Title/PageTitle';
-import Map_filler from "../images/mapfiller.png";
 import { Link } from "react-router-dom";
-import { GoogleMap, LoadScript, Marker, DirectionsRenderer, Autocomplete } from '@react-google-maps/api';
 import MapContainer from "../components/Google_Maps/MapContainer";
 
 /*need a way to identify which ride is happening*/
@@ -21,26 +19,18 @@ function RideinProgress() {
     return (
         <PageTitle title="Ride in Progress">
             <main id="ride-in-progress">
-                
-            </main>
-            {<section id='RideinProgress'>
-                <h1>Ride in Progress</h1>
-                <div className="map-container">
-                    <MapContainer/>
-                    {/*change this ask ethan*/}
-                </div>
-
+                <MapContainer/>
                 <div className="ride-info">
                     <div className="progress">
                         {/* Filler features
                         /*find a way to display current driver here as well*/}
-                        
+
                         <h2>Your driver is navigating to your destination.</h2>
-                            <br />
+                        <br />
                         <p>
                             Your estimated time left is 15 mins.
                         </p>
-                        <br />
+                        <br/>
                     </div>
                     <div className="ridebuttons">
                         <Link to="/Report">
@@ -56,7 +46,7 @@ function RideinProgress() {
                         </a>
                     </div>
                 </div>
-            </section>}
+            </main>
         </PageTitle>
     );
 }
