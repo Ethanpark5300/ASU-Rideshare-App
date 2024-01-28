@@ -1,7 +1,7 @@
 import React from 'react';
 import '../styles/Profile.css';
 import { useAppSelector } from '../store/hooks';
-import PageTitle from '../components/Page_Title/PageTitle';
+import PageTitle from '../components/PageTitle/PageTitle';
 import profile_filler from "../images/profile.png";
 import { Button } from "../components/Buttons/Button";
 import { useAppDispatch } from "../store/hooks";

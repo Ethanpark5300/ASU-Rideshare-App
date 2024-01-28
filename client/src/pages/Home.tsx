@@ -1,5 +1,5 @@
 import "../styles/Home.css";
-import PageTitle from "../components/Page_Title/PageTitle";
+import PageTitle from "../components/PageTitle/PageTitle";
 
 function Home() {
     return (

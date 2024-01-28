@@ -3,11 +3,11 @@ import { Account } from "../account/Account";
 import "../styles/Login.css";
 import { useAppDispatch } from "../store/hooks";
 import { setAccountStore } from "../store/features/accountSlice";
-import { TextInput } from "../components/Text_Input/TextInput";
+import { TextInput } from "../components/TextInput/TextInput";
 // import { DatabaseAccessor } from "../databases/DatabaseAccessor";
 import { Link } from "react-router-dom";
 import { Button } from "../components/Buttons/Button";
-import PageTitle from "../components/Page_Title/PageTitle";
+import PageTitle from "../components/PageTitle/PageTitle";
 
 //maybe do axios stuff here
 

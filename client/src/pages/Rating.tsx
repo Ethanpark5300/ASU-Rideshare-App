@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Rating.css';
-import PageTitle from '../components/Page_Title/PageTitle';
+import PageTitle from '../components/PageTitle/PageTitle';
 
 interface RatingFormState {
     rating: number;

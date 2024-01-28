@@ -1,5 +1,5 @@
 import "../styles/Report.css";
-import PageTitle from "../components/Page_Title/PageTitle";
+import PageTitle from "../components/PageTitle/PageTitle";
 import React, { useState } from "react";
 
 function Report() {

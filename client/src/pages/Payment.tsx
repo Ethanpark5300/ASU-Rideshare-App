@@ -1,6 +1,6 @@
 import React from 'react';
 import '../styles/Payment.css';
-import PageTitle from '../components/Page_Title/PageTitle';
+import PageTitle from '../components/PageTitle/PageTitle';
 import PayPal from '../components/PayPal/PayPal';
 
 const Payment: React.FC = () => {

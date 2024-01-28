@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { GoogleMap, LoadScript, Marker, DirectionsRenderer, Autocomplete } from '@react-google-maps/api';
 import '../styles/RequestRide.css';
-import PageTitle from '../components/Page_Title/PageTitle';
+import PageTitle from '../components/PageTitle/PageTitle';
 
 const libraries = ['places'] as any;
 

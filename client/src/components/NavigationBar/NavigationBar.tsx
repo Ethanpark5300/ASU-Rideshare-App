@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import "./Navbar.css";
+import "./NavigationBar.css";
 import Navbar_Logo from "./Navbar-Logo.svg";
 import { useEffect } from "react";
 import { useAppSelector } from "../../store/hooks";

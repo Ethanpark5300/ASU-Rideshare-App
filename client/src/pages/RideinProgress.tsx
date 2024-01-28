@@ -2,9 +2,9 @@ import { useEffect } from "react";
 //import { useAppSelector } from "../../store/hooks";
 //import { Account } from "../../account/Account";
 import '../styles/RideinProgress.css';
-import PageTitle from '../components/Page_Title/PageTitle';
+import PageTitle from '../components/PageTitle/PageTitle';
 import { Link } from "react-router-dom";
-import MapContainer from "../components/Google_Maps/MapContainer";
+import MapContainer from "../components/GoogleMaps/MapContainer";
 
 /*need a way to identify which ride is happening*/
  //import { Driver, Ride } from './models'; 

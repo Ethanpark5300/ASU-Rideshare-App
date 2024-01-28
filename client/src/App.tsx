@@ -4,7 +4,7 @@ import { Account } from './account/Account';
 import { setAccountStore } from './store/features/accountSlice';
 import { useAppDispatch, useAppSelector } from './store/hooks';
 import "./App.css"
-import Navbar from './components/Navigation_Bar/Navbar';
+import NavigationBar from './components/NavigationBar/NavigationBar';
 
 //Pages
 import Home from './pages/Home';
@@ -54,7 +54,7 @@ function App() {
 
 	return (
 		<>
-		<Navbar/>
+			<NavigationBar/>
 			<Routes>
 				<Route path="/" element={<Home />} />
 				<Route path="/Login" element={<Login />} />
@@ -63,14 +63,14 @@ function App() {
 					path="/Profile"
 					element={
 						<Profile
-                            firstName={account?.account?.firstName}
-                            lastName={account?.account?.lastName}
+							firstName={account?.account?.firstName}
+							lastName={account?.account?.lastName}
 							label={''}
 							address={''}
 							asuid={''}
 							email={account?.account?.email}
-                            /** @TODO Phone Number is undefined */
-                            phoneNumber={account?.account?.phoneNumber}
+							/** @TODO Phone Number is undefined */
+							phoneNumber={account?.account?.phoneNumber}
 							paypalEmail={''}
 						/>
 					}

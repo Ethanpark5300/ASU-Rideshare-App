@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { TextInput } from "../components/Text_Input/TextInput";
+import { TextInput } from "../components/TextInput/TextInput";
 import "../styles/Register.css";
 import { Button } from "../components/Buttons/Button";
-import PageTitle from "../components/Page_Title/PageTitle";
+import PageTitle from "../components/PageTitle/PageTitle";
 
 function Register() {
     const emailRef = useRef<string>("");
