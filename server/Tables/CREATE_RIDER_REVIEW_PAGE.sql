@@ -1,5 +1,5 @@
 CREATE TABLE RIDER_REVIEW_PAGE (
-	User_ID int NOT NULL,
+	Email varchar(500) NOT NULL UNIQUE PRIMARY KEY,
 	Driver_ID int NOT NULL,
 	Rating int,
 	Review varchar(500),
