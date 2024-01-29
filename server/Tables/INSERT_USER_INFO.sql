@@ -23,7 +23,7 @@ VALUES
 	(20,'meaningfully','off','meaningfullyoff','11131','meaningfullyoff@asu.edu',NULL,4.8);
 */	
 --assuming auto INCREMENT works then this should be code since we do not need to worry about User_id
-INSERT INTO USER_INFO(First_Name,Last_Name,Password,Email,Rating_Passenger,Rating_Driver,Phone_Number)
+INSERT INTO USER_INFO(First_Name,Last_Name,Password_User,Email,Rating_Passenger,Rating_Driver,Phone_Number)
 VALUES 
 	('zeal',				'smeal',		'$2a$10$U/4oET/nT6fzpOnB72oNCOXyEEQt2kwbK7/Drek3/4EpPIkSx6vHK','zealsmeal@asu.edu',4.5,4.0,'111-111-1111'),	--pass: 11111
 	('accidentally',		'demolish',		'$2a$10$m1TLFSUBalwb7qXN4CJ7vee5a.rKvnXYjk6mJho1ZhpoUSI/QvNQS','accidentallydemolish@asu.edu',NULL,3.6,'111-111-1111'),	--pass: 11112
