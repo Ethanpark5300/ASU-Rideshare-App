@@ -51,7 +51,7 @@ const RequestRide: React.FC = () => {
                 const duration = route.legs.reduce((acc: number, leg: any) => acc + leg.duration.value, 0);
 
                 setDistance((distance / 1609.34).toFixed(2) + ' miles'); // Convert meters to miles
-                setDuration((duration / 60).toFixed(2) + ' minutes'); // Convert seconds to minutes
+                setDuration(Math.round(duration / 60) + ' minutes'); // Round duration to nearest whole number of minutes
             }
         } else {
             console.error('Error calculating directions:', response);
@@ -115,6 +115,9 @@ const RequestRide: React.FC = () => {
     const handleClear = () => {
         setOrigin('');
         setDestination('');
+        setDirections(null); // Clear directions
+        setDistance(''); // Clear distance
+        setDuration(''); // Clear duration
     };
 
     const handleSubmit = () => {
