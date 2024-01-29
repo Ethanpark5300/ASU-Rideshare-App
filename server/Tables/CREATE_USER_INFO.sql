@@ -7,7 +7,6 @@ CREATE TABLE USER_INFO (
     Password_User varchar(500) NOT NULL,
     Rating_Passenger real,
     Rating_Driver real,
-	Birthday date,
 	Phone_Number varchar(500),
 	Pay_Pal varchar(500), 
 	Session_Token varchar(500),
