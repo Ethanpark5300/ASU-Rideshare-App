@@ -3,5 +3,6 @@ CREATE TABLE REPORTING (
 	EMAIL int,
 	REPORT_ID int NOT NULL PRIMARY KEY, --actual report number 
 	REPORTED_ID int, -- person getting reported user id
-	REASON varchar(500)
+	REASON varchar(500) NOT NULL ,
+	COMMENTS varchar(500)
 )
