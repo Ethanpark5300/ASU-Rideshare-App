@@ -1,8 +1,9 @@
 import fs from 'fs';
 import { Database } from 'sqlite3';
-import express from 'express';
+import express, { NextFunction } from 'express';
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
+import jwt from 'jsonwebtoken';
 //const fs = require("fs");
 //const sqlite3 = require("sqlite3");
 //const Database = sqlite3.Database;
@@ -12,7 +13,10 @@ const app = express();
 const cookieParser = require('cookie-parser');
 
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT || 3001;
+//process.env is set outside
+const JWT_SECRET = process.env.JWT_SECRET || "DevelopmentSecretKey";
+
 
 let message: string | undefined;
 let hadError: boolean;
@@ -68,13 +72,7 @@ app.post("/registration", async (req: Request, res: Response) => {
 app.post("/login", (req: Request, res: Response) => {
 	//console.log(req.body.email);
 	//console.log(req.body.password);
-	const options = {
-		httpOnly: true,
-		signed: true,
-		/**@todo figure out if this is needed, and if it is, fix it*/
-		//sameSite: "lax",
-		/**@todo expiration by Max-Age/expires, if a timer beyond browser life wanted*/
-	};
+	
 
 	const emailPassWrong: string = "Email or Password is incorrect";
 
@@ -90,14 +88,14 @@ app.post("/login", (req: Request, res: Response) => {
 
 
 		if (!hadError) {
-			//console.log("Comparing: " + req.body.password + " + " + rows.Password)
+			//console.log("Comparing: " + req.body.password + " + " + rows.Password_User)
 			bcrypt
-				.compare(req.body.password, rows.Password)
+				.compare(req.body.password, rows.Password_User)
 				.then(result => {
 					//console.log(result);
+					let accObj = accountObject(rows);
 					if (result) {
-						//cookie(name of cookie, value of cookie, options of cookie)
-						res.cookie('loggedIn', rows.Email, options);
+						setTokenCookie(res, accObj);
 					} else {
 						hadError = true;
 						message = emailPassWrong;
@@ -106,12 +104,7 @@ app.post("/login", (req: Request, res: Response) => {
 
 						loginSuccess: !hadError,
 						message: message,
-						account: {
-							Email: rows?.Email ?? undefined,
-							FirstName:rows?.First_Name ?? undefined,
-							LastName:rows?.Last_Name ?? undefined,
-							PhoneNumber:rows?.Phone_Number ?? undefined,
-						}
+						account: accObj,
 					});
 
 				})
@@ -121,9 +114,7 @@ app.post("/login", (req: Request, res: Response) => {
 
 				loginSuccess: !hadError,
 				message: message,
-				account: {
-					Email: rows?.Email ?? undefined,
-				}
+				account: undefined
 			});
 		}
 		
@@ -140,25 +131,25 @@ app.post("/login", (req: Request, res: Response) => {
  * @returns user info
  */
 app.get('/read-cookie', (req:Request, res:Response) => {
-	console.log(req.signedCookies);
-	//console.log(req.signedCookies.loggedIn);
-
+	//console.log(req.signedCookies);
+	//console.log("----");
+	//console.log(req.signedCookies.sessionToken);
+	//console.log("----");
 
 	//cookie should store something and we can get the user info afterwards
 
 	/**@todo do fetch*/
-	res.json({
-		account: {
-			Email: req.signedCookies.loggedIn,
+	const verifyAcc: Object | undefined = verifyToken(req.signedCookies.sessionToken);
+	console.log(verifyAcc);
 
-		}
-	});
+	
+	res.json(verifyAcc);
 });
 /**
  * logout
  */
 app.get('/clear-cookie', (req:Request, res:Response) => {
-	res.clearCookie('loggedIn').end();
+	res.clearCookie('sessionToken').end();
 });
 
 function cb(err: Error | null) {
@@ -170,6 +161,67 @@ function cb(err: Error | null) {
 		message = undefined;
 	}
 }
+
+/**
+ * returns an object to be put in account: object returned
+ * @todo I don't know what rows type actually is, unfortunately, so fix that if able
+ * 
+ * @param rows returned rows from some sql statement
+ * @returns
+ */
+function accountObject(rows:any) {
+	return {
+		Email: rows?.Email ?? undefined,
+		FirstName: rows?.First_Name ?? undefined,
+		LastName: rows?.Last_Name ?? undefined,
+		PhoneNumber: rows?.Phone_Number ?? undefined,
+	};
+}
+
+/**
+ * res should be passed by reference, and modified here to give a cookie to it
+ * @param res
+ */
+function setTokenCookie(res: Response, accObj: any) {
+	const options = {
+		httpOnly: true,
+		signed: true,
+		/**@todo fix this*/
+		//sameSite: "lax",
+		/**@todo expiration by Max-Age/expires, if a timer beyond browser life desired*/
+	};
+
+	const sessionTokenOptions = {
+		expiresIn: "1d",
+	}
+
+	const sessionToken: string = jwt.sign(
+		accObj, //payload
+		JWT_SECRET, //key
+		sessionTokenOptions //options
+	);
+
+
+	//cookie(name of cookie, value of cookie, options of cookie)
+	res.cookie('sessionToken', sessionToken, options);
+
+}
+
+/**
+ * Verifies the session token is proper. Returned value can be used as true on success, false on error
+ * @param token
+ * @returns object with account details if validated, and undefined if error
+ */
+const verifyToken = function (token: string): Object | undefined {
+	try {
+		return jwt.verify(token, JWT_SECRET);
+	} catch (e) {
+		return undefined;
+	}
+	
+}
+
+
 
 app.listen(PORT, () => {
 	console.log(`Server is running on port ${PORT}.`);

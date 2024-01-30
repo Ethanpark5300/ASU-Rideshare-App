@@ -9,7 +9,6 @@ CREATE TABLE USER_INFO (
     Rating_Driver real,
 	Phone_Number varchar(500),
 	Pay_Pal varchar(500), 
-	Session_Token varchar(500),
 	Status_User varchar(500)
 );
 
