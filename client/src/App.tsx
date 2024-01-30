@@ -37,8 +37,9 @@ function App() {
 			})
 				.then((res) => res.json())
 				.then((data) => {
+					console.log(data);
 					if (data.Email !== undefined) {
-						const accountData = new Account(data.email, data.firstName, data.lastName, data.phoneNumber);
+						const accountData = new Account(data.Email, data.FirstName, data.LastName, data.PhoneNumber);
 						dispatch(setAccountStore(accountData));
 					} else {
 						dispatch(setAccountStore(undefined));
@@ -51,6 +52,8 @@ function App() {
 	};
 
 	const account = useAppSelector((state) => state.account);
+	console.log("----")
+	console.log(account.account);
 
 	return (
 		<>
