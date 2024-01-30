@@ -30,6 +30,9 @@ const saltRounds: number = 10;
 //creating the table and storing it in
 const user_info = new Database("user_info.db");
 
+/** @TODO Import report database */
+// const report_table = new Database("user_info.db")
+
 //just in case we need again
 //user_info.exec(fs.readFileSync(__dirname + '/Tables/CREATE_USER_INFO.sql').toString());
 
@@ -221,7 +224,11 @@ const verifyToken = function (token: string): Object | undefined {
 	
 }
 
-
+/** @TODO Send report to report database */
+app.post("/send-report", async (req: Request, res: Response) => {
+	let reason = req.body.reason;
+	let comments = req.body.comments;
+});
 
 app.listen(PORT, () => {
 	console.log(`Server is running on port ${PORT}.`);
