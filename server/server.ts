@@ -5,7 +5,8 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken';
 //const fs = require("fs");
-//const sqlite3 = require("sqlite3");
+const sqlite = require("sqlite")
+const sqlite3 = require("sqlite3");
 //const Database = sqlite3.Database;
 //const express = require("express");
 const cors = require("cors");
@@ -30,8 +31,6 @@ const saltRounds: number = 10;
 //creating the table and storing it in
 const user_info = new Database("user_info.db");
 
-/** @TODO Import report database */
-// const report_table = new Database("user_info.db")
 
 //just in case we need again
 //user_info.exec(fs.readFileSync(__dirname + '/Tables/CREATE_USER_INFO.sql').toString());
@@ -75,14 +74,14 @@ app.post("/registration", async (req: Request, res: Response) => {
 app.post("/login", (req: Request, res: Response) => {
 	//console.log(req.body.email);
 	//console.log(req.body.password);
-	
+
 
 	const emailPassWrong: string = "Email or Password is incorrect";
 
-	user_info.get(fs.readFileSync(__dirname + '/Tables/login.sql').toString(), [req.body.email], (err:Error, rows:any) => {
-		if (rows=== undefined) {
+	user_info.get(fs.readFileSync(__dirname + '/Tables/login.sql').toString(), [req.body.email], (err: Error, rows: any) => {
+		if (rows === undefined) {
 			hadError = true; message = emailPassWrong;
-		}else if (err) {
+		} else if (err) {
 			hadError = true; message = err.message;
 		} else {
 			hadError = false;
@@ -120,20 +119,20 @@ app.post("/login", (req: Request, res: Response) => {
 				account: undefined
 			});
 		}
-		
+
 	});
 	//sends the user to the next screen after login(home screen)
 	//if (!hadError) {
 	//	res.cookie('name', 'user type here', options);
 	//}
-	
-	
+
+
 });
 /**
  * @todo return user info for account storing(email, first, last)
  * @returns user info
  */
-app.get('/read-cookie', (req:Request, res:Response) => {
+app.get('/read-cookie', (req: Request, res: Response) => {
 	//console.log(req.signedCookies);
 	//console.log("----");
 	//console.log(req.signedCookies.sessionToken);
@@ -145,13 +144,13 @@ app.get('/read-cookie', (req:Request, res:Response) => {
 	const verifyAcc: Object | undefined = verifyToken(req.signedCookies.sessionToken);
 	//console.log(verifyAcc);
 
-	
+
 	res.json(verifyAcc);
 });
 /**
  * logout
  */
-app.get('/clear-cookie', (req:Request, res:Response) => {
+app.get('/clear-cookie', (req: Request, res: Response) => {
 	res.clearCookie('sessionToken').end();
 });
 
@@ -172,7 +171,7 @@ function cb(err: Error | null) {
  * @param rows returned rows from some sql statement
  * @returns
  */
-function accountObject(rows:any) {
+function accountObject(rows: any) {
 	return {
 		Email: rows?.Email ?? undefined,
 		FirstName: rows?.First_Name ?? undefined,
@@ -221,13 +220,26 @@ const verifyToken = function (token: string): Object | undefined {
 	} catch (e) {
 		return undefined;
 	}
-	
+
 }
 
-/** @TODO Send report to report database */
 app.post("/send-report", async (req: Request, res: Response) => {
+	const dbPromise = sqlite.open
+	({
+		filename: "./reports.sqlite",
+		driver: sqlite3.Database
+	});
+	
+	const db = await dbPromise;
+
+	let email = req.body.email;
+	/** @TODO Replace reported_id with actual reportee ID  */
+	let reported_id = "Test email"
 	let reason = req.body.reason;
 	let comments = req.body.comments;
+
+	await db.run(`INSERT INTO Reports (email, reported_id, reason, comments) VALUES (?,?,?,?)`, email, reported_id, reason, comments);
+	// console.log("Submitted")
 });
 
 app.listen(PORT, () => {
