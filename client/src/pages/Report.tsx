@@ -2,7 +2,11 @@ import "../styles/Report.css";
 import PageTitle from "../components/PageTitle/PageTitle";
 import React, { useState } from "react";
 
-function Report() {
+interface RatingProps {
+    email: string;
+}
+
+const Report: React.FC<RatingProps> = (props) => {
     //state to store selected reason
     const [selectedReason, setSelectedReason] = useState("");
 
@@ -34,6 +38,7 @@ function Report() {
                 body: JSON.stringify({
                     reason: selectedReason,
                     comments: comments,
+                    email: props.email,
                 }),
             })
         }

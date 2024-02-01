@@ -57,7 +57,7 @@ function App() {
 
 	return (
 		<>
-			<NavigationBar/>
+			<NavigationBar />
 			<Routes>
 				<Route path="/" element={<Home />} />
 				<Route path="/Login" element={<Login />} />
@@ -72,7 +72,6 @@ function App() {
 							address={''}
 							asuid={''}
 							email={account?.account?.email}
-							/** @TODO Phone Number is undefined */
 							phoneNumber={account?.account?.phoneNumber}
 							paypalEmail={''}
 						/>
@@ -87,7 +86,14 @@ function App() {
 				<Route path="/ChooseRider" element={<ChooseRider />} />
 				<Route path="/ChangePayment" element={<ChangePayment />} />
 				<Route path="/Rating" element={<Rating />} />
-				<Route path="/Report" element={<Report />} />
+				<Route
+					path="/Report"
+					element={
+						<Report
+							email={account?.account?.email}
+						/>
+					} 
+				/>
 			</Routes>
 		</>
 	);
