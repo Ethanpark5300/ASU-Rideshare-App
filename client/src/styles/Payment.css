@@ -1,0 +1,20 @@
+.payment-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background-color: #f1f1f1;
+    gap: .75rem;
+}
+
+#payment h1 {
+    font-size: 2rem;
+}
+
+#payment h2 {
+    font-size: 1.5rem;
+}
+
+.paypal-btns-container {
+    width: 30%;
+}

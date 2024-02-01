@@ -2,15 +2,20 @@
 * {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
     font-family: Arial, Helvetica, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
 }
 
 /* CSS global variables */
 :root {
     --brand-maroon: #8C1D40;
     --brand-gold: #FFC627;
-    --navbar-height: 64px;
+    --modified-height: calc(100vh - 64.8px);
 }
 
 /* Make all buttons' border transparent */
