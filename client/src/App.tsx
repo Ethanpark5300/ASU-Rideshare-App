@@ -61,7 +61,14 @@ function App() {
 			<Routes>
 				<Route path="/" element={<Home />} />
 				<Route path="/Login" element={<Login />} />
-				<Route path="/Payment" element={<Payment />} />
+				<Route
+					path="/Payment"
+					element={
+						<Payment
+							email={account?.account?.email}
+						/>
+					}
+				/>
 				<Route
 					path="/Profile"
 					element={
