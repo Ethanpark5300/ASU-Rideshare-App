@@ -29,7 +29,7 @@ const saltRounds: number = 10;
 
 
 //creating the table and storing it in
-const user_info = new Database("user_info.db");
+const user_info = new Database("./database/user_info.db");
 
 
 //just in case we need again
@@ -226,7 +226,7 @@ const verifyToken = function (token: string): Object | undefined {
 app.post("/send-report", async (req: Request, res: Response) => {
 	const dbPromise = sqlite.open
 	({
-		filename: "./reports.sqlite",
+		filename: "./database/reports.sqlite",
 		driver: sqlite3.Database
 	});
 	
@@ -239,7 +239,6 @@ app.post("/send-report", async (req: Request, res: Response) => {
 	let comments = req.body.comments;
 
 	await db.run(`INSERT INTO Reports (email, reported_id, reason, comments) VALUES (?,?,?,?)`, email, reported_id, reason, comments);
-	// console.log("Submitted")
 });
 
 app.listen(PORT, () => {
