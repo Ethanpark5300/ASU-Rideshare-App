@@ -258,9 +258,10 @@ app.post("/send-payment", async (req: Request, res: Response) => {
 	let currentDate = new Date().toLocaleDateString();
 	let currentTime = new Date().toLocaleTimeString();
 	
-	/** @FIXME Query is being executed twice */
-	await db.run(`INSERT INTO Payments (rider_email, driver_email, ride_cost, payment_date, payment_time) VALUES (?,?,?,?,?)`, rider_email, driver_email, ride_cost, currentDate, currentTime)
-	// console.log("test")
+	await db.run(`INSERT INTO Payments (rider_email, driver_email, ride_cost, payment_date, payment_time) VALUES (?,?,?,?,?)`, rider_email, driver_email, ride_cost, currentDate, currentTime);
+
+	/* delete duplicate records from the table */
+	await db.run(`DELETE FROM Payments WHERE payment_id NOT IN (SELECT MIN(payment_id) FROM Payments GROUP BY rider_email, driver_email, ride_cost, payment_date, payment_time)`);
 });
 
 app.listen(PORT, () => {
