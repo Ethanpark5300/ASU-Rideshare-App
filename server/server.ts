@@ -233,7 +233,7 @@ app.post("/send-report", async (req: Request, res: Response) => {
 	const db = await dbPromise;
 
 	let email = req.body.email;
-	/** @TODO Replace reported_id with actual reportee ID  */
+	/** @TODO Replace value with actual reportee name */
 	let reported_id = "Test email"
 	let reason = req.body.reason;
 	let comments = req.body.comments;

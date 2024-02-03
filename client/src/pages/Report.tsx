@@ -13,7 +13,7 @@ const Report: React.FC<RatingProps> = (props) => {
     //state to store selected comment
     const [comments, setComments] = useState("");
 
-    //placeholder variable, change later
+    /** @TODO Replace value with reportee name */
     const reportedUser = "[Var]";
 
     //function to handle change in dropdown selection
@@ -28,17 +28,14 @@ const Report: React.FC<RatingProps> = (props) => {
 
     // Function to handle submitting the report
     const handleSubmitReport = async () => {
-        // Here, you can save the selectedReason to your database or take any other action
-        // console.log("Selected Reason:", selectedReason);
-        // console.log("Comments:", comments);
         try {
             fetch(`/send-report`, {
                 method: "POST",
                 headers: { "Content-type": "application/json" },
                 body: JSON.stringify({
+                    email: props.email,
                     reason: selectedReason,
                     comments: comments,
-                    email: props.email,
                 }),
             })
         }
@@ -83,7 +80,7 @@ const Report: React.FC<RatingProps> = (props) => {
                     />
 
                     <button className="reportButton" onClick={handleSubmitReport}>
-                        Submit Report{" "}
+                        Submit Report
                     </button>
                 </div>
             </main>
