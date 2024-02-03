@@ -223,6 +223,7 @@ const verifyToken = function (token: string): Object | undefined {
 
 }
 
+/** Send report to reports database */
 app.post("/send-report", async (req: Request, res: Response) => {
 	const dbPromise = sqlite.open
 	({
@@ -239,6 +240,27 @@ app.post("/send-report", async (req: Request, res: Response) => {
 	let comments = req.body.comments;
 
 	await db.run(`INSERT INTO Reports (email, reported_id, reason, comments) VALUES (?,?,?,?)`, email, reported_id, reason, comments);
+});
+
+/** Send payment to payments database */
+app.post("/send-payment", async (req: Request, res: Response) => {
+	const dbPromise = sqlite.open
+	({
+		filename: "./database/payments.sqlite",
+		driver: sqlite3.Database
+	});
+	
+	const db = await dbPromise;
+	
+	let rider_email = req.body.riderEmail;
+	let driver_email = req.body.driverEmail;
+	let ride_cost = req.body.rideCost;
+	let currentDate = new Date().toLocaleDateString();
+	let currentTime = new Date().toLocaleTimeString();
+	
+	/** @FIXME Query is being executed twice */
+	await db.run(`INSERT INTO Payments (rider_email, driver_email, ride_cost, payment_date, payment_time) VALUES (?,?,?,?,?)`, rider_email, driver_email, ride_cost, currentDate, currentTime)
+	// console.log("test")
 });
 
 app.listen(PORT, () => {

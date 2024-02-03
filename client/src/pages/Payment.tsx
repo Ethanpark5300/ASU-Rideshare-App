@@ -65,6 +65,21 @@ const Payment: React.FC<PaymentProps> = (props) => {
 
     const renderPopup = () => {
         if (paymentStatus === 'success') {
+            try {
+                fetch(`/send-payment`, {
+                    method: "POST",
+                    headers: { "Content-type": "application/json" },
+                    body: JSON.stringify({
+                        riderEmail: props.email,
+                        driverEmail: driverEmail,
+                        rideCost: amount,
+                    }),
+                })
+            }
+            catch (e: any) {
+                console.log(e);
+            }
+
             return (
                 <div className="payment-success-popup">
                     <p>Payment successful!</p>
