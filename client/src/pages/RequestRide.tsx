@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { GoogleMap, LoadScript, Marker, DirectionsRenderer, Autocomplete } from '@react-google-maps/api';
 import '../styles/RequestRide.css';
 import PageTitle from '../components/PageTitle/PageTitle';
-
+import { FaMapMarkerAlt } from "react-icons/fa";
 const libraries = ['places'] as any;
 
 const RequestRide: React.FC = () => {
@@ -136,17 +136,27 @@ const RequestRide: React.FC = () => {
                         libraries={libraries}
                         onLoad={handleMapLoad}
                     >
-                        <Autocomplete
-                            onLoad={(autocomplete) => (originAutocomplete.current = autocomplete)}
-                            onPlaceChanged={handleOriginPlaceChanged}
-                        >
-                            <input
-                                type="text"
-                                placeholder="Origin"
-                                value={origin}
-                                onChange={(e) => setOrigin(e.target.value)}
-                            />
-                        </Autocomplete>
+                        <div className="origin-container">
+                            <Autocomplete
+                                onLoad={(autocomplete) => (originAutocomplete.current = autocomplete)}
+                                onPlaceChanged={handleOriginPlaceChanged}
+                            >
+                                <input
+                                    type="text"
+                                    placeholder="Origin"
+                                    value={origin}
+                                    onChange={(e) => setOrigin(e.target.value)}
+                                />
+                            </Autocomplete>
+                            <div className="current-location-tooltip">
+                                <button
+                                    className='current-location-btn'
+                                    onClick={handleUseCurrentLocation}>
+                                    <FaMapMarkerAlt />
+                                </button>
+                                <span className='current-location-tooltip-text'>Use Current Location</span>
+                            </div>
+                        </div>
                         <Autocomplete
                             onLoad={(autocomplete) => (destinationAutocomplete.current = autocomplete)}
                             onPlaceChanged={handleDestinationPlaceChanged}
@@ -159,10 +169,9 @@ const RequestRide: React.FC = () => {
                             />
                         </Autocomplete>
                         <div className="request-btns-container">
-                            <button className='btn current-location-btn' onClick={handleUseCurrentLocation}>Use Current Location</button>
-                            <button className='btn preview-btn' onClick={handlePreview}>Preview</button>
-                            <button className='btn clear-btn' onClick={handleClear}>Clear</button>
-                            <button className='btn request-btn' onClick={handleSubmit}>Submit</button>
+                            <button className='preview-btn' onClick={handlePreview}>Preview</button>
+                            <button className='clear-btn' onClick={handleClear}>Clear</button>
+                            <button className='request-btn' onClick={handleSubmit}>Submit</button>
                         </div>
                     </LoadScript>
                     {distance && duration && (
@@ -171,8 +180,8 @@ const RequestRide: React.FC = () => {
                             <p>Duration: {duration}</p>
                         </div>
                     )}
-                </aside>
 
+                </aside>
                 {error ? (
                     <p>{error}</p>
                 ) : (
