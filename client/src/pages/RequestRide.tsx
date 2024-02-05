@@ -15,7 +15,6 @@ const RequestRide: React.FC = () => {
     const [directions, setDirections] = useState<any>(null);
     const [distance, setDistance] = useState<string>('');
     const [duration, setDuration] = useState<string>('');
-
     const originAutocomplete = useRef<google.maps.places.Autocomplete>(null);
     const destinationAutocomplete = useRef<google.maps.places.Autocomplete>(null);
 
@@ -137,10 +136,11 @@ const RequestRide: React.FC = () => {
                         onLoad={handleMapLoad}
                     >
                         <div className="origin-container">
+                            <label htmlFor="origin">Pick-Up Location</label>
                             <Autocomplete
                                 onLoad={(autocomplete) => (originAutocomplete.current = autocomplete)}
                                 onPlaceChanged={handleOriginPlaceChanged}
-                            >
+                                >
                                 <input
                                     type="text"
                                     placeholder="Origin"
@@ -157,6 +157,17 @@ const RequestRide: React.FC = () => {
                                 <span className='current-location-tooltip-text'>Use Current Location</span>
                             </div>
                         </div>
+                        <div className="search-filter-container">
+                            <div className="normal-search-container">
+                                <input type="radio" name="origin-search-filter" id="origin-normal-search" checked/>
+                                <label htmlFor="origin-normal-search"> Normal Search</label>
+                            </div>
+                            <div className="building-search-container">
+                                <input type="radio" name="origin-search-filter" id="origin-building-search"/>
+                                <label htmlFor="origin-building-search"> Building Search</label>
+                            </div>
+                        </div>
+                        <label htmlFor="destination">Drop-Off Location</label>
                         <Autocomplete
                             onLoad={(autocomplete) => (destinationAutocomplete.current = autocomplete)}
                             onPlaceChanged={handleDestinationPlaceChanged}
@@ -168,12 +179,25 @@ const RequestRide: React.FC = () => {
                                 onChange={(e) => setDestination(e.target.value)}
                             />
                         </Autocomplete>
+                        <div className="search-filter-container">
+                            <div className="normal-search-container">
+                                <input type="radio" name="destination-search-filter" id="destination-normal-search" checked/>
+                                <label htmlFor="destination-normal-search"> Normal Search</label>
+                            </div>
+                            <div className="building-search-container">
+                                <input type="radio" name="destination-search-filter" id="destination-building-search" />
+                                <label htmlFor="destination-building-search"> Building Search</label>
+                            </div>
+                        </div>
                         <div className="request-btns-container">
                             <button className='preview-btn' onClick={handlePreview}>Preview</button>
                             <button className='clear-btn' onClick={handleClear}>Clear</button>
                             <button className='request-btn' onClick={handleSubmit}>Submit</button>
                         </div>
                     </LoadScript>
+                    <div className="search-filter-container">
+
+                    </div>
                     {distance && duration && (
                         <div className='request-results-container'>
                             <p>Distance: {distance}</p>
