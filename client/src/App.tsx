@@ -92,7 +92,14 @@ function App() {
 				<Route path="/ChooseDriver" element={<ChooseDriver />} />
 				<Route path="/ChooseRider" element={<ChooseRider />} />
 				<Route path="/ChangePayment" element={<ChangePayment />} />
-				<Route path="/Rating" element={<Rating />} />
+				<Route
+					path="/Rating"
+					element={
+						<Rating
+							email={account?.account?.email}
+						/>
+					}
+				/>
 				<Route
 					path="/Report"
 					element={

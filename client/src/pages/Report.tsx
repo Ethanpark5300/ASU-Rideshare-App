@@ -2,11 +2,11 @@ import "../styles/Report.css";
 import PageTitle from "../components/PageTitle/PageTitle";
 import React, { useState } from "react";
 
-interface RatingProps {
+interface ReportProps {
     email: string;
 }
 
-const Report: React.FC<RatingProps> = (props) => {
+const Report: React.FC<ReportProps> = (props) => {
     //state to store selected reason
     const [selectedReason, setSelectedReason] = useState("");
 
