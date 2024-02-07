@@ -222,6 +222,24 @@ const verifyToken = function (token: string): Object | undefined {
 	}
 
 }
+/** Send ratings to the ratings database*/
+app.post("/send-ratings", async (req: Request, res: Response) => {
+	const dbPromise = sqlite.open
+	({
+		filename: "./database/ratings.sqlite",
+		driver: sqlite3.Database
+	});
+
+	const db = await dbPromise;
+
+	let rating_id = req.body.rating_id;
+	let rater = req.body.rater;
+	let ratee = req.body.ratee;
+	let stars = req.body.stars;
+	let comments = req.body.comments;
+
+	await db.run('INSERT INTO Ratings (rating_id, rater, ratee, stars, comments) VALUES (?,?,?,?,?)', rating_id, rater, ratee, stars, comments);
+});
 
 /** Send report to reports database */
 app.post("/send-report", async (req: Request, res: Response) => {
