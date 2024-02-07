@@ -32,7 +32,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
         .then((res) => res.json())
         .then((data) => {
             if (data.Email !== undefined) {
-                dispatch(setAccountStore(new Account(data.email, data.firstName, data.lastName, data.phoneNumber)));
+                dispatch(setAccountStore(new Account(data.Email, data.FirstName, data.LastName, data.PhoneNumber)));
             } else {
                 dispatch(setAccountStore(undefined));
             }

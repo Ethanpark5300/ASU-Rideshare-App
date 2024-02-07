@@ -188,9 +188,7 @@ function setTokenCookie(res: Response, accObj: any) {
 	const options = {
 		httpOnly: true,
 		signed: true,
-		/**@todo fix this*/
 		sameSite: 'lax' as const,
-		/**@todo expiration by Max-Age/expires, if a timer beyond browser life desired*/
 		maxAge: 2 * 60 * 60 * 1000, //2 hours
 	};
 
