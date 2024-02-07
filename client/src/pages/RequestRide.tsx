@@ -3,6 +3,8 @@ import { GoogleMap, LoadScript, Marker, DirectionsRenderer, Autocomplete } from 
 import '../styles/RequestRide.css';
 import PageTitle from '../components/PageTitle/PageTitle';
 import { FaMapMarkerAlt } from "react-icons/fa";
+import Select from 'react-select';
+import buildingsData from '../databases/Buildings.json';
 const libraries = ['places'] as any;
 
 const RequestRide: React.FC = () => {
@@ -15,8 +17,25 @@ const RequestRide: React.FC = () => {
     const [directions, setDirections] = useState<any>(null);
     const [distance, setDistance] = useState<string>('');
     const [duration, setDuration] = useState<string>('');
+    const [searchOriginFilter, setSearchOriginFilter] = useState<'normal' | 'building'>('normal');
+    const [searchDestinationFilter, setSearchDestinationFilter] = useState<'normal' | 'building'>('normal');
     const originAutocomplete = useRef<google.maps.places.Autocomplete>(null);
     const destinationAutocomplete = useRef<google.maps.places.Autocomplete>(null);
+    const [selectedOriginBuilding, setSelectedOriginBuilding] = useState<BuildingOption | null>(null);
+    const [selectedDestinationBuilding, setSelectedDestinationBuilding] = useState<BuildingOption | null>(null);
+    let pickupLocation, dropoffLocation;
+
+    interface Building {
+        code: string;
+        name: string;
+        address: string;
+    }
+
+    interface BuildingOption {
+        value: string;
+        label: string;
+        address: string;
+    }
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -41,6 +60,26 @@ const RequestRide: React.FC = () => {
         setMapLoaded(true);
     };
 
+    function getPickupLocation() {
+        if (origin === null || origin === undefined || origin === "") {
+            pickupLocation = selectedOriginBuilding.address
+        }
+
+        if (selectedOriginBuilding === null || selectedOriginBuilding.address === undefined || selectedOriginBuilding.address === "") {
+            pickupLocation = origin
+        }
+    }
+
+    function getDropoffLocation() {
+        if (destination === null || destination === undefined || destination === "") {
+            dropoffLocation = selectedDestinationBuilding.address
+        }
+
+        if (selectedDestinationBuilding === null || selectedDestinationBuilding.address === undefined || selectedDestinationBuilding.address === "") {
+            dropoffLocation = destination
+        }
+    }
+
     const handleDirectionsResponse = (response: any) => {
         if (response !== null && response.status === 'OK') {
             setDirections(response);
@@ -59,13 +98,16 @@ const RequestRide: React.FC = () => {
     };
 
     const handlePreview = () => {
-        if (origin && destination) {
+        getPickupLocation()
+        getDropoffLocation()
+
+        if (pickupLocation && dropoffLocation) {
             const directionsService = new window.google.maps.DirectionsService();
 
             directionsService.route(
                 {
-                    origin: origin,
-                    destination: destination,
+                    origin: pickupLocation,
+                    destination: dropoffLocation,
                     travelMode: window.google.maps.TravelMode.DRIVING,
                 },
                 handleDirectionsResponse
@@ -75,6 +117,13 @@ const RequestRide: React.FC = () => {
 
     const handleUseCurrentLocation = () => {
         if (currentPosition.lat !== 0 && currentPosition.lng !== 0) {
+            // Clear the building search input and set selected building to null
+            setOrigin('');
+            setSelectedOriginBuilding(null);
+
+            // Change the radio button to normal search
+            setSearchOriginFilter('normal');
+
             // Using the Geocoding API to get the address from coordinates
             const geocoder = new window.google.maps.Geocoder();
             const latlng = new window.google.maps.LatLng(currentPosition.lat, currentPosition.lng);
@@ -114,15 +163,55 @@ const RequestRide: React.FC = () => {
     const handleClear = () => {
         setOrigin('');
         setDestination('');
-        setDirections(null); // Clear directions
-        setDistance(''); // Clear distance
-        setDuration(''); // Clear duration
+        setDirections(null);
+        setDistance('');
+        setDuration('');
+        setSelectedOriginBuilding(null);
+        setSelectedDestinationBuilding(null);
     };
 
+    /**@TODO Send pickup and dropoff location */
     const handleSubmit = () => {
-        /**@TODO Send pick-up and drop-off location to rider request page */
-        console.log('Pick-up Location:', origin);
-        console.log('Drop-off Location:', destination);
+        getPickupLocation()
+        getDropoffLocation()
+
+        console.log("Pickup Location: " + pickupLocation)
+        console.log("Dropoff Location: " + dropoffLocation)
+    };
+
+    const buildingOptions: BuildingOption[] = buildingsData.buildings.map((building: Building) => ({
+        value: building.code,
+        // label: `${building.code} - ${building.name} (${building.address})`,
+        label: `${building.code} - ${building.name}`,
+        address: building.address,
+    }));
+
+    const handleOriginBuildingChange = (selectedOption: BuildingOption | null) => {
+        setSelectedOriginBuilding(selectedOption);
+    };
+
+    const handleDestinationBuildingChange = (selectedOption: BuildingOption | null) => {
+        setSelectedDestinationBuilding(selectedOption);
+    };
+
+    const customOption = ({ innerProps, label, isFocused }: any) => (
+        <div {...innerProps} className={isFocused ? 'option-focused' : 'option'}>
+            <div>{label}</div>
+        </div>
+    );
+
+    const handleOriginSearchFilterChange = (filter: 'normal' | 'building') => {
+        setSearchOriginFilter(filter);
+        // Clear origin input when switching filters
+        setOrigin('');
+        setSelectedOriginBuilding(null); // Clear selected building
+    };
+
+    const handleDestinationSearchFilterChange = (filter: 'normal' | 'building') => {
+        setSearchDestinationFilter(filter);
+        // Clear destination input when switching filters
+        setDestination('');
+        setSelectedDestinationBuilding(null); // Clear selected building
     };
 
     return (
@@ -136,18 +225,39 @@ const RequestRide: React.FC = () => {
                         onLoad={handleMapLoad}
                     >
                         <div className="origin-container">
-                            <label htmlFor="origin">Pick-Up Location</label>
-                            <Autocomplete
-                                onLoad={(autocomplete) => (originAutocomplete.current = autocomplete)}
-                                onPlaceChanged={handleOriginPlaceChanged}
-                                >
-                                <input
-                                    type="text"
-                                    placeholder="Origin"
-                                    value={origin}
-                                    onChange={(e) => setOrigin(e.target.value)}
-                                />
-                            </Autocomplete>
+                            <div className="input-container">
+                                <label htmlFor="origin" className='rr-label'>Pick-Up Location</label>
+                                {searchOriginFilter === 'normal' ? (
+                                    <Autocomplete
+                                        onLoad={(autocomplete) => (originAutocomplete.current = autocomplete)}
+                                        onPlaceChanged={handleOriginPlaceChanged}
+                                    >
+                                        <input
+                                            type="text"
+                                            name='origin'
+                                            id='origin'
+                                            placeholder="Origin"
+                                            value={origin}
+                                            onChange={(e) => setOrigin(e.target.value)}
+                                        />
+                                    </Autocomplete>
+                                ) : (
+                                    <Select
+                                        options={buildingOptions}
+                                        value={selectedOriginBuilding}
+                                        onChange={handleOriginBuildingChange}
+                                        isSearchable
+                                        placeholder="Building Search"
+                                        components={{ Option: customOption }}
+                                        styles={{
+                                            control: (provided: any) => ({
+                                                ...provided,
+                                                maxWidth: '275px',
+                                            }),
+                                        }}
+                                    />
+                                )}
+                            </div>
                             <div className="current-location-tooltip">
                                 <button
                                     className='current-location-btn'
@@ -159,52 +269,100 @@ const RequestRide: React.FC = () => {
                         </div>
                         <div className="search-filter-container">
                             <div className="normal-search-container">
-                                <input type="radio" name="origin-search-filter" id="origin-normal-search" checked/>
-                                <label htmlFor="origin-normal-search"> Normal Search</label>
+                                <input
+                                    type="radio"
+                                    name="origin-search-filter"
+                                    id="origin-normal-search"
+                                    checked={searchOriginFilter === 'normal'}
+                                    onChange={() => handleOriginSearchFilterChange('normal')}
+                                />
+                                <label htmlFor="origin-normal-search">Normal Search</label>
                             </div>
                             <div className="building-search-container">
-                                <input type="radio" name="origin-search-filter" id="origin-building-search"/>
-                                <label htmlFor="origin-building-search"> Building Search</label>
+                                <input
+                                    type="radio"
+                                    name="origin-search-filter"
+                                    id="origin-building-search"
+                                    checked={searchOriginFilter === 'building'}
+                                    onChange={() => handleOriginSearchFilterChange('building')}
+                                />
+                                <label htmlFor="origin-building-search">Building Search</label>
                             </div>
                         </div>
-                        <label htmlFor="destination">Drop-Off Location</label>
-                        <Autocomplete
-                            onLoad={(autocomplete) => (destinationAutocomplete.current = autocomplete)}
-                            onPlaceChanged={handleDestinationPlaceChanged}
-                        >
-                            <input
-                                type="text"
-                                placeholder="Destination"
-                                value={destination}
-                                onChange={(e) => setDestination(e.target.value)}
-                            />
-                        </Autocomplete>
-                        <div className="search-filter-container">
+
+                        <div className="destination-container">
+                            <div className="input-container">
+                                <label htmlFor="destination" className='rr-label'>Drop-Off Location</label>
+                                {searchDestinationFilter === 'normal' ? (
+                                    <Autocomplete
+                                        onLoad={(autocomplete) => (destinationAutocomplete.current = autocomplete)}
+                                        onPlaceChanged={handleDestinationPlaceChanged}
+                                    >
+                                        <input
+                                            type="text"
+                                            name='destination'
+                                            id='destination'
+                                            placeholder="Destination"
+                                            value={destination}
+                                            onChange={(e) => setDestination(e.target.value)}
+                                        />
+                                    </Autocomplete>
+                                ) : (
+                                    <Select
+                                        name='destination'
+                                        id='destination'
+                                        options={buildingOptions}
+                                        value={selectedDestinationBuilding}
+                                        onChange={handleDestinationBuildingChange}
+                                        isSearchable
+                                        placeholder="Building Search"
+                                        components={{ Option: customOption }}
+                                        styles={{
+                                            control: (provided: any) => ({
+                                                ...provided,
+                                                maxWidth: '275px',
+                                            }),
+                                        }}
+                                    />
+                                )}
+                            </div>
+
+                        </div>
+                        <div className={`search-filter-container ${searchDestinationFilter === 'building' ? 'search-filter-margin' : ''}`}>
                             <div className="normal-search-container">
-                                <input type="radio" name="destination-search-filter" id="destination-normal-search" checked/>
-                                <label htmlFor="destination-normal-search"> Normal Search</label>
+                                <input
+                                    type="radio"
+                                    name="destination-search-filter"
+                                    id="destination-normal-search"
+                                    checked={searchDestinationFilter === 'normal'}
+                                    onChange={() => handleDestinationSearchFilterChange('normal')}
+                                />
+                                <label htmlFor="destination-normal-search">Normal Search</label>
                             </div>
                             <div className="building-search-container">
-                                <input type="radio" name="destination-search-filter" id="destination-building-search" />
-                                <label htmlFor="destination-building-search"> Building Search</label>
+                                <input
+                                    type="radio"
+                                    name="destination-search-filter"
+                                    id="destination-building-search"
+                                    checked={searchDestinationFilter === 'building'}
+                                    onChange={() => handleDestinationSearchFilterChange('building')}
+                                />
+                                <label htmlFor="destination-building-search">Building Search</label>
                             </div>
                         </div>
+
                         <div className="request-btns-container">
-                            <button className='preview-btn' onClick={handlePreview}>Preview</button>
+                            <button className='preview-btn' onClick={handlePreview}>Directions</button>
                             <button className='clear-btn' onClick={handleClear}>Clear</button>
                             <button className='request-btn' onClick={handleSubmit}>Submit</button>
                         </div>
                     </LoadScript>
-                    <div className="search-filter-container">
-
-                    </div>
                     {distance && duration && (
                         <div className='request-results-container'>
                             <p>Distance: {distance}</p>
                             <p>Duration: {duration}</p>
                         </div>
                     )}
-
                 </aside>
                 {error ? (
                     <p>{error}</p>
