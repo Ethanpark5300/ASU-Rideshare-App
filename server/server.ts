@@ -222,11 +222,29 @@ const verifyToken = function (token: string): Object | undefined {
 	}
 
 }
+/**Send block info to the blocked database*/
+app.post("/send-blocked", async (req: Request, res: Response) => {
+	const dbPromise = sqlite.open
+		({
+			filename: "./database/blocked.sqlite",
+			driver: sqlite3.Database
+		});
+
+	const db = await dbPromise;
+
+	let block_id = req.body.block_id;
+	let rider_id = req.body.rider_id;
+	let driver_id = req.body.driver_id;
+
+	await db.run('INSERT INTO Blocked (block_id, rider_id, driver_id) VALUES(?,?,?)', block_id, rider_id, driver_id);
+});
+
+
 /** Send ratings to the ratings database*/
 app.post("/send-ratings", async (req: Request, res: Response) => {
 	const dbPromise = sqlite.open
 	({
-		filename: "./database/ratings.sqlite",
+		filename: "./database/ratings.sqlite3",
 		driver: sqlite3.Database
 	});
 
