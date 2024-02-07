@@ -58,7 +58,7 @@ function Navbar() {
                                 </li>
                                 <li>
                                     <Link to="/RequestRide">
-                                        <button className="requestride-button">Request Ride</button>
+                                        <button className="request-ride-button">Request Ride</button>
                                     </Link>
                                 </li>
                             </ul>
@@ -82,7 +82,6 @@ function Navbar() {
                             </ul>
                         )
                     }
-
                 </div>
 
                 <div className="hamburger">

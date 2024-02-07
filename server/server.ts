@@ -5,7 +5,8 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken';
 //const fs = require("fs");
-//const sqlite3 = require("sqlite3");
+const sqlite = require("sqlite")
+const sqlite3 = require("sqlite3");
 //const Database = sqlite3.Database;
 //const express = require("express");
 const cors = require("cors");
@@ -28,7 +29,8 @@ const saltRounds: number = 10;
 
 
 //creating the table and storing it in
-const user_info = new Database("user_info.db");
+const user_info = new Database("./database/user_info.db");
+
 
 //just in case we need again
 //user_info.exec(fs.readFileSync(__dirname + '/Tables/CREATE_USER_INFO.sql').toString());
@@ -72,14 +74,14 @@ app.post("/registration", async (req: Request, res: Response) => {
 app.post("/login", (req: Request, res: Response) => {
 	//console.log(req.body.email);
 	//console.log(req.body.password);
-	
+
 
 	const emailPassWrong: string = "Email or Password is incorrect";
 
-	user_info.get(fs.readFileSync(__dirname + '/Tables/login.sql').toString(), [req.body.email], (err:Error, rows:any) => {
-		if (rows=== undefined) {
+	user_info.get(fs.readFileSync(__dirname + '/Tables/login.sql').toString(), [req.body.email], (err: Error, rows: any) => {
+		if (rows === undefined) {
 			hadError = true; message = emailPassWrong;
-		}else if (err) {
+		} else if (err) {
 			hadError = true; message = err.message;
 		} else {
 			hadError = false;
@@ -117,20 +119,20 @@ app.post("/login", (req: Request, res: Response) => {
 				account: undefined
 			});
 		}
-		
+
 	});
 	//sends the user to the next screen after login(home screen)
 	//if (!hadError) {
 	//	res.cookie('name', 'user type here', options);
 	//}
-	
-	
+
+
 });
 /**
  * @todo return user info for account storing(email, first, last)
  * @returns user info
  */
-app.get('/read-cookie', (req:Request, res:Response) => {
+app.get('/read-cookie', (req: Request, res: Response) => {
 	//console.log(req.signedCookies);
 	//console.log("----");
 	//console.log(req.signedCookies.sessionToken);
@@ -142,13 +144,13 @@ app.get('/read-cookie', (req:Request, res:Response) => {
 	const verifyAcc: Object | undefined = verifyToken(req.signedCookies.sessionToken);
 	//console.log(verifyAcc);
 
-	
+
 	res.json(verifyAcc);
 });
 /**
  * logout
  */
-app.get('/clear-cookie', (req:Request, res:Response) => {
+app.get('/clear-cookie', (req: Request, res: Response) => {
 	res.clearCookie('sessionToken').end();
 });
 
@@ -169,7 +171,7 @@ function cb(err: Error | null) {
  * @param rows returned rows from some sql statement
  * @returns
  */
-function accountObject(rows:any) {
+function accountObject(rows: any) {
 	return {
 		Email: rows?.Email ?? undefined,
 		FirstName: rows?.First_Name ?? undefined,
@@ -219,10 +221,85 @@ const verifyToken = function (token: string): Object | undefined {
 	} catch (e) {
 		return undefined;
 	}
-	
+
 }
+/**Send block info to the blocked database*/
+app.post("/send-blocked", async (req: Request, res: Response) => {
+	const dbPromise = sqlite.open
+		({
+			filename: "./database/blocked.sqlite",
+			driver: sqlite3.Database
+		});
+
+	const db = await dbPromise;
+
+	let block_id = req.body.block_id;
+	let rider_id = req.body.rider_id;
+	let driver_id = req.body.driver_id;
+
+	await db.run('INSERT INTO Blocked (block_id, rider_id, driver_id) VALUES(?,?,?)', block_id, rider_id, driver_id);
+});
 
 
+/** Send ratings to the ratings database*/
+app.post("/send-ratings", async (req: Request, res: Response) => {
+	const dbPromise = sqlite.open
+	({
+		filename: "./database/ratings.sqlite3",
+		driver: sqlite3.Database
+	});
+
+	const db = await dbPromise;
+
+	let rating_id = req.body.rating_id;
+	let rater = req.body.rater;
+	let ratee = req.body.ratee;
+	let stars = req.body.stars;
+	let comments = req.body.comments;
+
+	await db.run('INSERT INTO Ratings (rating_id, rater, ratee, stars, comments) VALUES (?,?,?,?,?)', rating_id, rater, ratee, stars, comments);
+});
+
+/** Send report to reports database */
+app.post("/send-report", async (req: Request, res: Response) => {
+	const dbPromise = sqlite.open
+	({
+		filename: "./database/reports.sqlite",
+		driver: sqlite3.Database
+	});
+	
+	const db = await dbPromise;
+
+	let email = req.body.email;
+	/** @TODO Replace value with actual reportee name */
+	let reported_id = "Test email"
+	let reason = req.body.reason;
+	let comments = req.body.comments;
+
+	await db.run(`INSERT INTO Reports (email, reported_id, reason, comments) VALUES (?,?,?,?)`, email, reported_id, reason, comments);
+});
+
+/** Send payment to payments database */
+app.post("/send-payment", async (req: Request, res: Response) => {
+	const dbPromise = sqlite.open
+	({
+		filename: "./database/payments.sqlite",
+		driver: sqlite3.Database
+	});
+	
+	const db = await dbPromise;
+	
+	let rider_email = req.body.riderEmail;
+	let driver_email = req.body.driverEmail;
+	let ride_cost = req.body.rideCost;
+	let currentDate = new Date().toLocaleDateString();
+	let currentTime = new Date().toLocaleTimeString();
+	
+	await db.run(`INSERT INTO Payments (rider_email, driver_email, ride_cost, payment_date, payment_time) VALUES (?,?,?,?,?)`, rider_email, driver_email, ride_cost, currentDate, currentTime);
+
+	/* delete duplicate records from the table */
+	await db.run(`DELETE FROM Payments WHERE payment_id NOT IN (SELECT MIN(payment_id) FROM Payments GROUP BY rider_email, driver_email, ride_cost, payment_date, payment_time)`);
+});
 
 app.listen(PORT, () => {
 	console.log(`Server is running on port ${PORT}.`);

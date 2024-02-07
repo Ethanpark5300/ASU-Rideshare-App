@@ -1,0 +1,71 @@
+#payment {
+    height: var(--modified-height);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#payment h1 {
+    background-color: var(--brand-gold);
+    padding: .5rem;
+}
+
+.payment-container {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: .75rem;
+    width: 500px;
+    border-radius: 4px;
+    background-color: #e8e8e8;
+}
+
+.payment-information-container {
+    text-align: center;
+}
+
+.paypal-btns-container {
+    width: 75%;
+}
+
+#payment h3 {
+    color: gray;
+    font-size: .9rem;
+}
+
+.payment-success-popup,
+.payment-error-popup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    padding: 2rem;
+    z-index: 999;
+    gap: 1.5rem;
+    background-color: white;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+}
+
+#payment button {
+    padding: 8px 16px;
+    border-radius: 1000px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .03s ease-in-out;
+    line-height: 16px;
+}
+
+.payment-success-popup button {
+    color: white;
+    background-color: var(--brand-maroon);
+}
+
+.payment-error-popup button {
+    color: white;
+    background-color: black;
+}
+
+#payment button:hover {
+    transform: scale(1.05);
+}

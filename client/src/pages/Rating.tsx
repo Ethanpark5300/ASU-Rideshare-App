@@ -1,27 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Rating.css';
 import PageTitle from '../components/PageTitle/PageTitle';
+import { Link } from 'react-router-dom';
+
+interface RatingProps {
+    email: string;
+}
 
 interface RatingFormState {
     rating: number;
     comment: string;
-    favorite: boolean | null;
+    favorite: boolean;
 }
 
-const Rating: React.FC = (props) => {
+const Rating: React.FC<RatingProps> = (props) => {
     const [formData, setFormData] = useState<RatingFormState>({
         rating: 0,
         comment: '',
-        favorite: null,
+        favorite: false,
     });
 
     const [formChanges, setFormChanges] = useState<RatingFormState>({
         rating: 0,
         comment: '',
-        favorite: null,
+        favorite: false,
     });
-
-    const [showResults, setShowResults] = useState(false);
 
     const handleRatingChange = (newRating: number) => {
         setFormChanges({ ...formChanges, rating: newRating });
@@ -32,131 +35,96 @@ const Rating: React.FC = (props) => {
     };
 
     const handleFavoriteChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setFormChanges({ ...formChanges, favorite: event.target.value === 'yes' });
+        const newValue = event.target.value === 'yes';
+        // console.log("New value:", newValue);
+        setFormChanges({ ...formChanges, favorite: newValue });
     };
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
         setFormData({ ...formChanges });
-        setShowResults(true);
+        console.log('Rating:', formChanges.rating);
+        console.log('Comment:', formChanges.comment);
+        console.log('Favorite:', formChanges.favorite);
     };
 
-    useEffect(() => {
-        if (showResults) {
-            console.log('Rating:', formData.rating);
-            console.log('Comment:', formData.comment);
-            console.log('Favorite:', formData.favorite);
-        }
-    }, [showResults, formData]);
-
-    const handleClear = () => {
-        setFormChanges({ rating: 0, comment: '', favorite: null });
-        setFormData({ rating: 0, comment: '', favorite: null });
-        setShowResults(false);
-
-        // Log the default values to the console
-        console.log('Rating:', 0);
-        console.log('Comment:', '');
-        console.log('Favorite:', null);
-    };
-
-    const handleReport = () => {
-        alert('User reported!');
-        setTimeout(() => {
-            setShowResults(false);
-        }, -100);
-    };
-
+    /** @TODO Add custom popup */
     const handleBlock = () => {
         alert('User blocked!');
-        setTimeout(() => {
-            setShowResults(false);
-        }, -100);
     };
+
+    // useEffect(() => {
+    //     console.log("Form data:", formData);
+    // }, [formData]);
+
+    /** @TODO Replace value with ratee name */
+    const rateeUser = "[Var]";
 
     return (
         <PageTitle title="Rating">
             <main id="rating">
-                <div className="gray-box">
-                    <div className="rating-container">
-                        <h1 className="rating-heading">Rate </h1>
-                        <form onSubmit={handleSubmit}>
-                            <div className="stars-container">
-                                <label className="label">Rating:</label>
-                                <div className="stars-wrapper">
-                                    {[1, 2, 3, 4, 5].map((star) => (
-                                        <span
-                                            key={star}
-                                            onClick={() => handleRatingChange(star)}
-                                            className={`star ${star <= (formChanges.rating || 0) ? 'active' : ''}`}
-                                        >
-                                            &#9733;
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="comment-container">
-                                {/* Comment input */}
-                                <label className="label">Comment:</label>
-                                <textarea
-                                    value={formChanges.comment}
-                                    onChange={handleCommentChange}
-                                    rows={4}
-                                    className="comment-input"
-                                    placeholder="Enter your comments here..."
-                                />
-                            </div>
-                            <div className="favorite-container">
-                                {/* Favorite driver radio buttons */}
-                                <label className="label">Favorite driver?</label>
-                                <div>
-                                    <label>
-                                        <input
-                                            type="radio"
-                                            name="favorite"
-                                            value="yes"
-                                            checked={formChanges.favorite === true}
-                                            onChange={handleFavoriteChange}
-                                        />{' '}
-                                        Yes
-                                    </label>
-                                    <label>
-                                        <input
-                                            type="radio"
-                                            name="favorite"
-                                            value="no"
-                                            checked={formChanges.favorite === false}
-                                            onChange={handleFavoriteChange}
-                                        />{' '}
-                                        No
-                                    </label>
-                                </div>
-                            </div>
-                            <div className="buttons-container">
-                                {/* Submit, Report, Block buttons */}
-                                <button type="submit" className="submit-button">
-                                    Submit
-                                </button>
-                                <button onClick={handleReport} className="report-button">
-                                    Report
-                                </button>
-                                <button onClick={handleBlock} className="block-button">
-                                    Block
-                                </button>
-                            </div>
-                        </form>
+                <h1>Rate {rateeUser}</h1>
 
-                        {/* Results container */}
-                        <div className={`results-container ${showResults ? 'show' : ''}`}>
-                            <h2 className="results-heading">Results</h2>
-                            <p className="result-item">Rating: {formData.rating}</p>
-                            <p className="result-item">Comment: {formData.comment}</p>
-                            <p className="result-item">Favorite driver: {formData.favorite === null ? 'Not selected' : formData.favorite ? 'Yes' : 'No'}</p>
-                            <button onClick={handleClear} className="submit-button">
-                                Clear
-                            </button>
-                        </div>
+                {/* Five star ratings */}
+                <div className="stars-container">
+                    <label>Rating:</label>
+                    <div className="stars-wrapper">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                            <span
+                                key={star}
+                                onClick={() => handleRatingChange(star)}
+                                className={`star ${star <= (formChanges.rating || 0) ? 'active' : ''}`}
+                            >
+                                &#9733;
+                            </span>
+                        ))}
                     </div>
+                </div>
+                {/* Comment input */}
+                <div className="comment-container">
+                    <label>Comment:</label>
+                    <textarea
+                        value={formChanges.comment}
+                        onChange={handleCommentChange}
+                        className="comment-input"
+                        placeholder="Enter your comments here..."
+                    />
+                </div>
+                {/* Favorite driver radio buttons */}
+                <div className="favorite-container">
+                    <label>Favorite driver?</label>
+                    <div className='favorite-radio-buttons-container'>
+                        <label>
+                            <input
+                                type="radio"
+                                name="favorite"
+                                value="yes"
+                                onChange={handleFavoriteChange}
+                            />{' '}
+                            Yes
+                        </label>
+                        <label>
+                            <input
+                                type="radio"
+                                name="favorite"
+                                value="no"
+                                onChange={handleFavoriteChange}
+                            />{' '}
+                            No
+                        </label>
+                    </div>
+                </div>
+                {/* Submit, Report, Block buttons */}
+                <div className="buttons-container">
+                    <button onClick={handleSubmit} className="submit-button">
+                        Submit
+                    </button>
+                    <Link to="/Report">
+                        <button className='report-button'>Report</button>
+                    </Link>
+                    <button onClick={handleBlock} className="block-button">
+                        Block
+                    </button>
                 </div>
             </main>
         </PageTitle>

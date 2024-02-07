@@ -1,73 +1,200 @@
-/* Map Size */
-.map-container {
-    height: calc(100vh - 64px);
-    width: 100%;
+#request-ride {
+    display: flex;
+    align-items: center;
+    height: calc(100vh - 67px);
+    overflow: hidden;
 }
 
-/* Sidebar Styles */
-.search-bar {
+#request-ride .map-container {
+    position: relative;
+    z-index: 0;
+    height: calc(100vh - 67px);
+    width: 100vw;
+}
+
+#request-ride h1 {
+    display: inline-block;
+    background-color: var(--brand-gold);
+    padding: .25rem;
+}
+
+#request-ride .search-bar {
     position: absolute;
     z-index: 1;
     background-color: #fff;
     padding: 0 3rem 1.5rem 3rem;
-    margin-top: calc(100vh / 8);
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
     outline: 1px solid #DDDDDD;
 }
 
-.request-btns-container {
+#request-ride .request-btns-container {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem
+    gap: 1rem
 }
 
-.search-bar input {
+#request-ride .search-bar input {
     margin-bottom: 1.25rem;
     padding: .75rem;
     border: 2px solid lightgray;
     outline: transparent;
     border-radius: 4px;
     transition: all 0.3s;
-
 }
 
-.search-bar input:focus {
+#request-ride .search-bar input:focus {
     border: 2px solid black;
 }
 
-#request-ride .btn {
+#request-ride .preview-btn,
+#request-ride .clear-btn,
+#request-ride .request-btn {
     border-radius: 1000px;
     cursor: pointer;
-    padding: 8px 24px;
+    padding: 12px 24px;
     font-weight: 700;
-    transition: 0.1s;
+    transition: .03s ease-in-out;
+    line-height: 16px;
 }
 
-.current-location-btn,
-.preview-btn,
-.clear-btn {
+#request-ride .preview-btn,
+#request-ride .clear-btn {
     background-color: var(--brand-maroon);
     color: white;
 }
 
-.current-location-btn:hover,
-.preview-btn:hover,
-.clear-btn:hover {
-    background-color: maroon;
-}
-
-.request-btn {
+#request-ride .request-btn {
     background-color: var(--brand-gold);
 }
 
-.request-btn:hover {
-    background-color: gold;
+#request-ride .preview-btn:hover,
+#request-ride .clear-btn:hover,
+#request-ride .request-btn:hover {
+    transform: scale(1.05);
 }
 
-.request-results-container {
+#request-ride .request-results-container {
     line-height: 1.5;
 }
 
-.request-results-container p:first-child {
+#request-ride .request-results-container p:first-child {
     margin-top: 1rem;
 }
+
+#request-ride .origin-container {
+    position: relative;
+    display: block;
+}
+
+#request-ride .current-location-btn {
+    position: absolute;
+    border-radius: 1000px;
+    cursor: pointer;
+    transition: .03s ease-in-out;
+    line-height: 16px;
+    padding: .33rem;
+    top: -3.33rem;
+    right: -19.75rem;
+}
+
+#request-ride .current-location-btn:hover {
+    transform: scale(1.05);
+}
+
+.current-location-tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.current-location-tooltip .current-location-tooltip-text {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    bottom: 15px;
+    left: 330px;
+}
+
+.current-location-tooltip:hover .current-location-tooltip-text {
+    visibility: visible;
+}
+
+#request-ride .origin-container input {
+    margin-bottom: 0;
+}
+
+#request-ride .search-filter-container,
+#request-ride .normal-search-container,
+#request-ride .building-search-container {
+    display: flex;
+}
+
+#request-ride .input-container {
+    display: flex;
+    flex-direction: column;
+}
+
+#request-ride input[type=radio] {
+    margin-right: .5rem;
+}
+
+#request-ride .building-search-container {
+    margin-left: 1rem;
+}
+
+#request-ride .normal-search-container label,
+#request-ride .building-search-container label {
+    margin-top: -3px;
+}
+
+#request-ride .rr-label {
+    font-weight: bold;
+    margin-bottom: 2px;
+}
+
+#request-ride .origin-container input,
+#request-ride .destination-container input {
+    width: 100%;
+}
+
+#request-ride .option {
+    padding: .75rem;
+    transition: background-color 0.3s;
+}
+
+#request-ride .option-focused {
+    padding: .75rem;
+    background-color: #f0f0f0;
+    transition: background-color 0.3s;
+}
+
+#request-ride .Select__menu {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+#request-ride .Select__control {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#request-ride .Select__placeholder {
+    color: #888;
+}
+
+#request-ride .search-filter-margin {
+    margin-top: 1rem;
+}
+
+/* @TODO Style radio buttons */

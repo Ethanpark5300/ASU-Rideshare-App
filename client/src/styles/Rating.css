@@ -1,18 +1,17 @@
-.rating-container {
+#rating {
     text-align: center;
+    background-color: #f1f1f1;
+    height: calc(100vh - 67px)
 }
 
-.container {
-    max-width: 400px;
-    margin: auto;
+#rating h1 {
+    background-color: var(--brand-gold);
+    display: inline-block;
+    padding: .5rem;
+    margin-bottom: 0;
 }
 
-.heading {
-    text-align: center;
-    color: #333;
-}
-
-.label {
+#rating label {
     display: block;
     color: #555;
 }
@@ -21,8 +20,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 16px;
-    margin-top: 32px;
+    margin-block: 1rem;
 }
 
 .star {
@@ -35,91 +33,58 @@
     color: var(--brand-gold);
 }
 
-.comment-container {
-    margin-bottom: 16px;
-    text-align: center;
+.favorite-radio-buttons-container {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: .25rem;
 }
 
 .comment-input {
-    width: 720px;
-    max-width: 100%;
-    margin: 0 auto;
-    padding: 8px;
-    box-sizing: border-box;
+    width: 500px;
+    height: 100px;
+    padding: .75rem;
+    border: 2px solid lightgray;
+    outline: transparent;
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+.comment-input:focus {
+    border: 2px solid black;
 }
 
 .favorite-container {
-    margin-top: 24px;
-    margin-bottom: 16px;
-    text-align: center;
-}
-
-.favorite-container label {
-    margin-right: 16px;
-}
-
-.favorite-container .label
-{
-    margin-bottom: 8px;
-}
-
-.results-container {
-    display: none;
-    margin-top: 32px;
-    text-align: center;
-}
-
-.results-container.show {
-    display: block;
-}
-
-.results-heading {
-    font-size: 1.5rem;
-    margin-bottom: 16px;
-    color: #333;
-}
-
-.result-item {
-    margin-bottom: 8px;
+    margin-block: 1rem;
 }
 
 .buttons-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 10px;
+    gap: 1rem
 }
 
-.submit-button,
+#rating button {
+    border-radius: 1000px;
+    cursor: pointer;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 700;
+    transition: .03s ease-in-out;
+    line-height: 16px;
+}
+
 .report-button,
 .block-button {
-    margin-bottom: 8px;
     color: #fff;
     background-color: var(--brand-maroon);
-    padding: 8px 32px;
-    border-radius: 1000px;
-    text-transform: uppercase;
-    font-size: 12px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-    margin-left: 10px;
 }
 
-.submit-button:hover,
-.report-button:hover,
-.block-button:hover
-{
-    background-color: maroon;
+.submit-button {
+    background-color: var(--brand-gold);
 }
 
-.gray-box {
-    background-color: #f0f0f0;
-    padding: 20px;
-    border-radius: 10px;
-    margin-top: 16px;
-    margin-bottom: 48px;
-    margin-left: 48px;
-    margin-right: 48px;
+#rating button:hover {
+    transform: scale(1.05);
 }
