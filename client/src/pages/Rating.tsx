@@ -14,6 +14,9 @@ interface RatingFormState {
 }
 
 const Rating: React.FC<RatingProps> = (props) => {
+    /** @TODO Replace value with ratee name */
+    const rateeUser = "[Var]";
+
     const [formData, setFormData] = useState<RatingFormState>({
         rating: 0,
         comment: '',
@@ -43,22 +46,35 @@ const Rating: React.FC<RatingProps> = (props) => {
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
         setFormData({ ...formChanges });
-        console.log('Rating:', formChanges.rating);
-        console.log('Comment:', formChanges.comment);
-        console.log('Favorite:', formChanges.favorite);
+        // console.log('Rating:', formChanges.rating);
+        // console.log('Comment:', formChanges.comment);
+        // console.log('Favorite:', formChanges.favorite);
+
+        /** @TODO Redirect user back to home page */
     };
 
     /** @TODO Add custom popup */
-    const handleBlock = () => {
+    const handleBlock = async () => {
+        try {
+            fetch(`/send-blocked`, {
+                method: "POST",
+                headers: { "Content-type": "application/json" },
+                body: JSON.stringify({
+                    rider_id: props.email,
+                    driver_id: rateeUser,
+                }),
+            })
+        }
+        catch (e: any) {
+            console.log(e);
+        }
+
         alert('User blocked!');
     };
 
     // useEffect(() => {
     //     console.log("Form data:", formData);
     // }, [formData]);
-
-    /** @TODO Replace value with ratee name */
-    const rateeUser = "[Var]";
 
     return (
         <PageTitle title="Rating">

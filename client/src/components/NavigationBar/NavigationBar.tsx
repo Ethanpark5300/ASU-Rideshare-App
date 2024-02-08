@@ -46,15 +46,17 @@ function Navbar() {
                 </Link>
 
                 <div className="navbar-links">
+                    {/** @TODO Show respective navbars based on user type */}
+
                     {/* Signed in Navbar */}
                     {
                         (account.account) && (
                             <ul className="nav__list">
                                 <li className="nav__item">
-                                    <Link className="nav__link fromLeft" to="/"> Home </Link>
+                                    <Link className="nav__link fromLeft" to="/">Home</Link>
                                 </li>
                                 <li className="nav__item">
-                                    <Link className="nav__link fromLeft" to="/Profile"> Profile </Link>
+                                    <Link className="nav__link fromLeft" to="/Profile">Profile</Link>
                                 </li>
                                 <li>
                                     <Link to="/RequestRide">

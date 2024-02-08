@@ -231,11 +231,10 @@ app.post("/send-blocked", async (req: Request, res: Response) => {
 
 	const db = await dbPromise;
 
-	let block_id = req.body.block_id;
 	let rider_id = req.body.rider_id;
 	let driver_id = req.body.driver_id;
 
-	await db.run('INSERT INTO Blocked (block_id, rider_id, driver_id) VALUES(?,?,?)', block_id, rider_id, driver_id);
+	await db.run('INSERT INTO BLOCKED (rider_id, driver_id) VALUES(?,?)', rider_id, driver_id);
 });
 
 

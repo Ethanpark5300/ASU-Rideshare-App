@@ -133,6 +133,10 @@ nav button:hover {
 
 /* Media Queries */
 @media (max-width: 768px) {
+    .request-ride-button {
+        margin-top: 0px;
+    }
+
     .navbar-links {
         position: fixed;
         top: 60px;
@@ -150,12 +154,14 @@ nav button:hover {
     }
 
     .nav__link {
-        font-size: 14px;
+        font-size: 16px;
     }
 
     nav button {
-        font-size: 11px;
-        padding: 7px 17px;
+        margin-top: 0;
+        font-size: 16px;
+        padding: 8px 16px;
+        line-height: 16px;
     }
 
     .hamburger {
