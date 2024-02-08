@@ -304,6 +304,19 @@ app.post("/send-payment", async (req: Request, res: Response) => {
 	await db.run(`DELETE FROM Payments WHERE payment_id NOT IN (SELECT MIN(payment_id) FROM Payments GROUP BY rider_email, driver_email, ride_cost, payment_date, payment_time)`);
 });
 
+app.get("/available-drivers", async (req: Request, res: Response) => {
+	const dbPromise = sqlite.open
+		({
+			filename: "./database/user_info.db",
+			driver: sqlite3.Database
+		});
+
+	let db = await dbPromise;
+	let results = await db.all(`SELECT * FROM USER_INFO WHERE Status_User='TRUE' AND Type_User='Driver';`)
+
+	res.json({ driverListResults: results });
+})
+
 app.listen(PORT, () => {
 	console.log(`Server is running on port ${PORT}.`);
 });

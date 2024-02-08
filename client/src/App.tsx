@@ -52,7 +52,7 @@ function App() {
 
 	const account = useAppSelector((state) => state.account);
 	//console.log("----")
-	//console.log(account.account);
+	// console.log(account.account);
 
 	return (
 		<>
@@ -74,7 +74,7 @@ function App() {
 						<Profile
 							firstName={account?.account?.firstName}
 							lastName={account?.account?.lastName}
-							label={''}
+							label={account?.account?.accountType.toString()}
 							address={''}
 							asuid={''}
 							email={account?.account?.email}
