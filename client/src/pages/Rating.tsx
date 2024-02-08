@@ -50,10 +50,27 @@ const Rating: React.FC<RatingProps> = (props) => {
         // console.log('Comment:', formChanges.comment);
         // console.log('Favorite:', formChanges.favorite);
 
-        /** @TODO Redirect user back to home page */
+        try {
+            fetch(`/send-ratings`, {
+                method: "POST",
+                headers: { "Content-type": "application/json" },
+                body: JSON.stringify({
+                    rater: props.email,
+                    ratee: rateeUser,
+                    star_rating: formChanges.rating,
+                    comments: formChanges.comment,
+                    favoritedDriver: formChanges.favorite
+                }),
+            })
+
+            /** @TODO Add custom popup to redirect user back to home page */
+            alert('User rated!');
+        }
+        catch (e: any) {
+            console.log(e);
+        }
     };
 
-    /** @TODO Add custom popup */
     const handleBlock = async () => {
         try {
             fetch(`/send-blocked`, {
@@ -64,12 +81,13 @@ const Rating: React.FC<RatingProps> = (props) => {
                     driver_id: rateeUser,
                 }),
             })
+
+            /** @TODO Add custom popup */
+            alert('User blocked!');
         }
         catch (e: any) {
             console.log(e);
         }
-
-        alert('User blocked!');
     };
 
     // useEffect(() => {

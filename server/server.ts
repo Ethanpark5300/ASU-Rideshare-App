@@ -237,24 +237,29 @@ app.post("/send-blocked", async (req: Request, res: Response) => {
 	await db.run('INSERT INTO BLOCKED (rider_id, driver_id) VALUES(?,?)', rider_id, driver_id);
 });
 
-
 /** Send ratings to the ratings database*/
 app.post("/send-ratings", async (req: Request, res: Response) => {
 	const dbPromise = sqlite.open
 	({
-		filename: "./database/ratings.sqlite3",
+		filename: "./database/ratings.sqlite",
 		driver: sqlite3.Database
 	});
 
 	const db = await dbPromise;
 
-	let rating_id = req.body.rating_id;
 	let rater = req.body.rater;
 	let ratee = req.body.ratee;
-	let stars = req.body.stars;
+	let star_rating = req.body.star_rating;
 	let comments = req.body.comments;
 
-	await db.run('INSERT INTO Ratings (rating_id, rater, ratee, stars, comments) VALUES (?,?,?,?,?)', rating_id, rater, ratee, stars, comments);
+	await db.run('INSERT INTO Ratings (Rater, Ratee, Star_Rating, Comments) VALUES (?,?,?,?)', rater, ratee, star_rating, comments);
+
+	/** @TODO Calculate new average user rating with aggregate average */
+
+	/** @returns true if favorited and false if not favorited */
+	let favoritedDriver = req.body.favoritedDriver
+
+	/** @TODO Add driver to the rider's favorites list if true */
 });
 
 /** Send report to reports database */
