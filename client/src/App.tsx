@@ -14,7 +14,6 @@ import Profile from './pages/Profile';
 import Register from './pages/Register';
 import RequestRide from './pages/RequestRide';
 import RideHistory from './pages/RideHistory';
-import RiderRequest from './pages/RiderRequest';
 import RideinProgress from './pages/RideinProgress';
 import Rating from './pages/Rating';
 import ChooseDriver from './pages/ChooseDriver';
@@ -87,7 +86,6 @@ function App() {
 				<Route path="/Register" element={<Register />} />
 				<Route path="/RequestRide" element={<RequestRide />} />
 				<Route path="/RideHistory" element={<RideHistory />} />
-				<Route path="/RiderRequest" element={<RiderRequest />} />
 				<Route path="/RideinProgress" element={<RideinProgress />} />
 				<Route path="/ChooseDriver" element={<ChooseDriver />} />
 				<Route path="/ChooseRider" element={<ChooseRider />} />
