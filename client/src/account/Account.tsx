@@ -24,6 +24,7 @@ export class Account {
  * A driver has a value of 2, or 10
  * A driver+rider has a value of 3, or 11
  * When comparing flags, use bitwise and: &. Returns 0 for no matches, or some number corresponding to matches.
+ * When adding flasfs together, use bitwise or: |. Returns combination of both sets of flags.
  */
 export enum AccountTypeFlag {
 	None = 0, //no standard account should have none here
