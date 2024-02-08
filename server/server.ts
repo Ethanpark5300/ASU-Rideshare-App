@@ -177,6 +177,7 @@ function accountObject(rows: any) {
 		FirstName: rows?.First_Name ?? undefined,
 		LastName: rows?.Last_Name ?? undefined,
 		PhoneNumber: rows?.Phone_Number ?? undefined,
+		AccountType: rows?.Type_User ?? 0,
 	};
 }
 

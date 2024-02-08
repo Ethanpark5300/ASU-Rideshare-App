@@ -38,7 +38,7 @@ function App() {
 				.then((data) => {
 					//console.log(data);
 					if (data.Email !== undefined) {
-						const accountData = new Account(data.Email, data.FirstName, data.LastName, data.PhoneNumber);
+						const accountData = new Account(data.Email, data.FirstName, data.LastName, data.PhoneNumber, data.AccountType);
 						dispatch(setAccountStore(accountData));
 					} else {
 						dispatch(setAccountStore(undefined));

@@ -36,7 +36,7 @@ function Login() {
                     setLoginMessage(data.message);
                     setLoginFailed(!data.loginSuccess);
                     if (data.loginSuccess) {
-                        dispatch(setAccountStore(new Account(data.account.Email, data.account.FirstName, data.account.LastName, data.account.PhoneNumber)));
+                        dispatch(setAccountStore(new Account(data.account.Email, data.account.FirstName, data.account.LastName, data.account.PhoneNumber, data.account.AccountType)));
                     } else {
                         dispatch(setAccountStore(undefined));
                     }
