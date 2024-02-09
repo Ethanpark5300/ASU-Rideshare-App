@@ -312,7 +312,7 @@ app.get("/available-drivers", async (req: Request, res: Response) => {
 		});
 
 	let db = await dbPromise;
-	let results = await db.all(`SELECT * FROM USER_INFO WHERE Status_User='TRUE' AND Type_User='Driver';`)
+	let results = await db.all(`SELECT * FROM USER_INFO WHERE Status_User='TRUE' AND Type_User=2;`)
 
 	res.json({ driverListResults: results });
 })

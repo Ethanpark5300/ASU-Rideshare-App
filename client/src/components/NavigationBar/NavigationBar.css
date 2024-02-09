@@ -127,14 +127,16 @@ nav button:hover {
     transform: translateY(-7px) rotate(-45deg);
 }
 
-.request-ride-button {
-    margin-top: 14px;
+nav ul.nav__list li:last-child,
+nav ul.nav__list li:nth-last-child(2) {
+    margin-block: auto;
 }
 
 /* Media Queries */
 @media (max-width: 768px) {
-    .request-ride-button {
-        margin-top: 0px;
+    nav ul.nav__list li:last-child,
+    nav ul.nav__list li:nth-last-child(2) {
+        margin-block: 0;
     }
 
     .navbar-links {

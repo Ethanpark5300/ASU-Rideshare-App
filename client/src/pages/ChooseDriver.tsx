@@ -36,7 +36,6 @@ function ChooseDriver() {
                     <div>
                         {driversAvailableList.map((drivers) => (
                             <div key={drivers.Email}>
-                                <h3>{drivers.Type_User}</h3>
                                 <p>{drivers.First_Name}</p>
                             </div>
                         ))}

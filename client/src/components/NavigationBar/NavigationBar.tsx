@@ -46,11 +46,9 @@ function Navbar() {
                 </Link>
 
                 <div className="navbar-links">
-                    {/** @TODO Show respective navbars based on user type */}
-
-                    {/* Signed in Navbar */}
+                    {/* Rider Navbar */}
                     {
-                        (account.account) && (
+                        (account?.account?.accountType === 1) && (
                             <ul className="nav__list">
                                 <li className="nav__item">
                                     <Link className="nav__link fromLeft" to="/">Home</Link>
@@ -60,7 +58,50 @@ function Navbar() {
                                 </li>
                                 <li>
                                     <Link to="/RequestRide">
-                                        <button className="request-ride-button">Request Ride</button>
+                                        <button>Request Ride</button>
+                                    </Link>
+                                </li>
+                            </ul>
+                        )
+                    }
+
+                    {/* Driver Navbar */}
+                    {
+                        (account?.account?.accountType === 2) && (
+                            <ul className="nav__list">
+                                <li className="nav__item">
+                                    <Link className="nav__link fromLeft" to="/">Home</Link>
+                                </li>
+                                <li className="nav__item">
+                                    <Link className="nav__link fromLeft" to="/Profile">Profile</Link>
+                                </li>
+                                <li>
+                                    <Link to="/ChooseRider">
+                                        <button>View Requests</button>
+                                    </Link>
+                                </li>
+                            </ul>
+                        )
+                    }
+
+                    {/* Rider and Driver Navbar */}
+                    {
+                        (account?.account?.accountType === 3) && (
+                            <ul className="nav__list">
+                                <li className="nav__item">
+                                    <Link className="nav__link fromLeft" to="/">Home</Link>
+                                </li>
+                                <li className="nav__item">
+                                    <Link className="nav__link fromLeft" to="/Profile">Profile</Link>
+                                </li>
+                                <li>
+                                    <Link to="/ChooseRider">
+                                        <button>View Requests</button>
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link to="/RequestRide">
+                                        <button>Request Ride</button>
                                     </Link>
                                 </li>
                             </ul>

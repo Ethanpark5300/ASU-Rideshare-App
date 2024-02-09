@@ -74,7 +74,7 @@ function App() {
 						<Profile
 							firstName={account?.account?.firstName}
 							lastName={account?.account?.lastName}
-							label={account?.account?.accountType.toString()}
+							label={account?.account?.accountType}
 							address={''}
 							asuid={''}
 							email={account?.account?.email}

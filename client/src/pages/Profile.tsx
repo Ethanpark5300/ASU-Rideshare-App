@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import '../styles/Profile.css';
 import { useAppSelector } from '../store/hooks';
 import PageTitle from '../components/PageTitle/PageTitle';
@@ -11,7 +11,7 @@ import { Account } from "../account/Account";
 interface ProfileProps {
     firstName: string;
     lastName: string;
-    label: string;
+    label: number;
     address: string;
     asuid: string;
     email: string;
@@ -19,9 +19,15 @@ interface ProfileProps {
     paypalEmail: string;
 }
 
-const Profile: React.FC<ProfileProps> = (props) => {
+let userType = null;
 
+const Profile: React.FC<ProfileProps> = (props) => {
     const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        readCookie();
+        checkUserType();
+    }, );
 
     const readCookie = async () => {
         fetch(`/read-cookie`, {
@@ -46,8 +52,17 @@ const Profile: React.FC<ProfileProps> = (props) => {
                 headers: { "Content-type": "application/json" },
             });
             dispatch(setAccountStore(undefined));
+            userType = ""
         } catch { }
     };
+
+    const checkUserType = async () => {
+        console.log(props.label)
+        if (props.label === 1) userType = "Rider"
+        else if (props.label === 2) userType = "Driver"
+        else if (props.label === 3) userType = "Rider and Driver"
+        else userType = ""
+    }
 
     return (
         <PageTitle title="Profile">
@@ -60,9 +75,8 @@ const Profile: React.FC<ProfileProps> = (props) => {
                 </div>
                 <div className="profileInfo">
                     <h2>Account Info</h2>
-                    <p><strong>First Name: </strong> {props.firstName} </p>
-                    <p><strong>Last Name: </strong> {props.lastName} </p>
-                    <p><strong>Type: </strong> {props.label}</p>
+                    <p><strong>Name: </strong> {props.firstName} {props.lastName} </p>
+                    <p><strong>Type: </strong> {userType}</p>
                     <p><strong>Address: </strong> {props.address} </p>
                     <p><strong>ASU ID: </strong> {props.asuid}</p>
                     <p><strong>E-Mail: </strong> {props.email}</p>
