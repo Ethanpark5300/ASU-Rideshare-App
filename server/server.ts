@@ -224,24 +224,22 @@ const verifyToken = function (token: string): Object | undefined {
 }
 /**Send block info to the blocked database*/
 app.post("/send-blocked", async (req: Request, res: Response) => {
-	const dbPromise = sqlite.open
-		({
-			filename: "./database/blocked.sqlite",
-			driver: sqlite3.Database
-		});
+	const dbPromise = sqlite.open({
+		filename: "./database/blocked.sqlite",
+		driver: sqlite3.Database
+	});
 
 	const db = await dbPromise;
 
 	let rider_id = req.body.rider_id;
-	let driver_id = req.body.driver_id;
+	let driver_id = req.body.driver_id; /** @TODO Replace value with actual driver email */
 
 	await db.run('INSERT INTO BLOCKED (rider_id, driver_id) VALUES(?,?)', rider_id, driver_id);
 });
 
 /** Send ratings to the ratings database*/
 app.post("/send-ratings", async (req: Request, res: Response) => {
-	const dbPromise = sqlite.open
-	({
+	const dbPromise = sqlite.open({
 		filename: "./database/ratings.sqlite",
 		driver: sqlite3.Database
 	});
@@ -249,7 +247,7 @@ app.post("/send-ratings", async (req: Request, res: Response) => {
 	const db = await dbPromise;
 
 	let rater = req.body.rater;
-	let ratee = req.body.ratee;
+	let ratee = req.body.ratee; /** @TODO Replace value with actual ratee email */
 	let star_rating = req.body.star_rating;
 	let comments = req.body.comments;
 
@@ -265,17 +263,15 @@ app.post("/send-ratings", async (req: Request, res: Response) => {
 
 /** Send report to reports database */
 app.post("/send-report", async (req: Request, res: Response) => {
-	const dbPromise = sqlite.open
-	({
+	const dbPromise = sqlite.open({
 		filename: "./database/reports.sqlite",
 		driver: sqlite3.Database
 	});
-	
+
 	const db = await dbPromise;
 
 	let email = req.body.email;
-	/** @TODO Replace value with actual reportee name */
-	let reported_id = "Test email"
+	let reported_id = "Test email" /** @TODO Replace value with actual reportee email */
 	let reason = req.body.reason;
 	let comments = req.body.comments;
 
@@ -284,20 +280,19 @@ app.post("/send-report", async (req: Request, res: Response) => {
 
 /** Send payment to payments database */
 app.post("/send-payment", async (req: Request, res: Response) => {
-	const dbPromise = sqlite.open
-	({
+	const dbPromise = sqlite.open({
 		filename: "./database/payments.sqlite",
 		driver: sqlite3.Database
 	});
-	
+
 	const db = await dbPromise;
-	
+
 	let rider_email = req.body.riderEmail;
-	let driver_email = req.body.driverEmail;
+	let driver_email = "Test email" /** @TODO Replace value with actual email */
 	let ride_cost = req.body.rideCost;
 	let currentDate = new Date().toLocaleDateString();
 	let currentTime = new Date().toLocaleTimeString();
-	
+
 	await db.run(`INSERT INTO Payments (rider_email, driver_email, ride_cost, payment_date, payment_time) VALUES (?,?,?,?,?)`, rider_email, driver_email, ride_cost, currentDate, currentTime);
 
 	/* delete duplicate records from the table */
@@ -305,16 +300,39 @@ app.post("/send-payment", async (req: Request, res: Response) => {
 });
 
 app.get("/available-drivers", async (req: Request, res: Response) => {
-	const dbPromise = sqlite.open
-		({
-			filename: "./database/user_info.db",
-			driver: sqlite3.Database
-		});
+	/** @returns current riders email */
+	let riderEmail = req.query.riderEmail;
 
-	let db = await dbPromise;
-	let results = await db.all(`SELECT * FROM USER_INFO WHERE Status_User='TRUE' AND Type_User=2;`)
+	const dbGetFavoriteDriversPromise = sqlite.open({
+		filename: "./database/favorites.sqlite",
+		driver: sqlite3.Database
+	});
+	let dbFavoriteDrivers = await dbGetFavoriteDriversPromise;
 
-	res.json({ driverListResults: results });
+	const dbAvailableDriversPromise = sqlite.open({
+		filename: "./database/user_info.db",
+		driver: sqlite3.Database
+	});
+	let dbAvailableDrivers = await dbAvailableDriversPromise;
+
+	let getFavoriteDriversListResults = await dbFavoriteDrivers.all(`SELECT Driver_Email FROM Favorites WHERE Rider_Email = '${riderEmail}'`)
+	// console.log(getFavoriteDriversListResults)
+
+	let getAvailableDriversListResults = await dbAvailableDrivers.all(`SELECT * FROM USER_INFO WHERE Type_User = 2 AND Status_User = 'TRUE'`)
+	// console.log(getAvailableDriversListResults)
+
+	let favoriteDriverEmails = getFavoriteDriversListResults.map((driver: { Driver_Email: String; }) => driver.Driver_Email);
+
+	let availableFavoriteDriversResults = getAvailableDriversListResults.filter((driver: { Email: String; }) => favoriteDriverEmails.includes(driver.Email))
+	// console.log(availableFavoriteDrivers);
+
+	let otherAvailableDriversResults = await dbAvailableDrivers.all(`SELECT * FROM USER_INFO WHERE Type_User = 2 AND Status_User = 'TRUE' AND Email NOT IN (${getFavoriteDriversListResults.map((driver: { Driver_Email: String; }) => `'${driver.Driver_Email}'`).join(',')})`);
+	// console.log(otherAvailableDriversListResults)
+
+	res.json({
+		availableFavoriteDrivers: availableFavoriteDriversResults,
+		availableDriversList: otherAvailableDriversResults,
+	});
 })
 
 app.listen(PORT, () => {

@@ -87,7 +87,14 @@ function App() {
 				<Route path="/RequestRide" element={<RequestRide />} />
 				<Route path="/RideHistory" element={<RideHistory />} />
 				<Route path="/RideinProgress" element={<RideinProgress />} />
-				<Route path="/ChooseDriver" element={<ChooseDriver />} />
+				<Route
+					path="/ChooseDriver"
+					element={
+						<ChooseDriver
+							email={account?.account?.email}
+						/>
+					}
+				/>
 				<Route path="/ChooseRider" element={<ChooseRider />} />
 				<Route path="/ChangePayment" element={<ChangePayment />} />
 				<Route
