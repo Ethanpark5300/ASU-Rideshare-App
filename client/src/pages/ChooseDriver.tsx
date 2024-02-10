@@ -36,13 +36,17 @@ const ChooseDriver: React.FC<ChooseDriverProps> = (props) => {
 
                     {/* List of available riders favorite drivers */}
                     <h2>Available Favorite Drivers</h2>
-                    {favoriteDriversAvailableList.map((driver) => {
-                        return (
-                            <div key={driver.email}>
-                                <p>{driver.first_name} {driver.last_name}</p>
-                            </div>
-                        );
-                    })}
+                    {favoriteDriversAvailableList.length > 0 ? (
+                        <div>
+                            {favoriteDriversAvailableList.map((driver) => (
+                                <div key={driver.email}>
+                                    <p>{driver.first_name} {driver.last_name}</p>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div>No favorite drivers available.</div>
+                    )}
 
                     <br />
 

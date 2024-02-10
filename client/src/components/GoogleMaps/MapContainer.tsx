@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { GoogleMap, LoadScript, MarkerF } from '@react-google-maps/api';
+import { Loader } from "@googlemaps/js-api-loader"
+/** @FIXME Fix Google Maps performance */
 
 const MapContainer: React.FC = () => {
     const [currentPosition, setCurrentPosition] = useState({ lat: 0, lng: 0 });
