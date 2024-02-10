@@ -34,21 +34,19 @@ const ChooseDriver: React.FC<ChooseDriverProps> = (props) => {
                 <aside className="choosedriver-panel">
                     <h1>Choose a Driver</h1>
 
+                    {/* List of available riders favorite drivers */}
                     <h2>Available Favorite Drivers</h2>
-                    {favoriteDriversAvailableList.length > 0 ? (
-                        <div>
-                            {favoriteDriversAvailableList.map((driver) => (
-                                <div key={driver.id}>
-                                    <p>{driver.first_name} {driver.last_name}</p>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div>No drivers available.</div>
-                    )}
+                    {favoriteDriversAvailableList.map((driver) => {
+                        return (
+                            <div key={driver.email}>
+                                <p>{driver.first_name} {driver.last_name}</p>
+                            </div>
+                        );
+                    })}
 
                     <br />
-                    {/* General List of Available Drivers */}
+
+                    {/* List of available drivers excluding riders blocked drivers */}
                     <h2>Available Drivers</h2>
                     {driversAvailableList.length > 0 ? (
                         <div>
