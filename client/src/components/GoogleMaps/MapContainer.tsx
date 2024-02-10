@@ -27,7 +27,7 @@ const MapContainer: React.FC = () => {
     }, []);
 
     const mapStyles = {
-        height: '91.1vh',
+        height: '90.6vh',
         width: '100%',
     };
 

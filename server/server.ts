@@ -300,8 +300,7 @@ app.post("/send-payment", async (req: Request, res: Response) => {
 });
 
 app.get("/available-drivers", async (req: Request, res: Response) => {
-	/** @returns current riders email */
-	let riderEmail = req.query.riderEmail;
+	let riderEmail = req.query.riderEmail as string; /** @returns current rider's email */
 
 	const dbGetFavoriteDriversPromise = sqlite.open({
 		filename: "./database/favorites.sqlite",
@@ -315,25 +314,52 @@ app.get("/available-drivers", async (req: Request, res: Response) => {
 	});
 	let dbAvailableDrivers = await dbAvailableDriversPromise;
 
-	let getFavoriteDriversListResults = await dbFavoriteDrivers.all(`SELECT Driver_Email FROM Favorites WHERE Rider_Email = '${riderEmail}'`)
-	// console.log(getFavoriteDriversListResults)
+	const dbBlockedDriversPromise = sqlite.open({
+		filename: "./database/blocked.sqlite",
+		driver: sqlite3.Database
+	});
+	let dbBlockedDrivers = await dbBlockedDriversPromise;
 
-	let getAvailableDriversListResults = await dbAvailableDrivers.all(`SELECT * FROM USER_INFO WHERE Type_User = 2 AND Status_User = 'TRUE'`)
-	// console.log(getAvailableDriversListResults)
+	let getFavoriteDriversListResults = await dbFavoriteDrivers.all(`SELECT Driver_Email FROM Favorites WHERE Rider_Email = '${riderEmail}'`);
+	let getAvailableDriversListResults = await dbAvailableDrivers.all(`SELECT * FROM USER_INFO WHERE Type_User = 2 AND Status_User = 'TRUE'`);
+	let getBlockedDriversListResults = await dbBlockedDrivers.all(`SELECT * FROM BLOCKED WHERE rider_id = '${riderEmail}'`);
 
-	let favoriteDriverEmails = getFavoriteDriversListResults.map((driver: { Driver_Email: String; }) => driver.Driver_Email);
+	// List of Available Favorite Drivers
+	let availableFavoriteDrivers = getFavoriteDriversListResults
+		.filter((favorite: { Driver_Email: any; }) => {
+			return getAvailableDriversListResults.some((driver: { Email: any; }) => driver.Email === favorite.Driver_Email);
+		})
+		.map((favorite: { Driver_Email: any; }) => {
+			const driverInfo = getAvailableDriversListResults.find((driver: { Email: any; }) => driver.Email === favorite.Driver_Email);
+			if (driverInfo) {
+				return {
+					email: favorite.Driver_Email,
+					first_name: driverInfo.First_Name,
+					last_name: driverInfo.Last_Name
+				};
+			} else {
+				// Handle the case where driverInfo is not found
+				console.error(`Driver info not found for email: ${favorite.Driver_Email}`);
+				return null;
+			}
+		})
+		.filter(Boolean); // Remove null values from the array
 
-	let availableFavoriteDriversResults = getAvailableDriversListResults.filter((driver: { Email: String; }) => favoriteDriverEmails.includes(driver.Email))
-	// console.log(availableFavoriteDrivers);
-
-	let otherAvailableDriversResults = await dbAvailableDrivers.all(`SELECT * FROM USER_INFO WHERE Type_User = 2 AND Status_User = 'TRUE' AND Email NOT IN (${getFavoriteDriversListResults.map((driver: { Driver_Email: String; }) => `'${driver.Driver_Email}'`).join(',')})`);
-	// console.log(otherAvailableDriversListResults)
+	// List of Other Available Drivers (Excluding User's Blocked Drivers)
+	let blockedDrivers = getBlockedDriversListResults.map((blocked: { driver_id: any; }) => blocked.driver_id);
+	let otherAvailableDrivers = getAvailableDriversListResults
+		.filter((driver: { Email: any; }) => {
+			return !blockedDrivers.includes(driver.Email);
+		})
+		.filter((driver: { Email: any; }) => {
+			return !availableFavoriteDrivers.some((favorite: { email: any; }) => favorite && favorite.email === driver.Email);
+		});
 
 	res.json({
-		availableFavoriteDrivers: availableFavoriteDriversResults,
-		availableDriversList: otherAvailableDriversResults,
+		availableFavoriteDrivers: availableFavoriteDrivers,
+		otherAvailableDrivers: otherAvailableDrivers
 	});
-})
+});
 
 app.listen(PORT, () => {
 	console.log(`Server is running on port ${PORT}.`);
