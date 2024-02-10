@@ -27,7 +27,15 @@
   width: 100vw;
 }
 
-#choose-driver .refresh-btn {
+#choose-driver .choose-btns-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+#choose-driver .refresh-btn,
+.nearest-btn {
   border-radius: 1000px;
   cursor: pointer;
   padding: 12px 24px;
@@ -38,6 +46,7 @@
   color: white;
 }
 
-#choose-driver .refresh-btn:hover {
+#choose-driver .refresh-btn:hover,
+.nearest-btn:hover {
   transform: scale(1.05);
 }

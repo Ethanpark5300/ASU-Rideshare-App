@@ -1,6 +1,13 @@
 import "../styles/ChooseDriver.css";
 import PageTitle from "../components/PageTitle/PageTitle";
 import { useState, useEffect } from "react";
+import {
+  GoogleMap,
+  LoadScript,
+  Marker,
+  DirectionsRenderer,
+  Autocomplete,
+} from "@react-google-maps/api";
 
 interface ChooseDriverProps {
   email: string;
@@ -61,11 +68,16 @@ const ChooseDriver: React.FC<ChooseDriverProps> = (props) => {
           ) : (
             <div>No drivers available.</div>
           )}
+          <div className="choose-btns-container">
+            {/* Refresh Button */}
+            <button className="refresh-btn" onClick={refreshDriversList}>
+              Refresh List
+            </button>
 
-          {/* Refresh Button */}
-          <button className="refresh-btn" onClick={refreshDriversList}>
-            Refresh List
-          </button>
+            <button className="nearest-btn" onClick={refreshDriversList}>
+              Request Nearest Driver
+            </button>
+          </div>
         </aside>
 
         <div className="maps-container"></div>
