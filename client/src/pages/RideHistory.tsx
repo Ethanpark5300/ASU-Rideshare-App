@@ -18,7 +18,8 @@ function RideHistory() {
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    }, [account?.account?.accountType]);
+    }, [account?.account?.email]);
+
 
     useEffect(() => {
         refreshRideHistoryList();
@@ -28,6 +29,7 @@ function RideHistory() {
         <PageTitle title="Ride History">
             <main id='ride-history'>
                 <h1>Ride History</h1>
+                <button onClick={refreshRideHistoryList}>Refresh</button>
 
                 {/** @returns Rider history */}
                 {account?.account?.accountType === 1 && (
@@ -39,7 +41,7 @@ function RideHistory() {
                                     <div key={ride.RideHistory_ID}>
                                         <table>
                                             <tr>
-                                                <td>Name = {ride.Driver_ID} Time = {ride.PickupTime} Location = {ride.Dropoff} Date = {ride.Ride_Date} Cost = {ride.Pay} Rating = {ride.rate}</td>
+                                                <td>Name = {ride.Driver_FirstName} {ride.Driver_LastName} Time = {ride.Pickup_Time} Location = {ride.Dropoff_Location} Date = {ride.Ride_Date} Cost = {ride.Cost} Rating = {ride.Given_Rider_Rating}</td>
                                             </tr>
                                         </table>
                                     </div>
@@ -62,7 +64,7 @@ function RideHistory() {
                                         <div key={ride.RideHistory_ID}>
                                             <table>
                                                 <tr>
-                                                    <td>Name = {ride.Rider_ID} Date = {ride.Ride_Date} Time = {ride.PickupTime} Location = {ride.Dropoff}  Payout = {ride.Earned} Rating = {ride.rate}</td>
+                                                    <td>Name = {ride.Rider_FirstName} {ride.Rider_LastName} Date = {ride.Ride_Date} Time = {ride.Pickup_Time} Location = {ride.Dropoff_Location} Payout = {ride.Earned} Rating = {ride.Given_Driver_Rating}</td>
                                                 </tr>
                                             </table>
                                         </div>
@@ -74,7 +76,7 @@ function RideHistory() {
                         </div>
                     )
                 }
-                <button onClick={refreshRideHistoryList}>Refresh</button>
+                
             </main>
         </PageTitle>
     );

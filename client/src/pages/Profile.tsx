@@ -74,11 +74,6 @@ const Profile: React.FC<ProfileProps> = (props) => {
                             <p><strong>Type: </strong> Driver</p>
                         )
                     }
-                    {
-                        (account?.account?.accountType === 3) && (
-                            <p><strong>Type: </strong> Rider and Driver</p>
-                        )
-                    }
                     <p><strong>Address: </strong> {props.address} </p>
                     <p><strong>ASU ID: </strong> {props.asuid}</p>
                     <p><strong>E-Mail: </strong> {props.email}</p>

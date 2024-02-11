@@ -84,30 +84,6 @@ function Navbar() {
                         )
                     }
 
-                    {/* Rider and Driver Navbar */}
-                    {
-                        (account?.account?.accountType === 3) && (
-                            <ul className="nav__list">
-                                <li className="nav__item">
-                                    <Link className="nav__link fromLeft" to="/">Home</Link>
-                                </li>
-                                <li className="nav__item">
-                                    <Link className="nav__link fromLeft" to="/Profile">Profile</Link>
-                                </li>
-                                <li>
-                                    <Link to="/ChooseRider">
-                                        <button>View Requests</button>
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link to="/RequestRide">
-                                        <button>Request Ride</button>
-                                    </Link>
-                                </li>
-                            </ul>
-                        )
-                    }
-
                     {/* Guest Navbar */}
                     {
                         (!account.account) && (

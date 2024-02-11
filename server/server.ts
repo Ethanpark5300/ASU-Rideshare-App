@@ -291,7 +291,7 @@ app.post("/send-payment", async (req: Request, res: Response) => {
 	let driver_email = "Test email" /** @TODO Replace value with actual email */
 	let ride_cost = req.body.rideCost;
 	let currentDate = new Date().toLocaleDateString();
-	let currentTime = new Date().toLocaleTimeString();
+	let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
 	await db.run(`INSERT INTO Payments (rider_email, driver_email, ride_cost, payment_date, payment_time) VALUES (?,?,?,?,?)`, rider_email, driver_email, ride_cost, currentDate, currentTime);
 
@@ -362,7 +362,6 @@ app.get("/available-drivers", async (req: Request, res: Response) => {
 });
 
 app.get("/ride-history", async (req: Request, res: Response) => {
-	let accountType = req.query.accountType;
 	let accountEmail = req.query.accountEmail;
 
 	const dbGetRideHistoryPromise = sqlite.open({
@@ -371,9 +370,10 @@ app.get("/ride-history", async (req: Request, res: Response) => {
 	});
 	let getRideHistory = await dbGetRideHistoryPromise;
 
-	/** @TODO Don't show rider's/driver's email */
-	let getRiderHistoryResults = await getRideHistory.all(`SELECT RideHistory_ID, Driver_ID, Ride_Date, Pickup, Dropoff, Pay FROM HISTORY WHERE Rider_ID='${accountEmail}'`)
-	let getDriverHistoryResults = await getRideHistory.all(`SELECT RideHistory_ID, Rider_ID, Ride_Date, Pickup, Dropoff, Earned FROM HISTORY WHERE Driver_ID='${accountEmail}'`)
+	let getRiderHistoryResults = await getRideHistory.all(`SELECT RideHistory_ID, Driver_FirstName, Driver_LastName, Pickup_Time, Dropoff_Location, Ride_Date, Cost, Given_Rider_Rating FROM HISTORY WHERE Rider_ID='${accountEmail}'`)
+	let getDriverHistoryResults = await getRideHistory.all(`SELECT RideHistory_ID, Rider_FirstName, Rider_LastName, Ride_Date, Pickup_Time, Dropoff_Location, Earned, Given_Driver_Rating FROM HISTORY WHERE Driver_ID='${accountEmail}'`);
+
+	console.log(getDriverHistoryResults)
 
 	res.json({
 		ridersHistoryList: getRiderHistoryResults,

@@ -30,5 +30,4 @@ export enum AccountTypeFlag {
 	None = 0, //no standard account should have none here
 	Rider = 1 << 0, //...001
 	Driver = 1 << 1, //...010
-	Both = 1 << 1 | 1 << 0
 }
