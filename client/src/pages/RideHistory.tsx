@@ -37,7 +37,11 @@ function RideHistory() {
                             <div>
                                 {ridersHistoryList.map((ride) => (
                                     <div key={ride.RideHistory_ID}>
-                                        <p>{ride.Driver_ID} {ride.Ride_Date} {ride.Pickup} {ride.Dropoff} {ride.Pay}</p>
+                                        <table>
+                                            <tr>
+                                                <td>Name = {ride.Driver_ID} Time = {ride.PickupTime} Location = {ride.Dropoff} Date = {ride.Ride_Date} Cost = {ride.Pay} Rating = {ride.rate}</td>
+                                            </tr>
+                                        </table>
                                     </div>
                                 ))}
                             </div>
@@ -56,7 +60,11 @@ function RideHistory() {
                                 <div>
                                     {driversHistoryList.map((ride) => (
                                         <div key={ride.RideHistory_ID}>
-                                            <p>{ride.Rider_ID} {ride.Ride_Date} {ride.Pickup} {ride.Dropoff} {ride.Earned}</p>
+                                            <table>
+                                                <tr>
+                                                    <td>Name = {ride.Rider_ID} Date = {ride.Ride_Date} Time = {ride.PickupTime} Location = {ride.Dropoff}  Payout = {ride.Earned} Rating = {ride.rate}</td>
+                                                </tr>
+                                            </table>
                                         </div>
                                     ))}
                                 </div>
