@@ -361,6 +361,26 @@ app.get("/available-drivers", async (req: Request, res: Response) => {
 	});
 });
 
+app.get("/ride-history", async (req: Request, res: Response) => {
+	let accountType = req.query.accountType;
+	let accountEmail = req.query.accountEmail;
+
+	const dbGetRideHistoryPromise = sqlite.open({
+		filename: "./database/ridehistory.sqlite",
+		driver: sqlite3.Database
+	});
+	let getRideHistory = await dbGetRideHistoryPromise;
+
+	/** @TODO Don't show rider's/driver's email */
+	let getRiderHistoryResults = await getRideHistory.all(`SELECT RideHistory_ID, Driver_ID, Ride_Date, Pickup, Dropoff, Pay FROM HISTORY WHERE Rider_ID='${accountEmail}'`)
+	let getDriverHistoryResults = await getRideHistory.all(`SELECT RideHistory_ID, Rider_ID, Ride_Date, Pickup, Dropoff, Earned FROM HISTORY WHERE Driver_ID='${accountEmail}'`)
+
+	res.json({
+		ridersHistoryList: getRiderHistoryResults,
+		driversHistoryList: getDriverHistoryResults
+	});
+})
+
 app.listen(PORT, () => {
 	console.log(`Server is running on port ${PORT}.`);
 });

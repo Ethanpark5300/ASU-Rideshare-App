@@ -19,15 +19,8 @@ interface ProfileProps {
     paypalEmail: string;
 }
 
-let userType = null;
-
 const Profile: React.FC<ProfileProps> = (props) => {
     const dispatch = useAppDispatch();
-
-    useEffect(() => {
-        readCookie();
-        checkUserType();
-    }, );
 
     const readCookie = async () => {
         fetch(`/read-cookie`, {
@@ -52,17 +45,10 @@ const Profile: React.FC<ProfileProps> = (props) => {
                 headers: { "Content-type": "application/json" },
             });
             dispatch(setAccountStore(undefined));
-            userType = ""
         } catch { }
     };
 
-    const checkUserType = async () => {
-        console.log(props.label)
-        if (props.label === 1) userType = "Rider"
-        else if (props.label === 2) userType = "Driver"
-        else if (props.label === 3) userType = "Rider and Driver"
-        else userType = ""
-    }
+    const account = useAppSelector((state) => state.account);
 
     return (
         <PageTitle title="Profile">
@@ -76,7 +62,23 @@ const Profile: React.FC<ProfileProps> = (props) => {
                 <div className="profileInfo">
                     <h2>Account Info</h2>
                     <p><strong>Name: </strong> {props.firstName} {props.lastName} </p>
-                    <p><strong>Type: </strong> {userType}</p>
+
+                    {/** @Returns user type */}
+                    {
+                        (account?.account?.accountType === 1) && (
+                            <p><strong>Type: </strong> Rider</p>
+                        )
+                    }
+                    {
+                        (account?.account?.accountType === 2) && (
+                            <p><strong>Type: </strong> Driver</p>
+                        )
+                    }
+                    {
+                        (account?.account?.accountType === 3) && (
+                            <p><strong>Type: </strong> Rider and Driver</p>
+                        )
+                    }
                     <p><strong>Address: </strong> {props.address} </p>
                     <p><strong>ASU ID: </strong> {props.asuid}</p>
                     <p><strong>E-Mail: </strong> {props.email}</p>

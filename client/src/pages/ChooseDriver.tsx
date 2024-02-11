@@ -12,9 +12,7 @@ const ChooseDriver: React.FC<ChooseDriverProps> = (props) => {
 
     const refreshDriversList = useCallback(async () => {
         try {
-            const response = await fetch(
-                `/available-drivers?riderEmail=${props.email}`
-            );
+            const response = await fetch(`/available-drivers?riderEmail=${props.email}`);
             const data = await response.json();
             setFavoriteDriversAvailableList(data.availableFavoriteDrivers);
             setDriversAvailableList(data.otherAvailableDrivers);
@@ -76,9 +74,7 @@ const ChooseDriver: React.FC<ChooseDriverProps> = (props) => {
                         </button>
                     </div>
                 </aside>
-                <div className="map-container">
-                    <MapContainer />
-                </div>
+                <MapContainer />
             </main>
         </PageTitle>
     );
