@@ -66,40 +66,6 @@ function RideHistory() {
                         </div>
                     )
                 }
-
-                {/** @Returns rider and driver history */}
-                {
-                    (account?.account?.accountType === 3) && (
-                        <div>
-                            <h2>Ride History</h2>
-                            {ridersHistoryList.length > 0 ? (
-                                <div>
-                                    {ridersHistoryList.map((ride) => (
-                                        <div key={ride.RideHistory_ID}>
-                                            <p>{ride.Driver_ID} {ride.Ride_Date} {ride.Pickup} {ride.Dropoff} {ride.Pay}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div>No ride history available.</div>
-                            )}
-                            <br />
-                            <h2>Drive History</h2>
-                            {driversHistoryList.length > 0 ? (
-                                <div>
-                                    {driversHistoryList.map((ride) => (
-                                        <div key={ride.RideHistory_ID}>
-                                            <p>{ride.Rider_ID} {ride.Ride_Date} {ride.Pickup} {ride.Dropoff} {ride.Earned}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div>No drive history available.</div>
-                            )}
-                        </div>
-                    )
-                }
-
                 <button onClick={refreshRideHistoryList}>Refresh</button>
             </main>
         </PageTitle>
