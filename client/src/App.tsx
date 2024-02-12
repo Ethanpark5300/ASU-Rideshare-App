@@ -18,8 +18,10 @@ import RideinProgress from './pages/RideinProgress';
 import Rating from './pages/Rating';
 import ChooseDriver from './pages/ChooseDriver';
 import ChooseRider from './pages/ChooseRider';
-import ChangePayment from './pages/ChangePayment';
 import Report from './pages/Report';
+import FavoritesList from './pages/FavoritesList';
+import BlockedList from './pages/BlockedList';
+import EditAccount from './pages/EditAccount';
 
 function App() {
 	const dispatch = useAppDispatch();
@@ -58,61 +60,21 @@ function App() {
 		<>
 			<NavigationBar />
 			<Routes>
-				<Route path="/" element={<Home />} />
-				<Route path="/Login" element={<Login />} />
-				<Route
-					path="/Payment"
-					element={
-						<Payment
-							email={account?.account?.email}
-						/>
-					}
-				/>
-				<Route
-					path="/Profile"
-					element={
-						<Profile
-							firstName={account?.account?.firstName}
-							lastName={account?.account?.lastName}
-							label={account?.account?.accountType}
-							address={''}
-							asuid={''}
-							email={account?.account?.email}
-							phoneNumber={account?.account?.phoneNumber}
-							paypalEmail={''}
-						/>
-					}
-				/>
-				<Route path="/Register" element={<Register />} />
-				<Route path="/RequestRide" element={<RequestRide />} />
-				<Route path="/RideHistory" element={<RideHistory />} />
-				<Route path="/RideinProgress" element={<RideinProgress />} />
-				<Route
-					path="/ChooseDriver"
-					element={
-						<ChooseDriver
-							email={account?.account?.email}
-						/>
-					}
-				/>
-				<Route path="/ChooseRider" element={<ChooseRider />} />
-				<Route path="/ChangePayment" element={<ChangePayment />} />
-				<Route
-					path="/Rating"
-					element={
-						<Rating
-							email={account?.account?.email}
-						/>
-					}
-				/>
-				<Route
-					path="/Report"
-					element={
-						<Report
-							email={account?.account?.email}
-						/>
-					} 
-				/>
+				<Route path="/" element={<Home />}/>
+				<Route path="/Login" element={<Login />}/>
+				<Route path="/Payment" element={<Payment/>}/>
+				<Route path="/Profile" element={<Profile/>}/>
+				<Route path="/Register" element={<Register/>}/>
+				<Route path="/RequestRide" element={<RequestRide/>}/>
+				<Route path="/RideHistory" element={<RideHistory/>}/>
+				<Route path="/RideinProgress" element={<RideinProgress/>}/>
+				<Route path="/ChooseDriver" element={<ChooseDriver/>}/>
+				<Route path="/ChooseRider" element={<ChooseRider/>}/>
+				<Route path="/Rating" element={<Rating/>}/>
+				<Route path="/Report" element={<Report/>}/>
+				<Route path="/FavoritesList" element={<FavoritesList />}/>
+				<Route path="/BlockedList" element={<BlockedList />}/>
+				<Route path="/EditAccount" element={<EditAccount/>}></Route>
 			</Routes>
 		</>
 	);

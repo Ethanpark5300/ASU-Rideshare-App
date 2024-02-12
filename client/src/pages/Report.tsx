@@ -1,12 +1,11 @@
 import "../styles/Report.css";
 import PageTitle from "../components/PageTitle/PageTitle";
 import React, { useState } from "react";
+import { useAppSelector } from "../store/hooks";
 
-interface ReportProps {
-    email: string;
-}
+const Report: React.FC = (props) => {
+    const account = useAppSelector((state) => state.account);
 
-const Report: React.FC<ReportProps> = (props) => {
     //state to store selected reason
     const [selectedReason, setSelectedReason] = useState("");
 
@@ -33,7 +32,7 @@ const Report: React.FC<ReportProps> = (props) => {
                 method: "POST",
                 headers: { "Content-type": "application/json" },
                 body: JSON.stringify({
-                    email: props.email,
+                    email: account?.account?.email,
                     reason: selectedReason,
                     comments: comments,
                 }),

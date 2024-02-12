@@ -8,18 +8,7 @@ import { useAppDispatch } from "../store/hooks";
 import { setAccountStore } from "../store/features/accountSlice";
 import { Account } from "../account/Account";
 
-interface ProfileProps {
-    firstName: string;
-    lastName: string;
-    label: number;
-    address: string;
-    asuid: string;
-    email: string;
-    phoneNumber: string;
-    paypalEmail: string;
-}
-
-const Profile: React.FC<ProfileProps> = (props) => {
+const Profile: React.FC = (props) => {
     const dispatch = useAppDispatch();
 
     const readCookie = async () => {
@@ -61,7 +50,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
                 </div>
                 <div className="profileInfo">
                     <h2>Account Info</h2>
-                    <p><strong>Name: </strong> {props.firstName} {props.lastName} </p>
+                    <p><strong>Name: </strong> {account?.account?.firstName} {account?.account?.lastName} </p>
 
                     {/** @Returns user type */}
                     {
@@ -74,10 +63,10 @@ const Profile: React.FC<ProfileProps> = (props) => {
                             <p><strong>Type: </strong> Driver</p>
                         )
                     }
-                    <p><strong>Address: </strong> {props.address} </p>
-                    <p><strong>ASU ID: </strong> {props.asuid}</p>
-                    <p><strong>E-Mail: </strong> {props.email}</p>
-                    <p><strong>Phone Number: </strong> {props.phoneNumber}</p>
+                    <p><strong>Address: </strong> {} </p>
+                    <p><strong>ASU ID: </strong> {}</p>
+                    <p><strong>E-Mail: </strong> {account?.account?.email}</p>
+                    <p><strong>Phone Number: </strong> {account?.account?.phoneNumber}</p>
                     <button>Save</button>
                     <Button label="Check Cookie" onClickFn={readCookie} />
                     <Button label="Nom Cookie(logout)" onClickFn={eatCookie} />
@@ -85,7 +74,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
 
                 <div className="paymentInfo">
                     <h2>Payment Info</h2>
-                    <p><strong>PayPal Email: </strong> {props.paypalEmail}</p>
+                    <p><strong>PayPal Email: </strong> {}</p>
                     <button>Save</button>
                 </div>
 

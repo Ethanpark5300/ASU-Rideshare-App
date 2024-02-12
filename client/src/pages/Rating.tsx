@@ -2,10 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../styles/Rating.css';
 import PageTitle from '../components/PageTitle/PageTitle';
 import { Link } from 'react-router-dom';
-
-interface RatingProps {
-    email: string;
-}
+import { useAppSelector } from '../store/hooks';
 
 interface RatingFormState {
     rating: number;
@@ -13,7 +10,9 @@ interface RatingFormState {
     favorite: boolean;
 }
 
-const Rating: React.FC<RatingProps> = (props) => {
+const Rating: React.FC = (props) => {
+    const account = useAppSelector((state) => state.account);
+
     /** @TODO Replace value with ratee name */
     const rateeUser = "[Var]";
 
@@ -55,7 +54,7 @@ const Rating: React.FC<RatingProps> = (props) => {
                 method: "POST",
                 headers: { "Content-type": "application/json" },
                 body: JSON.stringify({
-                    rater: props.email,
+                    rater: account?.account?.email,
                     ratee: rateeUser,
                     star_rating: formChanges.rating,
                     comments: formChanges.comment,
@@ -77,7 +76,7 @@ const Rating: React.FC<RatingProps> = (props) => {
                 method: "POST",
                 headers: { "Content-type": "application/json" },
                 body: JSON.stringify({
-                    rider_id: props.email,
+                    rider_id: account?.account?.email,
                     driver_id: rateeUser,
                 }),
             })

@@ -2,24 +2,23 @@ import "../styles/ChooseDriver.css";
 import PageTitle from "../components/PageTitle/PageTitle";
 import { useState, useEffect, useCallback } from "react";
 import MapContainer from "../components/GoogleMaps/MapContainer";
-interface ChooseDriverProps {
-    email: string;
-}
+import { useAppSelector } from "../store/hooks";
 
-const ChooseDriver: React.FC<ChooseDriverProps> = (props) => {
+const ChooseDriver: React.FC = (props) => {
+    const account = useAppSelector((state) => state.account);
     const [driversAvailableList, setDriversAvailableList] = useState<any[]>([]);
     const [favoriteDriversAvailableList, setFavoriteDriversAvailableList] = useState<any[]>([]);
 
     const refreshDriversList = useCallback(async () => {
         try {
-            const response = await fetch(`/available-drivers?riderEmail=${props.email}`);
+            const response = await fetch(`/available-drivers?riderEmail=${account?.account?.email}`);
             const data = await response.json();
             setFavoriteDriversAvailableList(data.availableFavoriteDrivers);
             setDriversAvailableList(data.otherAvailableDrivers);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    }, [props.email]);
+    }, [account?.account?.email]);
 
     useEffect(() => {
         refreshDriversList();

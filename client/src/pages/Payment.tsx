@@ -3,6 +3,7 @@ import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import "../styles/Payment.css"
 import PageTitle from '../components/PageTitle/PageTitle';
 import { Link } from 'react-router-dom';
+import { useAppSelector } from '../store/hooks';
 
 /** @TODO Replace with driver's sandbox paypal email */
 /** Use sandbox business accounts for testing */
@@ -18,11 +19,9 @@ const paypalOptions = {
     currency: 'USD',
 };
 
-interface PaymentProps {
-    email: string;
-}
 
-const Payment: React.FC<PaymentProps> = (props) => {
+const Payment: React.FC = (props) => {
+    const account = useAppSelector((state) => state.account);
     const [paypalLoaded, setPaypalLoaded] = useState(false);
     const [paymentStatus, setPaymentStatus] = useState('');
     const [showErrorPopup, setShowErrorPopup] = useState(false); // State to track whether error popup is open
@@ -70,7 +69,7 @@ const Payment: React.FC<PaymentProps> = (props) => {
                     method: "POST",
                     headers: { "Content-type": "application/json" },
                     body: JSON.stringify({
-                        riderEmail: props.email,
+                        riderEmail: account?.account?.email,
                         driverEmail: driverEmail,
                         rideCost: amount,
                     }),
