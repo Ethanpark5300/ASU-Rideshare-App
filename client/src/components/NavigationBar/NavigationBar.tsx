@@ -56,6 +56,15 @@ function Navbar() {
                                 <li className="nav__item">
                                     <Link className="nav__link fromLeft" to="/Profile">Profile</Link>
                                 </li>
+                                <li className="nav__item">
+                                    <Link className="nav__link fromLeft" to="/FavoritesList">Favorites</Link>
+                                </li>
+                                <li className="nav__item">
+                                    <Link className="nav__link fromLeft" to="/BlockedList">Blocked</Link>
+                                </li>
+                                <li className="nav__item">
+                                    <Link className="nav__link fromLeft" to="/RideHistory">Ride History</Link>
+                                </li>
                                 <li>
                                     <Link to="/RequestRide">
                                         <button>Request Ride</button>
@@ -74,6 +83,12 @@ function Navbar() {
                                 </li>
                                 <li className="nav__item">
                                     <Link className="nav__link fromLeft" to="/Profile">Profile</Link>
+                                </li>
+                                <li className="nav__item">
+                                    <Link className="nav__link fromLeft" to="/BlockedList">Blocked</Link>
+                                </li>
+                                <li className="nav__item">
+                                    <Link className="nav__link fromLeft" to="/RideHistory">Ride History</Link>
                                 </li>
                                 <li>
                                     <Link to="/ChooseRider">

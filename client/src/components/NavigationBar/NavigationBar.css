@@ -57,17 +57,17 @@ nav a {
 
 .nav__link {
     color: black;
-    transition: all 0.2s;
+    transition: all 0.3s;
     display: inline-block;
 }
 
 .nav__link:after {
     display: block;
     content: '';
-    border-bottom: solid 8px var(--brand-gold);
+    border-bottom: solid 10px var(--brand-gold);
     padding-top: 16px;
     transform: scaleX(0);
-    transition: transform 125ms ease-in-out;
+    transition: transform 0.3s ease-in-out;
 }
 
 .nav__link {
