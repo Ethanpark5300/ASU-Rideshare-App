@@ -37,12 +37,13 @@ const ChooseDriver: React.FC = (props) => {
                         <div>
                             {favoriteDriversAvailableList.map((driver) => (
                                 <div key={driver.email}>
-                                    <p>{driver.first_name} {driver.last_name}</p>
+                                    {/** @TODO Request specific driver */}
+                                    <p>{driver.first_name} {driver.last_name}<button className="request-btn">Request</button></p>
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <div>No favorite drivers available.</div>
+                        <div>No favorite drivers are available.</div>
                     )}
 
                     <br />
@@ -53,12 +54,13 @@ const ChooseDriver: React.FC = (props) => {
                         <div>
                             {driversAvailableList.map((drivers) => (
                                 <div key={drivers.Email}>
-                                    <p>{drivers.First_Name} {drivers.Last_Name}</p>
+                                    {/** @TODO Request specific driver */}
+                                    <p>{drivers.First_Name} {drivers.Last_Name} <button className="request-btn">Request</button></p>
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <div>No drivers available.</div>
+                        <div>No drivers are available.</div>
                     )}
 
                     <div className="choose-btns-container">
@@ -67,13 +69,16 @@ const ChooseDriver: React.FC = (props) => {
                             Refresh List
                         </button>
 
-                        {/** @TODO Should request nearest driver */}
-                        <button className="nearest-btn" onClick={refreshDriversList}>
-                            Request Nearest Driver
+                        <button className="cancel-btn">
+                            Cancel
                         </button>
+
+                        {/** @TODO Should request nearest driver */}
+                        {/* <button className="nearest-btn" onClick={refreshDriversList}>
+                            Request Nearest Driver
+                        </button> */}
                     </div>
                 </aside>
-                <MapContainer />
             </main>
         </PageTitle>
     );

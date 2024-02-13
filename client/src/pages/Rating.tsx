@@ -14,7 +14,7 @@ const Rating: React.FC = (props) => {
     const account = useAppSelector((state) => state.account);
 
     /** @TODO Replace value with ratee name */
-    const rateeUser = "[Var]";
+    const rateeUser = "FirstName LastName";
 
     const [formData, setFormData] = useState<RatingFormState>({
         rating: 0,

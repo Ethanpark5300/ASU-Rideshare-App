@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { GoogleMap, LoadScript, Marker, DirectionsRenderer, Autocomplete } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, Marker, DirectionsRenderer, Autocomplete, MarkerF } from '@react-google-maps/api';
 import '../styles/RequestRide.css';
 import PageTitle from '../components/PageTitle/PageTitle';
 import { FaMapMarkerAlt } from "react-icons/fa";
@@ -42,8 +42,6 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
         label: string;
         address: string;
     }
-
-    // const account = useAppSelector((state) => state.account);
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -394,7 +392,7 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
                                 <div className="map-container">
                                     <GoogleMap mapContainerStyle={{ height: '100%', width: '100%' }} zoom={13} center={mapCenter}>
                                         {/* Marker for the user's current location */}
-                                        <Marker position={currentPosition} />
+                                        <MarkerF position={currentPosition} />
 
                                         {/* DirectionsRenderer for the searched directions */}
                                         {directions && <DirectionsRenderer directions={directions} />}

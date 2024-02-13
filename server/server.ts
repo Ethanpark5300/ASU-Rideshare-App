@@ -271,11 +271,11 @@ app.post("/send-report", async (req: Request, res: Response) => {
 	const db = await dbPromise;
 
 	let email = req.body.email;
-	let reported_id = "Test email" /** @TODO Replace value with actual reportee email */
+	let reportedId = req.body.reportedUser; /** @TODO Replace value with actual reportee email */
 	let reason = req.body.reason;
 	let comments = req.body.comments;
 
-	await db.run(`INSERT INTO Reports (email, reported_id, reason, comments) VALUES (?,?,?,?)`, email, reported_id, reason, comments);
+	await db.run(`INSERT INTO Reports (email, reported_id, reason, comments) VALUES (?,?,?,?)`, email, reportedId, reason, comments);
 });
 
 /** Send payment to payments database */
@@ -287,13 +287,15 @@ app.post("/send-payment", async (req: Request, res: Response) => {
 
 	const db = await dbPromise;
 
-	let rider_email = req.body.riderEmail;
-	let driver_email = "Test email" /** @TODO Replace value with actual email */
-	let ride_cost = req.body.rideCost;
+	let riderEmail = req.body.riderEmail;
+	let driverPayPalEmail = req.body.driverPayPalEmail; /** @TODO Replace value with actual email */
+	let rideCost = req.body.rideCost;
 	let currentDate = new Date().toLocaleDateString();
 	let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-	await db.run(`INSERT INTO Payments (rider_email, driver_email, ride_cost, payment_date, payment_time) VALUES (?,?,?,?,?)`, rider_email, driver_email, ride_cost, currentDate, currentTime);
+	let driverEmail = ""
+
+	await db.run(`INSERT INTO Payments (rider_email, driver_email, ride_cost, payment_date, payment_time) VALUES (?,?,?,?,?)`, riderEmail, driverEmail, rideCost, currentDate, currentTime);
 
 	/* delete duplicate records from the table */
 	await db.run(`DELETE FROM Payments WHERE payment_id NOT IN (SELECT MIN(payment_id) FROM Payments GROUP BY rider_email, driver_email, ride_cost, payment_date, payment_time)`);

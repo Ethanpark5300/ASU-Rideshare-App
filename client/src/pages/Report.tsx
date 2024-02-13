@@ -13,7 +13,7 @@ const Report: React.FC = (props) => {
     const [comments, setComments] = useState("");
 
     /** @TODO Replace value with reportee name */
-    const reportedUser = "[Var]";
+    const reportedUser = "FirstName LastName";
 
     //function to handle change in dropdown selection
     const handleReasonChange = (event) => {
@@ -33,6 +33,7 @@ const Report: React.FC = (props) => {
                 headers: { "Content-type": "application/json" },
                 body: JSON.stringify({
                     email: account?.account?.email,
+                    reportedUser: reportedUser,
                     reason: selectedReason,
                     comments: comments,
                 }),

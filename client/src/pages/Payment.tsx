@@ -7,12 +7,11 @@ import { useAppSelector } from '../store/hooks';
 
 /** @TODO Replace with driver's sandbox paypal email */
 /** Use sandbox business accounts for testing */
-const driverEmail = 'sb-4swkm28693439@business.example.com';
+const driverPayPalEmail = 'sb-4swkm28693439@business.example.com';
 const amount = 50;
 
 /** @TODO Replace with actual driver's name */
-const driverFirstName = "DriverFName"
-const driverLastName = "DriverLName"
+const driverName = "FirstName LastName";
 
 const paypalOptions = {
     clientId: process.env.REACT_APP_PAYPAL_CLIENT_ID || '',
@@ -34,7 +33,7 @@ const Payment: React.FC = (props) => {
                         value: amount,
                     },
                     driver: {
-                        email_address: driverEmail,
+                        email_address: driverPayPalEmail,
                     },
                 },
             ],
@@ -70,7 +69,7 @@ const Payment: React.FC = (props) => {
                     headers: { "Content-type": "application/json" },
                     body: JSON.stringify({
                         riderEmail: account?.account?.email,
-                        driverEmail: driverEmail,
+                        driverPayPalEmail: driverPayPalEmail,
                         rideCost: amount,
                     }),
                 })
@@ -111,8 +110,7 @@ const Payment: React.FC = (props) => {
                 <div className="payment-wrapper">
                     <div className="payment-container">
                         <h1>Payment</h1>
-                        <h2>Pay {driverFirstName} {driverLastName}</h2>
-                        <h3>{driverEmail}</h3>
+                        <h2>Pay {driverName}</h2>
                         <h2>Ride Cost: ${amount}</h2>
                         <div className="paypal-btns-container">
                             <PayPalScriptProvider options={paypalOptions}>
