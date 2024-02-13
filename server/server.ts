@@ -1,3 +1,5 @@
+import 'dotenv/config'; //THIS GOES FIRST
+
 import fs from 'fs';
 import { Database } from 'sqlite3';
 import express, { NextFunction } from 'express';
@@ -17,13 +19,13 @@ const cookieParser = require('cookie-parser');
 const PORT = process.env.PORT || 3001;
 //process.env is set outside
 const JWT_SECRET = process.env.JWT_SECRET || "DevelopmentSecretKey";
-
+const COOKIEPARSER_SECRET = process.env.COOKIEPARSER_SECRET || 'p3ufucaj55bi2kiy6lsktnm23z4c18xy';
 
 let message: string | undefined;
 let hadError: boolean;
 app.use(cors());
 app.use(express.json());
-app.use(cookieParser('p3ufucaj55bi2kiy6lsktnm23z4c18xy'));
+app.use(cookieParser(COOKIEPARSER_SECRET));
 
 const saltRounds: number = 10;
 
@@ -140,9 +142,7 @@ app.get('/read-cookie', (req: Request, res: Response) => {
 
 	//cookie should store something and we can get the user info afterwards
 
-	/**@todo do fetch*/
 	const verifyAcc: Object | undefined = verifyToken(req.signedCookies.sessionToken);
-	console.log(JWT_SECRET);
 
 	//return null for json to not throw out errors on the client side
 	res.json(verifyAcc ?? null);
