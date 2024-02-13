@@ -300,7 +300,7 @@ app.post("/send-payment", async (req: Request, res: Response) => {
 });
 
 app.get("/available-drivers", async (req: Request, res: Response) => {
-	let riderEmail = req.query.riderEmail as string; /** @returns current rider's email */
+	let riderEmail = req.query.riderEmail;
 
 	const dbGetFavoriteDriversPromise = sqlite.open({
 		filename: "./database/favorites.sqlite",
@@ -324,7 +324,7 @@ app.get("/available-drivers", async (req: Request, res: Response) => {
 	let getAvailableDriversListResults = await dbAvailableDrivers.all(`SELECT * FROM USER_INFO WHERE Type_User = 2 AND Status_User = 'TRUE'`);
 	let getBlockedDriversListResults = await dbBlockedDrivers.all(`SELECT * FROM BLOCKED WHERE rider_id = '${riderEmail}'`);
 
-	// List of Available Favorite Drivers
+	// List of available favorite drivers
 	let availableFavoriteDrivers = getFavoriteDriversListResults
 		.filter((favorite: { Driver_Email: any; }) => {
 			return getAvailableDriversListResults.some((driver: { Email: any; }) => driver.Email === favorite.Driver_Email);
@@ -345,7 +345,7 @@ app.get("/available-drivers", async (req: Request, res: Response) => {
 		})
 		.filter(Boolean); // Remove null values from the array
 
-	// List of Other Available Drivers (Excluding User's Blocked Drivers)
+	// List of other available drivers (excluding rider's blocked drivers)
 	let blockedDrivers = getBlockedDriversListResults.map((blocked: { driver_id: any; }) => blocked.driver_id);
 	let otherAvailableDrivers = getAvailableDriversListResults
 		.filter((driver: { Email: any; }) => {
@@ -373,11 +373,42 @@ app.get("/ride-history", async (req: Request, res: Response) => {
 	let getRiderHistoryResults = await getRideHistory.all(`SELECT RideHistory_ID, Driver_FirstName, Driver_LastName, Pickup_Time, Dropoff_Location, Ride_Date, Cost, Given_Rider_Rating FROM HISTORY WHERE Rider_ID='${accountEmail}'`)
 	let getDriverHistoryResults = await getRideHistory.all(`SELECT RideHistory_ID, Rider_FirstName, Rider_LastName, Ride_Date, Pickup_Time, Dropoff_Location, Earned, Given_Driver_Rating FROM HISTORY WHERE Driver_ID='${accountEmail}'`);
 
-	console.log(getDriverHistoryResults)
-
 	res.json({
 		ridersHistoryList: getRiderHistoryResults,
 		driversHistoryList: getDriverHistoryResults
+	});
+})
+
+app.post("/ride-queue", async (req: Request, res: Response) => { 
+	let rider_id = req.body.rider_id;
+	let pickupLocation = req.body.pickupLocation;
+	let dropoffLocation = req.body.dropoffLocation;
+
+	const dbRideQueuePromise = sqlite.open({
+		filename: "./database/ride_queue.sqlite",
+		driver: sqlite3.Database
+	});
+	let rideQueue = await dbRideQueuePromise;
+
+	/** @TODO Need to store rider's first and last name as well */
+	await rideQueue.run(`INSERT INTO Ride_Queue (Rider_ID, Pickup, Dropoff) VALUES (?,?,?)`, rider_id, pickupLocation, dropoffLocation);
+});
+
+app.get("/ride-queue", async (req: Request, res: Response) => {
+	let accountEmail = req.query.accountEmail;
+
+	const dbGetRideQueuePromise = sqlite.open({
+		filename: "./database/ride_queue.sqlite",
+		driver: sqlite3.Database
+	});
+	let getRideQueue = await dbGetRideQueuePromise;
+
+	let allRequestsList = await getRideQueue.all(`SELECT * FROM Ride_Queue`)
+	/** @TODO Need to show riders who request specific driver */
+
+	res.json({
+		// pendingRequestsList: allPendingRequestsList,
+		allRequestsList: allRequestsList,
 	});
 })
 

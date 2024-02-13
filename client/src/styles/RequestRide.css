@@ -198,3 +198,8 @@
 }
 
 /* @TODO Style radio buttons */
+
+#request-ride .request-error {
+    margin-left: auto;
+    margin-right: auto;
+}

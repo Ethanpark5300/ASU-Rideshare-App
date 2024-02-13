@@ -5,6 +5,8 @@ import PageTitle from '../components/PageTitle/PageTitle';
 import { FaMapMarkerAlt } from "react-icons/fa";
 import Select from 'react-select';
 import buildingsData from '../databases/Buildings.json';
+import { useAppSelector } from '../store/hooks';
+import { useNavigate } from 'react-router-dom';
 const libraries = ['places'] as any;
 
 const RequestRide: React.FC = () => {
@@ -36,6 +38,8 @@ const RequestRide: React.FC = () => {
         label: string;
         address: string;
     }
+
+    const account = useAppSelector((state) => state.account);
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -172,11 +176,24 @@ const RequestRide: React.FC = () => {
 
     /**@TODO Send pickup and dropoff location */
     const handleSubmit = () => {
-        getPickupLocation()
-        getDropoffLocation()
+        try {
+            getPickupLocation()
+            getDropoffLocation()
+            // console.log("Pickup Location: " + pickupLocation)
+            // console.log("Dropoff Location: " + dropoffLocation)
 
-        console.log("Pickup Location: " + pickupLocation)
-        console.log("Dropoff Location: " + dropoffLocation)
+            fetch(`/ride-queue`, {
+                method: "POST",
+                headers: { "Content-type": "application/json" },
+                body: JSON.stringify({
+                    rider_id: account?.account?.email,
+                    pickupLocation: pickupLocation,
+                    dropoffLocation: dropoffLocation,
+                }),
+            })
+        } catch(error) {
+            console.log(error)
+        }
     };
 
     const buildingOptions: BuildingOption[] = buildingsData.buildings.map((building: Building) => ({
@@ -365,7 +382,7 @@ const RequestRide: React.FC = () => {
                     )}
                 </aside>
                 {error ? (
-                    <p>{error}</p>
+                    <p className='request-error'>{error}</p>
                 ) : (
                     mapLoaded && (
                         <div>
