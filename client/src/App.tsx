@@ -39,7 +39,7 @@ function App() {
 				.then((res) => res.json())
 				.then((data) => {
 					//console.log(data);
-					if (data.Email !== undefined) {
+					if (data !== null) {
 						const accountData = new Account(data.Email, data.FirstName, data.LastName, data.PhoneNumber, data.AccountType);
 						dispatch(setAccountStore(accountData));
 					} else {

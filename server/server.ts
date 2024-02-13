@@ -142,10 +142,10 @@ app.get('/read-cookie', (req: Request, res: Response) => {
 
 	/**@todo do fetch*/
 	const verifyAcc: Object | undefined = verifyToken(req.signedCookies.sessionToken);
-	//console.log(verifyAcc);
+	console.log(JWT_SECRET);
 
-
-	res.json(verifyAcc);
+	//return null for json to not throw out errors on the client side
+	res.json(verifyAcc ?? null);
 });
 /**
  * logout

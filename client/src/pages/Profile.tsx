@@ -17,9 +17,11 @@ const Profile: React.FC = (props) => {
             headers: { "Content-type": "application/json" },
         })
 
-        .then((res) => res.json())
-        .then((data) => {
-            if (data.Email !== undefined) {
+			.then((res) => res.json())
+			.then((data) => {
+			if (data !== null) {
+				
+				console.log(data.Email + " " + data.FirstName + " " + data.LastName + " " + data.PhoneNumber + " " + data.AccountType);
                 dispatch(setAccountStore(new Account(data.Email, data.FirstName, data.LastName, data.PhoneNumber, data.AccountType)));
             } else {
                 dispatch(setAccountStore(undefined));
