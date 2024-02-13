@@ -65,7 +65,7 @@ function App() {
 				<Route path="/Payment" element={<Payment/>}/>
 				<Route path="/Profile" element={<Profile/>}/>
 				<Route path="/Register" element={<Register/>}/>
-				<Route path="/RequestRide" element={<RequestRide/>}/>
+				<Route path="/RequestRide" element={<RequestRide riderEmail={account?.account?.email}/>}/>
 				<Route path="/RideHistory" element={<RideHistory/>}/>
 				<Route path="/RideinProgress" element={<RideinProgress/>}/>
 				<Route path="/ChooseDriver" element={<ChooseDriver/>}/>

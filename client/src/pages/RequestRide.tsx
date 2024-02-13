@@ -9,7 +9,11 @@ import { useAppSelector } from '../store/hooks';
 import { useNavigate } from 'react-router-dom';
 const libraries = ['places'] as any;
 
-const RequestRide: React.FC = () => {
+interface RequestRideProps {
+    riderEmail: string;
+}
+
+const RequestRide: React.FC<RequestRideProps> = (props) => {
     const [currentPosition, setCurrentPosition] = useState({ lat: 0, lng: 0 });
     const [mapCenter, setMapCenter] = useState({ lat: 0, lng: 0 });
     const [mapLoaded, setMapLoaded] = useState(false);
@@ -39,7 +43,7 @@ const RequestRide: React.FC = () => {
         address: string;
     }
 
-    const account = useAppSelector((state) => state.account);
+    // const account = useAppSelector((state) => state.account);
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -186,7 +190,7 @@ const RequestRide: React.FC = () => {
                 method: "POST",
                 headers: { "Content-type": "application/json" },
                 body: JSON.stringify({
-                    rider_id: account?.account?.email,
+                    rider_id: props.riderEmail,
                     pickupLocation: pickupLocation,
                     dropoffLocation: dropoffLocation,
                 }),

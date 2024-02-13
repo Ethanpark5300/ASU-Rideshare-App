@@ -1,7 +1,7 @@
 import '../styles/ChooseRider.css';
 import PageTitle from '../components/PageTitle/PageTitle';
 import { useAppSelector } from '../store/hooks';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 function ChooseRider() {
     const account = useAppSelector((state) => state.account);
@@ -10,7 +10,6 @@ function ChooseRider() {
     const [allRequestsList, setAllRequestsList] = useState<any[]>([]);
 
     const refreshRideQueueList = useCallback(async () => {
-        console.log("dasda")
         try {
             const response = await fetch(`/ride-queue?accountEmail=${account?.account?.email}`);
             const data = await response.json();
@@ -19,6 +18,10 @@ function ChooseRider() {
             console.error("Error fetching data:", error);
         }
     }, [account?.account?.email]);
+
+    useEffect(() => {
+        refreshRideQueueList();
+    }, [refreshRideQueueList]);
 
     return (
         <PageTitle title="Choose Rider">
