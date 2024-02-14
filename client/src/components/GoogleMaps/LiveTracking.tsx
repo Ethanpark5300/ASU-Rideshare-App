@@ -9,6 +9,7 @@ interface Location {
 const LiveTracking: React.FC = () => {
     const [currentLocation, setCurrentLocation] = useState<Location | null>(null);
     const [errorMessage, setErrorMessage] = useState<string>('');
+    const [mapLoaded, setMapLoaded] = useState<boolean>(false);
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -17,6 +18,7 @@ const LiveTracking: React.FC = () => {
                     const { latitude, longitude } = position.coords;
                     setCurrentLocation({ lat: latitude, lng: longitude });
                     setErrorMessage('');
+                    setMapLoaded(true);
                 },
                 (error) => {
                     // console.error('Error getting user location:', error);
@@ -32,6 +34,10 @@ const LiveTracking: React.FC = () => {
         }
     }, []);
 
+    const handleMapLoad = () => {
+        setMapLoaded(true);
+    };
+
     return (
         <div style={{ width: '100%', height: '100%', position: 'relative' }}>
             {errorMessage && (
@@ -46,15 +52,18 @@ const LiveTracking: React.FC = () => {
                     {errorMessage}
                 </div>
             )}
-            <LoadScript googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY || ''}>
-                <GoogleMap
-                    mapContainerStyle={{ width: '100%', height: '100%' }}
-                    center={currentLocation || { lat: 0, lng: 0 }}
-                    zoom={15}
-                >
-                    {currentLocation && <MarkerF position={currentLocation} />}
-                </GoogleMap>
-            </LoadScript>
+            {mapLoaded && (
+                <LoadScript googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY || ''}>
+                    <GoogleMap
+                        mapContainerStyle={{ width: '100%', height: '100%' }}
+                        center={currentLocation || { lat: 0, lng: 0 }}
+                        zoom={15}
+                        onLoad={handleMapLoad}
+                    >
+                        {currentLocation && <MarkerF position={currentLocation} />}
+                    </GoogleMap>
+                </LoadScript>
+            )}
         </div>
     );
 };
