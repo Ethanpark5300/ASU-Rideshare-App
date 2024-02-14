@@ -27,14 +27,14 @@ function ChooseRider() {
         <PageTitle title="Choose Rider">
             <main id="choose-rider">
                 <h1>Choose a Rider</h1>
-                <h2>Pending Requests</h2>
+                <h2>Pending Rider Requests</h2>
                 <br />
-                <h2>All Requests</h2>
+                <h2>All Rider Requests</h2>
                 {allRequestsList.length > 0 ? (
                     <div>
                         {allRequestsList.map((ride) => (
                             <div key={ride.RideQueue_ID}>
-                                <p>{ride.Rider_ID} {ride.Pickup} {ride.Dropoff} <button>Accept</button></p>
+                                <p>{ride.Rider_FirstName} {ride.Rider_LastName} {ride.Pickup} {ride.Dropoff} <button>Accept</button></p>
                             </div>
                         ))}
                     </div>

@@ -430,36 +430,51 @@ app.get("/available-drivers", async (req: Request, res: Response) => {
 });
 
 app.post("/ride-queue", async (req: Request, res: Response) => {
-	let rider_id = req.body.rider_id;
-	let pickupLocation = req.body.pickupLocation;
-	let dropoffLocation = req.body.dropoffLocation;
+	(async () => {
+		let riderEmail = req.body.rider_id;
+		let pickupLocation = req.body.pickupLocation;
+		let dropoffLocation = req.body.dropoffLocation;
 
-	const dbRideQueuePromise = sqlite.open({
-		filename: "./database/ride_queue.sqlite",
-		driver: sqlite3.Database
-	});
-	let rideQueue = await dbRideQueuePromise;
+		const [dbUserInfoPromise, dbRideQueuePromise] = await Promise.all([
+			open({
+				filename: './database/user_info.db',
+				driver: sqlite3.Database
+			}),
+			open({
+				filename: './database/ride_queue.sqlite',
+				driver: sqlite3.Database
+			}),
+		])
 
-	/** @TODO Need to store rider's first and last name as well */
-	await rideQueue.run(`INSERT INTO Ride_Queue (Rider_ID, Pickup, Dropoff) VALUES (?,?,?)`, rider_id, pickupLocation, dropoffLocation);
+		let Rider_FirstName = await dbUserInfoPromise.get(`SELECT First_Name FROM USER_INFO WHERE Email='${riderEmail}'`)
+		let Rider_LastName = await dbUserInfoPromise.get(`SELECT Last_Name FROM USER_INFO WHERE Email='${riderEmail}'`)
+
+		await dbRideQueuePromise.run(`INSERT INTO Ride_Queue (Rider_ID, Rider_FirstName, Rider_LastName, Pickup, Dropoff, Status) VALUES (?,?,?,?,?,?)`, riderEmail, Rider_FirstName.First_Name, Rider_LastName.Last_Name, pickupLocation, dropoffLocation, "FALSE")
+	})()
 });
 
 app.get("/ride-queue", async (req: Request, res: Response) => {
-	let accountEmail = req.query.accountEmail;
+	(async () => {
+		let accountEmail = req.query.accountEmail;
 
-	const dbGetRideQueuePromise = sqlite.open({
-		filename: "./database/ride_queue.sqlite",
-		driver: sqlite3.Database
-	});
-	let getRideQueue = await dbGetRideQueuePromise;
+		const [dbGetRideQueuePromise] = await Promise.all([
+			open({
+				filename: './database/ride_queue.sqlite',
+				driver: sqlite3.Database
+			}),
+			// open({
+			// 	filename: '/tmp/database2.db',
+			// 	driver: sqlite3.Database
+			// }),
+		])
 
-	let allRequestsList = await getRideQueue.all(`SELECT * FROM Ride_Queue`)
-	/** @TODO Need to show riders who request specific driver */
+		let allRequestsList = await dbGetRideQueuePromise.all(`SELECT * FROM Ride_Queue`)
 
-	res.json({
-		// pendingRequestsList: allPendingRequestsList,
-		allRequestsList: allRequestsList,
-	});
+		res.json({
+			// pendingRequestsList: allPendingRequestsList,
+			allRequestsList: allRequestsList,
+		});
+	})()
 })
 
 app.listen(PORT, () => {
