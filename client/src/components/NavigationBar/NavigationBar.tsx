@@ -50,10 +50,11 @@ function Navbar() {
                 <div className="navbar-links">
                     {/* Rider Navbar */}
                     
-					<ul className="nav__list">
+					
 						{
-							(account?.account?.accountType & (AccountTypeFlag.Rider & AccountTypeFlag.Driver)) && (
-								<>
+						((account?.account?.accountType & (AccountTypeFlag.Rider & AccountTypeFlag.Driver)) !== 0) && (
+							<ul className="nav__list">
+								
 									<li className="nav__item">
 										<Link className="nav__link fromLeft" to="/">Home</Link>
 									</li>
@@ -79,10 +80,11 @@ function Navbar() {
 											<button>Request Ride</button>
 										</Link>
 									</li>
-								</>
+								
+								</ul>
 							)
 						}
-                        </ul>
+                        
                      
 
                     {/* Driver Navbar */}
