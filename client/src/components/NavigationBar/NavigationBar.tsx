@@ -52,7 +52,7 @@ function Navbar() {
                     
 					<ul className="nav__list">
 						{
-							(account?.account?.accountType & (AccountTypeFlag.Rider & AccountTypeFlag.Driver) && (
+							(account?.account?.accountType & (AccountTypeFlag.Rider & AccountTypeFlag.Driver)) && (
 								<>
 									<li className="nav__item">
 										<Link className="nav__link fromLeft" to="/">Home</Link>
