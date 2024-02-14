@@ -2,6 +2,7 @@ import '../styles/RideHistory.css';
 import PageTitle from '../components/PageTitle/PageTitle';
 import { useAppSelector } from '../store/hooks';
 import { useCallback, useEffect, useState } from 'react';
+import { AccountTypeFlag } from '../account/Account';
 
 function RideHistory() {
     const account = useAppSelector((state) => state.account);
@@ -32,7 +33,7 @@ function RideHistory() {
                 <button onClick={refreshRideHistoryList}>Refresh</button>
 
                 {/** @returns Rider history */}
-                {account?.account?.accountType === 1 && (
+                {(AccountTypeFlag.Rider) && (
                     <div>
                         <h2>Ride History</h2>
                         {ridersHistoryList.length > 0 ? (
@@ -55,7 +56,7 @@ function RideHistory() {
 
                 {/** @returns Driver history */}
                 {
-                    (account?.account?.accountType === 2) && (
+                    (AccountTypeFlag.Driver) && (
                         <div>
                             <h2>Drive History</h2>
                             {driversHistoryList.length > 0 ? (
@@ -76,7 +77,51 @@ function RideHistory() {
                         </div>
                     )
                 }
-                
+
+                {/** @returns Rider and Driver history */}
+                {
+                    (AccountTypeFlag.Rider | AccountTypeFlag.Driver) && (
+                        <>
+                            <div>
+                                <h2>Ride History</h2>
+                                {ridersHistoryList.length > 0 ? (
+                                    <div>
+                                        {ridersHistoryList.map((ride) => (
+                                            <div key={ride.RideHistory_ID}>
+                                                <table>
+                                                    <tr>
+                                                        <td>Name = {ride.Driver_FirstName} {ride.Driver_LastName} Time = {ride.Pickup_Time} Location = {ride.Dropoff_Location} Date = {ride.Ride_Date} Cost = {ride.Cost} Rating = {ride.Given_Rider_Rating}</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div>No ride history available.</div>
+                                )}
+                            </div>
+                            <div>
+                                <h2>Drive History</h2>
+                                {driversHistoryList.length > 0 ? (
+                                    <div>
+                                        {driversHistoryList.map((ride) => (
+                                            <div key={ride.RideHistory_ID}>
+                                                <table>
+                                                    <tr>
+                                                        <td>Name = {ride.Rider_FirstName} {ride.Rider_LastName} Date = {ride.Ride_Date} Time = {ride.Pickup_Time} Location = {ride.Dropoff_Location} Payout = {ride.Earned} Rating = {ride.Given_Driver_Rating}</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div>No drive history available.</div>
+                                )}
+                            </div>
+                        </>
+                    )
+                }
+
             </main>
         </PageTitle>
     );
