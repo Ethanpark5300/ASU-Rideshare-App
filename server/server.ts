@@ -1,14 +1,17 @@
 import 'dotenv/config'; //THIS GOES FIRST
-
+import nodemailer from 'nodemailer';
 import fs from 'fs';
 import { Database } from 'sqlite3';
 import express, { NextFunction } from 'express';
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken';
+
+import sqlite3 from 'sqlite3';
+import sqlite from 'sqlite';
 //const fs = require("fs");
-const sqlite = require("sqlite")
-const sqlite3 = require("sqlite3");
+//const sqlite = require("sqlite")
+//const sqlite3 = require("sqlite3");
 //const Database = sqlite3.Database;
 //const express = require("express");
 const cors = require("cors");
@@ -33,6 +36,15 @@ const saltRounds: number = 10;
 //creating the table and storing it in
 const user_info = new Database("./database/user_info.db");
 
+const transporter = nodemailer.createTransport({
+	service: 'gmail',
+	auth: {
+		user: process.env.EMAIL_USERNAME,
+		pass: process.env.EMAIL_PASSWORD
+	}
+}); 
+
+
 
 //just in case we need again
 //user_info.exec(fs.readFileSync(__dirname + '/Tables/CREATE_USER_INFO.sql').toString());
@@ -48,6 +60,19 @@ const user_info = new Database("./database/user_info.db");
 //	});
 //});
 
+/**
+ * 
+ * @param email email to send to
+ * @param verifyID unique generated ID that is sent in the content of the email
+ */
+const sendRegisterVerifyEmail = (email: string, verifyID: string) => {
+	const mailOptions = {
+		from: process.env.EMAIL_USERNAME,
+		to: email,
+		subject: "Email Verification",
+		text: "This email was recently used in registration. Enter this string of characters to verify your email.\n" + verifyID + "\n\n If this wasn't you, ignore this email.",
+	}
+}
 
 /**
  * body contains the properties email, firstName, lastName, password
@@ -59,15 +84,32 @@ app.post("/registration", async (req: Request, res: Response) => {
 	const hashedPassword: string = await bcrypt.hash(req.body.password, salt)
 	//console.log("Hash: " + hashedPassword);
 
-	const new_user = user_info.prepare(fs.readFileSync(__dirname + '/Tables/New_User.sql').toString());
-	new_user.run([req.body.firstName, req.body.lastName, hashedPassword, req.body.email], cb);
-
-	//console.log(message + " | " + req.body.email);
-
-	res.json({
-		registrationSuccess: !hadError,
-		message: message,
+	const db = new Database("./database/user_info.db", (err:Error|null) => {
+		if (err) return console.log(err.message);
 	});
+	db.run('INSERT INTO USER_INFO (FIRST_NAME, LAST_NAME, PASSWORD_USER, EMAIL) VALUES(?,?,?,?)', [req.body.firstName, req.body.lastName, hashedPassword, req.body.email], (err:Error, rows:Object) => {
+		if (err) {
+			hadError = true;
+			message = err.message;
+		} else {
+			hadError = false;
+			message = undefined;
+		}
+
+		console.log(message + " | " + req.body.email);
+
+		res.json({
+			registrationSuccess: !hadError,
+			message: message,
+		});
+	});	
+});
+
+/**
+ * body contains the property 
+ */
+app.post("/registration_verification", (req: Request, res: Response) => {
+
 });
 
 /**
@@ -353,9 +395,9 @@ app.get("/available-drivers", async (req: Request, res: Response) => {
 		.filter((driver: { Email: any; }) => {
 			return !blockedDrivers.includes(driver.Email);
 		})
-		.filter((driver: { Email: any; }) => {
-			return !availableFavoriteDrivers.some((favorite: { email: any; }) => favorite && favorite.email === driver.Email);
-		});
+		//.filter((driver: { Email: any; }) => {
+		//	return !availableFavoriteDrivers.some((favorite: { email: any; }) => favorite && favorite.email === driver.Email);
+		//});
 
 	res.json({
 		availableFavoriteDrivers: availableFavoriteDrivers,
