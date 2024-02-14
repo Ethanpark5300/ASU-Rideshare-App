@@ -52,7 +52,7 @@ function Navbar() {
                     
 					
 						{
-						((account?.account?.accountType & (AccountTypeFlag.Rider & AccountTypeFlag.Driver)) !== 0) && (
+						((account?.account?.accountType & (AccountTypeFlag.Rider | AccountTypeFlag.Driver)) !== 0) && (
 							<ul className="nav__list">
 								
 									<li className="nav__item">
@@ -114,7 +114,7 @@ function Navbar() {
 
                     {/* Guest Navbar */}
                     {
-                        (!account.account) && (
+                        (!account.account || ((account.account.accountType & AccountTypeFlag.None) !== 0)) && (
                             <ul className="nav__list">
                                 <li>
                                     <Link to="/Login">
