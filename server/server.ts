@@ -8,7 +8,7 @@ import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken';
 
 import sqlite3 from 'sqlite3';
-import sqlite from 'sqlite';
+import sqlite, { open } from 'sqlite';
 //const fs = require("fs");
 //const sqlite = require("sqlite")
 //const sqlite3 = require("sqlite3");
@@ -408,19 +408,32 @@ app.get("/available-drivers", async (req: Request, res: Response) => {
 app.get("/ride-history", async (req: Request, res: Response) => {
 	let accountEmail = req.query.accountEmail;
 
-	const dbGetRideHistoryPromise = sqlite.open({
-		filename: "./database/ridehistory.sqlite",
+	open({
+		filename: './database/ridehistory.sqlite',
 		driver: sqlite3.Database
-	});
-	let getRideHistory = await dbGetRideHistoryPromise;
+	}).then(async (db) => {
+		let getRiderHistoryResults = await db.all(`SELECT RideHistory_ID, Driver_FirstName, Driver_LastName, Pickup_Time, Dropoff_Location, Ride_Date, Cost, Given_Rider_Rating FROM HISTORY WHERE Rider_ID='${accountEmail}'`)
+		let getDriverHistoryResults = await db.all(`SELECT RideHistory_ID, Rider_FirstName, Rider_LastName, Ride_Date, Pickup_Time, Dropoff_Location, Earned, Given_Driver_Rating FROM HISTORY WHERE Driver_ID='${accountEmail}'`);
 
-	let getRiderHistoryResults = await getRideHistory.all(`SELECT RideHistory_ID, Driver_FirstName, Driver_LastName, Pickup_Time, Dropoff_Location, Ride_Date, Cost, Given_Rider_Rating FROM HISTORY WHERE Rider_ID='${accountEmail}'`)
-	let getDriverHistoryResults = await getRideHistory.all(`SELECT RideHistory_ID, Rider_FirstName, Rider_LastName, Ride_Date, Pickup_Time, Dropoff_Location, Earned, Given_Driver_Rating FROM HISTORY WHERE Driver_ID='${accountEmail}'`);
+		res.json({
+			ridersHistoryList: getRiderHistoryResults,
+			driversHistoryList: getDriverHistoryResults
+		});
+	})
 
-	res.json({
-		ridersHistoryList: getRiderHistoryResults,
-		driversHistoryList: getDriverHistoryResults
-	});
+	// const dbGetRideHistoryPromise = sqlite.open({
+	// 	filename: "./database/ridehistory.sqlite",
+	// 	driver: sqlite3.Database
+	// });
+	// let getRideHistory = await dbGetRideHistoryPromise;
+
+	// let getRiderHistoryResults = await getRideHistory.all(`SELECT RideHistory_ID, Driver_FirstName, Driver_LastName, Pickup_Time, Dropoff_Location, Ride_Date, Cost, Given_Rider_Rating FROM HISTORY WHERE Rider_ID='${accountEmail}'`)
+	// let getDriverHistoryResults = await getRideHistory.all(`SELECT RideHistory_ID, Rider_FirstName, Rider_LastName, Ride_Date, Pickup_Time, Dropoff_Location, Earned, Given_Driver_Rating FROM HISTORY WHERE Driver_ID='${accountEmail}'`);
+
+	// res.json({
+	// 	ridersHistoryList: getRiderHistoryResults,
+	// 	driversHistoryList: getDriverHistoryResults
+	// });
 })
 
 app.post("/ride-queue", async (req: Request, res: Response) => { 
