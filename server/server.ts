@@ -42,7 +42,7 @@ const transporter = nodemailer.createTransport({
 		user: process.env.EMAIL_USERNAME,
 		pass: process.env.EMAIL_PASSWORD
 	}
-}); 
+});
 
 
 
@@ -84,10 +84,10 @@ app.post("/registration", async (req: Request, res: Response) => {
 	const hashedPassword: string = await bcrypt.hash(req.body.password, salt)
 	//console.log("Hash: " + hashedPassword);
 
-	const db = new Database("./database/user_info.db", (err:Error|null) => {
+	const db = new Database("./database/user_info.db", (err: Error | null) => {
 		if (err) return console.log(err.message);
 	});
-	db.run('INSERT INTO USER_INFO (FIRST_NAME, LAST_NAME, PASSWORD_USER, EMAIL) VALUES(?,?,?,?)', [req.body.firstName, req.body.lastName, hashedPassword, req.body.email], (err:Error, rows:Object) => {
+	db.run('INSERT INTO USER_INFO (FIRST_NAME, LAST_NAME, PASSWORD_USER, EMAIL) VALUES(?,?,?,?)', [req.body.firstName, req.body.lastName, hashedPassword, req.body.email], (err: Error, rows: Object) => {
 		if (err) {
 			hadError = true;
 			message = err.message;
@@ -102,7 +102,7 @@ app.post("/registration", async (req: Request, res: Response) => {
 			registrationSuccess: !hadError,
 			message: message,
 		});
-	});	
+	});
 });
 
 /**
@@ -271,7 +271,7 @@ app.post("/send-blocked", async (req: Request, res: Response) => {
 		let driver_id = req.body.driver_id; /** @TODO Replace value with actual driver email */
 		let currentDate = new Date().toLocaleDateString();
 		let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-		
+
 		const dbBlockedPromise = await open({
 			filename: './database/blocked.sqlite',
 			driver: sqlite3.Database
@@ -365,69 +365,71 @@ app.get("/ride-history", async (req: Request, res: Response) => {
 })
 
 app.get("/available-drivers", async (req: Request, res: Response) => {
-	let riderEmail = req.query.riderEmail;
+	(async () => {
+		let riderEmail = req.query.riderEmail;
 
-	const dbGetFavoriteDriversPromise = sqlite.open({
-		filename: "./database/favorites.sqlite",
-		driver: sqlite3.Database
-	});
-	let dbFavoriteDrivers = await dbGetFavoriteDriversPromise;
+		const [dbGetFavoriteDriversPromise, dbAvailableDriversPromise, dbBlockedDriversPromise] = await Promise.all([
+			open({
+				filename: './database/favorites.sqlite',
+				driver: sqlite3.Database
+			}),
+			open({
+				filename: './database/user_info.db',
+				driver: sqlite3.Database
+			}),
+			open({
+				filename: './database/blocked.sqlite',
+				driver: sqlite3.Database
+			}),
+		])
 
-	const dbAvailableDriversPromise = sqlite.open({
-		filename: "./database/user_info.db",
-		driver: sqlite3.Database
-	});
-	let dbAvailableDrivers = await dbAvailableDriversPromise;
+		// Make rider status set to false
+		await dbAvailableDriversPromise.run(`UPDATE USER_INFO SET Status_User = 'FALSE' WHERE Email = '${riderEmail}'`);
 
-	const dbBlockedDriversPromise = sqlite.open({
-		filename: "./database/blocked.sqlite",
-		driver: sqlite3.Database
-	});
-	let dbBlockedDrivers = await dbBlockedDriversPromise;
+		let getFavoriteDriversListResults = await dbGetFavoriteDriversPromise.all(`SELECT Driver_Email FROM Favorites WHERE Rider_Email = '${riderEmail}'`);
+		let getAvailableDriversListResults = await dbAvailableDriversPromise.all(`SELECT * FROM USER_INFO WHERE Type_User IN (2, 3) AND Status_User = 'TRUE'`);
+		let getBlockedDriversListResults = await dbBlockedDriversPromise.all(`SELECT * FROM BLOCKED WHERE rider_id = '${riderEmail}'`);
 
-	let getFavoriteDriversListResults = await dbFavoriteDrivers.all(`SELECT Driver_Email FROM Favorites WHERE Rider_Email = '${riderEmail}'`);
-	let getAvailableDriversListResults = await dbAvailableDrivers.all(`SELECT * FROM USER_INFO WHERE Type_User = 2 AND Status_User = 'TRUE'`);
-	let getBlockedDriversListResults = await dbBlockedDrivers.all(`SELECT * FROM BLOCKED WHERE rider_id = '${riderEmail}'`);
+		// List of available favorite drivers
+		let availableFavoriteDrivers = getFavoriteDriversListResults
+			.filter((favorite: { Driver_Email: string; }) => {
+				return getAvailableDriversListResults.some((driver: { Email: string; }) => driver.Email === favorite.Driver_Email);
+			})
+			.map((favorite: { Driver_Email: string; }) => {
+				const driverInfo = getAvailableDriversListResults.find((driver: { Email: string; }) => driver.Email === favorite.Driver_Email);
+				if (driverInfo) {
+					return {
+						email: favorite.Driver_Email,
+						first_name: driverInfo.First_Name,
+						last_name: driverInfo.Last_Name
+					} as { email: string; first_name: string; last_name: string };
+				} else {
+					console.error(`Driver info not found for email: ${favorite.Driver_Email}`);
+					return null;
+				}
+			})
+			.filter((favorite: { email: string; first_name: string; last_name: string; } | null): favorite is { email: string; first_name: string; last_name: string } => favorite !== null); // Adjusted filter to ensure proper type
 
-	// List of available favorite drivers
-	let availableFavoriteDrivers = getFavoriteDriversListResults
-		.filter((favorite: { Driver_Email: any; }) => {
-			return getAvailableDriversListResults.some((driver: { Email: any; }) => driver.Email === favorite.Driver_Email);
-		})
-		.map((favorite: { Driver_Email: any; }) => {
-			const driverInfo = getAvailableDriversListResults.find((driver: { Email: any; }) => driver.Email === favorite.Driver_Email);
-			if (driverInfo) {
-				return {
-					email: favorite.Driver_Email,
-					first_name: driverInfo.First_Name,
-					last_name: driverInfo.Last_Name
-				};
-			} else {
-				// Handle the case where driverInfo is not found
-				console.error(`Driver info not found for email: ${favorite.Driver_Email}`);
-				return null;
-			}
-		})
-		.filter(Boolean); // Remove null values from the array
+		// List of other available drivers (excluding rider's blocked drivers)
+		let blockedDrivers = getBlockedDriversListResults.map((blocked: { driver_id: string; }) => blocked.driver_id);
+		let otherAvailableDrivers = getAvailableDriversListResults
+			.filter((driver: { Email: string; }) => {
+				return !blockedDrivers.includes(driver.Email);
+			})
+			.filter((driver: { Email: string; }) => {
+				return !availableFavoriteDrivers.some((favorite: { email: string; }) => favorite && favorite.email === driver.Email);
+			});
 
-	// List of other available drivers (excluding rider's blocked drivers)
-	let blockedDrivers = getBlockedDriversListResults.map((blocked: { driver_id: any; }) => blocked.driver_id);
-	let otherAvailableDrivers = getAvailableDriversListResults
-		.filter((driver: { Email: any; }) => {
-			return !blockedDrivers.includes(driver.Email);
-		})
-	//.filter((driver: { Email: any; }) => {
-	//	return !availableFavoriteDrivers.some((favorite: { email: any; }) => favorite && favorite.email === driver.Email);
-	//});
+		/** @TODO Drivers who blocked the rider should not show */
 
-	res.json({
-		availableFavoriteDrivers: availableFavoriteDrivers,
-		otherAvailableDrivers: otherAvailableDrivers
-	});
+		res.json({
+			availableFavoriteDrivers: availableFavoriteDrivers,
+			otherAvailableDrivers: otherAvailableDrivers
+		});
+	})()
 });
 
-
-app.post("/ride-queue", async (req: Request, res: Response) => { 
+app.post("/ride-queue", async (req: Request, res: Response) => {
 	let rider_id = req.body.rider_id;
 	let pickupLocation = req.body.pickupLocation;
 	let dropoffLocation = req.body.dropoffLocation;
