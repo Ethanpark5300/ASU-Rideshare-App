@@ -1,7 +1,7 @@
 import "../styles/ChooseDriver.css";
 import PageTitle from "../components/PageTitle/PageTitle";
 import { useState, useEffect, useCallback } from "react";
-import MapContainer from "../components/GoogleMaps/MapContainer";
+import LiveTracking from "../components/GoogleMaps/LiveTracking";
 import { useAppSelector } from "../store/hooks";
 
 const ChooseDriver: React.FC = (props) => {
@@ -79,6 +79,7 @@ const ChooseDriver: React.FC = (props) => {
                         </button> */}
                     </div>
                 </aside>
+            <LiveTracking/>
             </main>
         </PageTitle>
     );

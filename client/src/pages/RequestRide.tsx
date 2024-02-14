@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { GoogleMap, LoadScript, Marker, DirectionsRenderer, Autocomplete, MarkerF } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, Marker, MarkerF, DirectionsRenderer, Autocomplete } from '@react-google-maps/api';
 import '../styles/RequestRide.css';
 import PageTitle from '../components/PageTitle/PageTitle';
 import { FaMapMarkerAlt } from "react-icons/fa";
 import Select from 'react-select';
 import buildingsData from '../databases/Buildings.json';
-import { useAppSelector } from '../store/hooks';
-import { useNavigate } from 'react-router-dom';
 const libraries = ['places'] as any;
 
 interface RequestRideProps {
@@ -44,27 +42,50 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
     }
 
     useEffect(() => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const { latitude, longitude } = position.coords;
-                    setCurrentPosition({ lat: latitude, lng: longitude });
-                    setMapCenter({ lat: latitude, lng: longitude });
-                },
-                (error) => {
-                    console.error('Error getting user location:', error);
-                    setError('Error getting user location. Please enable location services.');
+        const geoWatchId = navigator.geolocation.watchPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+                setCurrentPosition({ lat: latitude, lng: longitude });
+                setMapCenter({ lat: latitude, lng: longitude });
+                setError(null);
+            },
+            (error) => {
+                // console.error('Error getting user location:', error);
+                if (error.code === error.PERMISSION_DENIED) {
+                    setError('User denied the request for Geolocation.');
+                } else {
+                    setError('An error occurred while retrieving location.');
                 }
-            );
-        } else {
-            console.error('Geolocation is not supported by this browser.');
-            setError('Geolocation is not supported by this browser.');
-        }
+            }
+        );
+
+        return () => {
+            navigator.geolocation.clearWatch(geoWatchId);
+        };
     }, []);
 
     const handleMapLoad = () => {
         setMapLoaded(true);
     };
+
+    // useEffect(() => {
+    //     if (navigator.geolocation) {
+    //         navigator.geolocation.getCurrentPosition(
+    //             (position) => {
+    //                 const { latitude, longitude } = position.coords;
+    //                 setCurrentPosition({ lat: latitude, lng: longitude });
+    //                 setMapCenter({ lat: latitude, lng: longitude });
+    //             },
+    //             (error) => {
+    //                 console.error('Error getting user location:', error);
+    //                 setError('Error getting user location. Please enable location services.');
+    //             }
+    //         );
+    //     } else {
+    //         console.error('Geolocation is not supported by this browser.');
+    //         setError('Geolocation is not supported by this browser.');
+    //     }
+    // }, []);
 
     function getPickupLocation() {
         if (origin === null || origin === undefined || origin === "") {
@@ -193,7 +214,7 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
                     dropoffLocation: dropoffLocation,
                 }),
             })
-        } catch(error) {
+        } catch (error) {
             console.log(error)
         }
     };
@@ -390,7 +411,11 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
                         <div>
                             {currentPosition.lat !== 0 && currentPosition.lng !== 0 && (
                                 <div className="map-container">
-                                    <GoogleMap mapContainerStyle={{ height: '100%', width: '100%' }} zoom={13} center={mapCenter}>
+                                    <GoogleMap
+                                        mapContainerStyle={{ height: '100%', width: '100%' }}
+                                        zoom={20}
+                                        center={mapCenter || { lat: 0, lng: 0 }}
+                                    >
                                         {/* Marker for the user's current location */}
                                         <MarkerF position={currentPosition} />
 
