@@ -3,7 +3,7 @@ import "./NavigationBar.css";
 import Navbar_Logo from "./Navbar-Logo.svg";
 import { useEffect } from "react";
 import { useAppSelector } from "../../store/hooks";
-import { Account } from "../../account/Account";
+import { Account, AccountTypeFlag } from "../../account/Account";
 
 function Navbar() {
     useEffect(() => {
@@ -49,57 +49,66 @@ function Navbar() {
 
                 <div className="navbar-links">
                     {/* Rider Navbar */}
-                    {
-                        (account?.account?.accountType === 1) && (
-                            <ul className="nav__list">
-                                <li className="nav__item">
-                                    <Link className="nav__link fromLeft" to="/">Home</Link>
-                                </li>
-                                <li className="nav__item">
-                                    <Link className="nav__link fromLeft" to="/Profile">Profile</Link>
-                                </li>
-                                <li className="nav__item">
-                                    <Link className="nav__link fromLeft" to="/FavoritesList">Favorites</Link>
-                                </li>
-                                <li className="nav__item">
-                                    <Link className="nav__link fromLeft" to="/BlockedList">Blocked</Link>
-                                </li>
-                                <li className="nav__item">
-                                    <Link className="nav__link fromLeft" to="/RideHistory">Ride History</Link>
-                                </li>
-                                <li>
-                                    <Link to="/RequestRide">
-                                        <button>Request Ride</button>
-                                    </Link>
-                                </li>
-                            </ul>
-                        )
-                    }
+                    
+					<ul className="nav__list">
+						{
+							(account?.account?.accountType & (AccountTypeFlag.Rider & AccountTypeFlag.Driver) && (
+								<>
+									<li className="nav__item">
+										<Link className="nav__link fromLeft" to="/">Home</Link>
+									</li>
+									<li className="nav__item">
+										<Link className="nav__link fromLeft" to="/Profile">Profile</Link>
+									</li>
+									{/* Drivers get a single extra tab, for now */ }
+											{
+												(account?.account?.accountType & AccountTypeFlag.Driver) && (
+													<li className="nav__item">
+														<Link className="nav__link fromLeft" to="/FavoritesList">Favorites</Link>
+													</li>
+												)
+											}
+									<li className="nav__item">
+										<Link className="nav__link fromLeft" to="/BlockedList">Blocked</Link>
+									</li>
+									<li className="nav__item">
+										<Link className="nav__link fromLeft" to="/RideHistory">Ride History</Link>
+									</li>
+									<li>
+										<Link to="/RequestRide">
+											<button>Request Ride</button>
+										</Link>
+									</li>
+								</>
+							)
+						}
+                        </ul>
+                     
 
                     {/* Driver Navbar */}
-                    {
-                        (account?.account?.accountType === 2) && (
-                            <ul className="nav__list">
-                                <li className="nav__item">
-                                    <Link className="nav__link fromLeft" to="/">Home</Link>
-                                </li>
-                                <li className="nav__item">
-                                    <Link className="nav__link fromLeft" to="/Profile">Profile</Link>
-                                </li>
-                                <li className="nav__item">
-                                    <Link className="nav__link fromLeft" to="/BlockedList">Blocked</Link>
-                                </li>
-                                <li className="nav__item">
-                                    <Link className="nav__link fromLeft" to="/RideHistory">Ride History</Link>
-                                </li>
-                                <li>
-                                    <Link to="/ChooseRider">
-                                        <button>View Requests</button>
-                                    </Link>
-                                </li>
-                            </ul>
-                        )
-                    }
+                    {/*{*/}
+                    {/*    (account?.account?.accountType & AccountTypeFlag.Driver) && (*/}
+                    {/*        <ul className="nav__list">*/}
+                    {/*            <li className="nav__item">*/}
+                    {/*                <Link className="nav__link fromLeft" to="/">Home</Link>*/}
+                    {/*            </li>*/}
+                    {/*            <li className="nav__item">*/}
+                    {/*                <Link className="nav__link fromLeft" to="/Profile">Profile</Link>*/}
+                    {/*            </li>*/}
+                    {/*            <li className="nav__item">*/}
+                    {/*                <Link className="nav__link fromLeft" to="/BlockedList">Blocked</Link>*/}
+                    {/*            </li>*/}
+                    {/*            <li className="nav__item">*/}
+                    {/*                <Link className="nav__link fromLeft" to="/RideHistory">Ride History</Link>*/}
+                    {/*            </li>*/}
+                    {/*            <li>*/}
+                    {/*                <Link to="/ChooseRider">*/}
+                    {/*                    <button>View Requests</button>*/}
+                    {/*                </Link>*/}
+                    {/*            </li>*/}
+                    {/*        </ul>*/}
+                    {/*    )*/}
+                    {/*}*/}
 
                     {/* Guest Navbar */}
                     {
