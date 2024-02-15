@@ -9,6 +9,8 @@ import jwt from 'jsonwebtoken';
 
 import sqlite3 from 'sqlite3';
 import sqlite, { open } from 'sqlite';
+import SMTPTransport from 'nodemailer/lib/smtp-transport';
+import { table } from 'console';
 //const fs = require("fs");
 //const sqlite = require("sqlite")
 //const sqlite3 = require("sqlite3");
@@ -36,21 +38,37 @@ const saltRounds: number = 10;
 //creating the table and storing it in
 const user_info = new Database("./database/user_info.db");
 
-const transporter = nodemailer.createTransport({
-	service: 'gmail',
-	auth: {
-		user: process.env.EMAIL_USERNAME,
-		pass: process.env.EMAIL_PASSWORD
-	}
-});
+/**
+ * If given table doesn't exist in user_info database, run createTableSQL to make it and fillTableSQL to fill it, if provided.
+ * @param tableName name of the table
+ * @param createTableSQL sql to create the table
+ * @param fillTableSQL optional, sql to fill the table with dummy data
+ */
+const makeTableExist = (tableName: string, createTableSQL: string, fillTableSQL?: string) => {
+	//check to see if USER_INFO exists and if it doesnt make it
+	user_info.get(`SELECT 1 FROM sqlite_schema WHERE type='table' AND name='${tableName}';`, (err: Error | null, rows: any) => {
+		console.log(`Check table ${tableName}:`)
+		if (err) {
+			console.log(err.message);
+		}
+		if (rows) {
+			console.log(`${tableName} already exists.`);
+		} else {
+			console.log(`${tableName} does not exist, make table.`);
+			//just in case we need again
+			user_info.exec(createTableSQL);
 
+			if (fillTableSQL) {
+				console.log(`Adding dummy data to ${tableName}.`);
+				//inserting dummy data
+				user_info.exec(fillTableSQL);
+			}
+			
+		}
+	});
+}
 
-
-//just in case we need again
-//user_info.exec(fs.readFileSync(__dirname + '/Tables/CREATE_USER_INFO.sql').toString());
-
-//inserting data
-//user_info.exec(fs.readFileSync(__dirname + '/Tables/INSERT_USER_INFO.sql').toString());
+makeTableExist("USER_INFO", fs.readFileSync(__dirname + '/Tables/CREATE_USER_INFO.sql').toString(), fs.readFileSync(__dirname + '/Tables/INSERT_USER_INFO.sql').toString());
 
 
 //app.get("/message", (req: Request, res: Response) => {
@@ -59,6 +77,14 @@ const transporter = nodemailer.createTransport({
 //		haha: req.request
 //	});
 //});
+
+const transporter = nodemailer.createTransport({
+	service: 'gmail',
+	auth: {
+		user: process.env.EMAIL_USERNAME,
+		pass: process.env.EMAIL_PASSWORD
+	}
+});
 
 /**
  * 
@@ -72,6 +98,14 @@ const sendRegisterVerifyEmail = (email: string, verifyID: string) => {
 		subject: "Email Verification",
 		text: "This email was recently used in registration. Enter this string of characters to verify your email.\n" + verifyID + "\n\n If this wasn't you, ignore this email.",
 	}
+
+	transporter.sendMail(mailOptions, (err: Error | null, info: SMTPTransport.SentMessageInfo) => {
+		if (err) {
+			console.error(err.message);
+		} else {
+			console.log('Email sent: ' + info.response);
+		}
+	});
 }
 
 /**
@@ -96,7 +130,7 @@ app.post("/registration", async (req: Request, res: Response) => {
 			message = undefined;
 		}
 
-		console.log(message + " | " + req.body.email);
+		//console.log(message + " | " + req.body.email);
 
 		res.json({
 			registrationSuccess: !hadError,

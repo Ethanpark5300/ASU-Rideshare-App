@@ -63,7 +63,7 @@ function Navbar() {
 									</li>
 									{/* Drivers get a single extra tab, for now */ }
 											{
-												(account?.account?.accountType & AccountTypeFlag.Driver) && (
+												((account?.account?.accountType & AccountTypeFlag.Driver) !== 0) && (
 													<li className="nav__item">
 														<Link className="nav__link fromLeft" to="/FavoritesList">Favorites</Link>
 													</li>
