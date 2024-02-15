@@ -1,45 +1,16 @@
-.ride-info {
+#ride-in-progress .ride-info-container {
+    background-color: white;
+    padding: 2rem;
     position: absolute;
     bottom: 0;
     right: 0;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    align-self: flex-end;
-    border: 2px black;
-    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
-    background-color: white;
-    max-width: 500px;
-    padding: 16px;
-}
-  
-.progress {
-    /* styles */
-    font-size: 25px;
-    align-self: flex-start;
-    
+    line-height: 2;
 }
 
-.ridebuttons {
-    align-self: end;
-    padding-right: 20px;
-    padding-bottom: 20px;
-}
-
-.ride-info button {
-    border-radius: 1000px;
-    cursor: pointer;
-    padding: 8px 24px;
-    font-weight: 700;
-    transition: 0.1s;
-    margin: 5px;
-    margin-right: 22px;
-    margin-top: 10px;
+#ride-in-progress .ride-info-container h1 {
     background-color: var(--brand-gold);
-}
-
-.ride-info button:hover {
-    background-color: gold;
+    font-size: 2.5rem;
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 1rem;
 }

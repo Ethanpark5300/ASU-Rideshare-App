@@ -74,7 +74,7 @@ function App() {
 				<Route path="/Report" element={<Report/>}/>
 				<Route path="/FavoritesList" element={<FavoritesList />}/>
 				<Route path="/BlockedList" element={<BlockedList />}/>
-				<Route path="/EditAccount" element={<EditAccount/>}></Route>
+				<Route path="/EditAccount" element={<EditAccount/>}/>
 			</Routes>
 		</>
 	);

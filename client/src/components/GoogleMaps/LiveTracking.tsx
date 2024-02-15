@@ -1,13 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { LoadScript, GoogleMap, Marker, MarkerF } from '@react-google-maps/api';
 
-interface Location {
-    lat: number;
-    lng: number;
-}
-
 const LiveTracking: React.FC = () => {
-    const [currentLocation, setCurrentLocation] = useState<Location | null>(null);
+    const [currentLocation, setCurrentLocation] = useState({ lat: 0, lng: 0 });
     const [errorMessage, setErrorMessage] = useState<string>('');
     const [mapLoaded, setMapLoaded] = useState<boolean>(false);
 
