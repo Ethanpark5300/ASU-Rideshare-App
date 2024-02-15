@@ -58,7 +58,7 @@ const Rating: React.FC = (props) => {
                     ratee: rateeUser,
                     star_rating: formChanges.rating,
                     comments: formChanges.comment,
-                    favoritedDriver: formChanges.favorite
+                    favorited_driver: formChanges.favorite
                 }),
             })
 
@@ -76,8 +76,8 @@ const Rating: React.FC = (props) => {
                 method: "POST",
                 headers: { "Content-type": "application/json" },
                 body: JSON.stringify({
-                    rider_id: account?.account?.email,
-                    driver_id: rateeUser,
+                    blocker: account?.account?.email,
+                    blockee: rateeUser,
                 }),
             })
 

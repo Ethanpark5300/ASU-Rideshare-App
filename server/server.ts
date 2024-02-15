@@ -33,10 +33,16 @@ app.use(express.json());
 app.use(cookieParser(COOKIEPARSER_SECRET));
 
 const saltRounds: number = 10;
-
+let dbPromise: any
 
 //creating the table and storing it in
-const user_info = new Database("./database/user_info.db");
+const database = new Database("./database.db");
+(async () => {
+	dbPromise = await open({
+		filename: './database.db',
+		driver: sqlite3.Database
+	})
+})()
 
 /**
  * If given table doesn't exist in user_info database, run createTableSQL to make it and fillTableSQL to fill it, if provided.
@@ -46,7 +52,7 @@ const user_info = new Database("./database/user_info.db");
  */
 const makeTableExist = (tableName: string, createTableSQL: string, fillTableSQL?: string) => {
 	//check to see if USER_INFO exists and if it doesnt make it
-	user_info.get(`SELECT 1 FROM sqlite_schema WHERE type='table' AND name='${tableName}';`, (err: Error | null, rows: any) => {
+	database.get(`SELECT 1 FROM sqlite_schema WHERE type='table' AND name='${tableName}';`, (err: Error | null, rows: any) => {
 		console.log(`Check table ${tableName}:`)
 		if (err) {
 			console.log(err.message);
@@ -56,12 +62,12 @@ const makeTableExist = (tableName: string, createTableSQL: string, fillTableSQL?
 		} else {
 			console.log(`${tableName} does not exist, make table.`);
 			//just in case we need again
-			user_info.exec(createTableSQL);
+			database.exec(createTableSQL);
 
 			if (fillTableSQL) {
 				console.log(`Adding dummy data to ${tableName}.`);
 				//inserting dummy data
-				user_info.exec(fillTableSQL);
+				database.exec(fillTableSQL);
 			}
 			
 		}
@@ -156,7 +162,7 @@ app.post("/login", (req: Request, res: Response) => {
 
 	const emailPassWrong: string = "Email or Password is incorrect";
 
-	user_info.get(fs.readFileSync(__dirname + '/Tables/login.sql').toString(), [req.body.email], (err: Error, rows: any) => {
+	database.get(fs.readFileSync(__dirname + '/Tables/login.sql').toString(), [req.body.email], (err: Error, rows: any) => {
 		if (rows === undefined) {
 			hadError = true; message = emailPassWrong;
 		} else if (err) {
@@ -300,167 +306,102 @@ const verifyToken = function (token: string): Object | undefined {
 }
 /** Send block info to the blocked database*/
 app.post("/send-blocked", async (req: Request, res: Response) => {
-	(async () => {
-		let rider_id = req.body.rider_id;
-		let driver_id = req.body.driver_id; /** @TODO Replace value with actual driver email */
-		let currentDate = new Date().toLocaleDateString();
-		let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+	let db = await dbPromise;
+	let blocker_ID = req.body.blocker;
+	let blockee_ID = req.body.blockee;
+	let currentDate = new Date().toLocaleDateString();
+	let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-		const dbBlockedPromise = await open({
-			filename: './database/blocked.sqlite',
-			driver: sqlite3.Database
-		})
-		await dbBlockedPromise.run('INSERT INTO BLOCKED (rider_id, driver_id, date, time) VALUES(?,?,?,?)', rider_id, driver_id, currentDate, currentTime);
-	})()
+	/** @TODO Get blockee first and last name with reportee email */
+	let blockee_FirstName = "Test";
+	let blockee_LastName = "Test";
+
+	await db.run('INSERT INTO BLOCKED (Blocker_ID, Blockee_ID, Blockee_FirstName, Blockee_LastName, Date, Time) VALUES (?,?,?,?,?,?)', blocker_ID, blockee_ID, blockee_FirstName, blockee_LastName, currentDate, currentTime);
 });
 
 /** Send ratings to the ratings database*/
 app.post("/send-ratings", async (req: Request, res: Response) => {
-	(async () => {
-		let rater = req.body.rater;
-		let ratee = req.body.ratee; /** @TODO Replace value with actual ratee email */
-		let star_rating = req.body.star_rating;
-		let comments = req.body.comments;
-		let favoritedDriver = req.body.favoritedDriver /** @returns true if favorited and false if not favorited */
-		let currentDate = new Date().toLocaleDateString();
-		let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+	let db = await dbPromise;
+	let rater_ID = req.body.rater;
+	let ratee_ID = req.body.ratee;
+	let star_rating = req.body.star_rating;
+	let comments = req.body.comments;
+	let favorite_driver = req.body.favorited_driver /** @returns true if favorited/false if not favorited */
+	let currentDate = new Date().toLocaleDateString();
+	let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-		const dbRatingsPromise = await open({
-			filename: './database/ratings.sqlite',
-			driver: sqlite3.Database
-		})
+	/** @TODO Get ratee first and last name with ratee email */
+	let ratee_FirstName = "Test"
+	let ratee_LastName = "Test"
 
-		await dbRatingsPromise.run('INSERT INTO Ratings (Rater, Ratee, Star_Rating, Comments, Date, Time) VALUES (?,?,?,?,?,?)', rater, ratee, star_rating, comments, currentDate, currentTime);
+	await db.run('INSERT INTO RATINGS (Rater_ID, Ratee_ID, Ratee_FirstName, Ratee_LastName, Star_Rating, Comments, Date, Time) VALUES (?,?,?,?,?,?,?,?)', rater_ID, ratee_ID, ratee_FirstName, ratee_LastName, star_rating, comments, currentDate, currentTime);
 
-		/** @TODO Calculate new average user rating with aggregate average */
-		/** @TODO Add driver to the rider's favorites list if favoritedDriver is true */
-	})()
+	/** @TODO Calculate new average user rating with aggregate average */
+	/** @TODO Add driver to the rider's favorites list if favoritedDriver is true */
 });
 
 /** Send report to reports database */
 app.post("/send-report", async (req: Request, res: Response) => {
-	(async () => {
-		let email = req.body.email;
-		let reportedId = req.body.reportedUser; /** @TODO Replace value with actual reportee email */
-		let reason = req.body.reason;
-		let comments = req.body.comments;
-		let currentDate = new Date().toLocaleDateString();
-		let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+	let db = await dbPromise;
+	let reporter_ID = req.body.reporter;
+	let reportee_ID = req.body.reportee;
+	let reason = req.body.reason;
+	let comments = req.body.comments;
+	let currentDate = new Date().toLocaleDateString();
+	let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-		const dbReportPromise = await open({
-			filename: './database/reports.sqlite',
-			driver: sqlite3.Database
-		})
-
-		await dbReportPromise.run(`INSERT INTO Reports (Email, Reported_ID, Reason, Comments, Date, Time) VALUES (?,?,?,?,?,?)`, email, reportedId, reason, comments, currentDate, currentTime);
-	})()
+	await db.run(`INSERT INTO REPORTS (Reporter_ID, Reportee_ID, Reason, Comments, Date, Time) VALUES (?,?,?,?,?,?)`, reporter_ID, reportee_ID, reason, comments, currentDate, currentTime);
 });
 
 /** Send payment to payments database */
 app.post("/send-payment", async (req: Request, res: Response) => {
-	(async () => {
-		let riderEmail = req.body.riderEmail;
-		let driverPayPalEmail = req.body.driverPayPalEmail; /** @TODO Replace value with actual driver email ID */
-		let rideCost = req.body.rideCost;
-		let currentDate = new Date().toLocaleDateString();
-		let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+	let db = await dbPromise;
+	let rider_ID = req.body.Rider_ID;
+	let driverPayPalEmail = req.body.driverPayPalEmail;
+	let rideCost = req.body.rideCost;
+	let currentDate = new Date().toLocaleDateString();
+	let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 
-		const dbPaymentPromise = await open({
-			filename: './database/payments.sqlite',
-			driver: sqlite3.Database
-		})
+	let driverEmail = "Test" /** @TODO Replace value with actual driver email ID */
 
-		let driverEmail = "Test" /** @TODO Replace value with actual driver email ID */
+	await db.run(`INSERT INTO PAYMENTS (Rider_ID, Driver_ID, Ride_Cost, Date, Time) VALUES (?,?,?,?,?)`, rider_ID, driverEmail, rideCost, currentDate, currentTime);
 
-		await dbPaymentPromise.run(`INSERT INTO Payments (rider_email, driver_email, ride_cost, payment_date, payment_time) VALUES (?,?,?,?,?)`, riderEmail, driverEmail, rideCost, currentDate, currentTime);
-
-		/* delete duplicate records from the table */
-		await dbPaymentPromise.run(`DELETE FROM Payments WHERE payment_id NOT IN (SELECT MIN(payment_id) FROM Payments GROUP BY rider_email, driver_email, ride_cost, payment_date, payment_time)`);
-	})()
+	/* Delete duplicate records from the table */
+	await db.run(`DELETE FROM PAYMENTS WHERE Payment_ID NOT IN (SELECT MIN(Payment_ID) FROM PAYMENTS GROUP BY Rider_ID, Driver_ID, Ride_Cost, Date, Time)`);
 });
 
 app.get("/ride-history", async (req: Request, res: Response) => {
-	(async () => {
-		let accountEmail = req.query.accountEmail;
+	let db = await dbPromise;
+	let accountEmail = req.query.accountEmail;
 
-		const dbGetRideHistoryPromise = await open({
-			filename: './database/ridehistory.sqlite',
-			driver: sqlite3.Database
-		})
+	let getRiderHistoryResults = await db.all(`SELECT RideHistory_ID, Driver_FirstName, Driver_LastName, Pickup_Time, Dropoff_Location, Ride_Date, Cost, Given_Rider_Rating FROM RIDE_HISTORY WHERE Rider_ID='${accountEmail}'`)
+	let getDriverHistoryResults = await db.all(`SELECT RideHistory_ID, Rider_FirstName, Rider_LastName, Ride_Date, Pickup_Time, Dropoff_Location, Earned, Given_Driver_Rating FROM RIDE_HISTORY WHERE Driver_ID='${accountEmail}'`);
 
-		let getRiderHistoryResults = await dbGetRideHistoryPromise.all(`SELECT RideHistory_ID, Driver_FirstName, Driver_LastName, Pickup_Time, Dropoff_Location, Ride_Date, Cost, Given_Rider_Rating FROM HISTORY WHERE Rider_ID='${accountEmail}'`)
-		let getDriverHistoryResults = await dbGetRideHistoryPromise.all(`SELECT RideHistory_ID, Rider_FirstName, Rider_LastName, Ride_Date, Pickup_Time, Dropoff_Location, Earned, Given_Driver_Rating FROM HISTORY WHERE Driver_ID='${accountEmail}'`);
-
-		res.json({
-			ridersHistoryList: getRiderHistoryResults,
-			driversHistoryList: getDriverHistoryResults
-		});
-	})()
+	res.json({
+		ridersHistoryList: getRiderHistoryResults,
+		driversHistoryList: getDriverHistoryResults
+	});
 })
 
 app.get("/available-drivers", async (req: Request, res: Response) => {
-	(async () => {
-		let riderEmail = req.query.riderEmail;
+	let db = await dbPromise;
+	let riderEmail = req.query.riderEmail;
 
-		const [dbGetFavoriteDriversPromise, dbAvailableDriversPromise, dbBlockedDriversPromise] = await Promise.all([
-			open({
-				filename: './database/favorites.sqlite',
-				driver: sqlite3.Database
-			}),
-			open({
-				filename: './database/user_info.db',
-				driver: sqlite3.Database
-			}),
-			open({
-				filename: './database/blocked.sqlite',
-				driver: sqlite3.Database
-			}),
-		])
+	// Set rider status to false
+	await db.run(`UPDATE USER_INFO SET Status_User = 'FALSE' WHERE Email = '${riderEmail}'`);
 
-		// Make rider status set to false
-		await dbAvailableDriversPromise.run(`UPDATE USER_INFO SET Status_User = 'FALSE' WHERE Email = '${riderEmail}'`);
+	let getFavoriteDriversListResults = await db.all(`SELECT * FROM Favorites WHERE Rider_Email = '${riderEmail}'`);
+	let getAvailableDriversListResults = await db.all(`SELECT * FROM USER_INFO WHERE Type_User IN (2, 3) AND Status_User = 'TRUE'`);
+	let getBlockedDriversListResults = await db.all(`SELECT * FROM BLOCKED WHERE rider_id = '${riderEmail}'`);
 
-		let getFavoriteDriversListResults = await dbGetFavoriteDriversPromise.all(`SELECT Driver_Email FROM Favorites WHERE Rider_Email = '${riderEmail}'`);
-		let getAvailableDriversListResults = await dbAvailableDriversPromise.all(`SELECT * FROM USER_INFO WHERE Type_User IN (2, 3) AND Status_User = 'TRUE'`);
-		let getBlockedDriversListResults = await dbBlockedDriversPromise.all(`SELECT * FROM BLOCKED WHERE rider_id = '${riderEmail}'`);
 
-		// List of available favorite drivers
-		let availableFavoriteDrivers = getFavoriteDriversListResults
-			.filter((favorite: { Driver_Email: string; }) => {
-				return getAvailableDriversListResults.some((driver: { Email: string; }) => driver.Email === favorite.Driver_Email);
-			})
-			.map((favorite: { Driver_Email: string; }) => {
-				const driverInfo = getAvailableDriversListResults.find((driver: { Email: string; }) => driver.Email === favorite.Driver_Email);
-				if (driverInfo) {
-					return {
-						email: favorite.Driver_Email,
-						first_name: driverInfo.First_Name,
-						last_name: driverInfo.Last_Name
-					} as { email: string; first_name: string; last_name: string };
-				} else {
-					console.error(`Driver info not found for email: ${favorite.Driver_Email}`);
-					return null;
-				}
-			})
-			.filter((favorite: { email: string; first_name: string; last_name: string; } | null): favorite is { email: string; first_name: string; last_name: string } => favorite !== null); // Adjusted filter to ensure proper type
 
-		// List of other available drivers (excluding rider's blocked drivers)
-		let blockedDrivers = getBlockedDriversListResults.map((blocked: { driver_id: string; }) => blocked.driver_id);
-		let otherAvailableDrivers = getAvailableDriversListResults
-			.filter((driver: { Email: string; }) => {
-				return !blockedDrivers.includes(driver.Email);
-			})
-			.filter((driver: { Email: string; }) => {
-				return !availableFavoriteDrivers.some((favorite: { email: string; }) => favorite && favorite.email === driver.Email);
-			});
+	/** @TODO Drivers who blocked the rider should not show */
 
-		/** @TODO Drivers who blocked the rider should not show */
-
-		res.json({
-			availableFavoriteDrivers: availableFavoriteDrivers,
-			otherAvailableDrivers: otherAvailableDrivers
-		});
-	})()
+	res.json({
+		// availableFavoriteDrivers: availableFavoriteDrivers,
+		// otherAvailableDrivers: otherAvailableDrivers
+	});
 });
 
 app.post("/ride-queue", async (req: Request, res: Response) => {

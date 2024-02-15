@@ -32,8 +32,8 @@ const Report: React.FC = (props) => {
                 method: "POST",
                 headers: { "Content-type": "application/json" },
                 body: JSON.stringify({
-                    email: account?.account?.email,
-                    reportedUser: reportedUser,
+                    reporter: account?.account?.email,
+                    reportee: reportedUser,
                     reason: selectedReason,
                     comments: comments,
                 }),

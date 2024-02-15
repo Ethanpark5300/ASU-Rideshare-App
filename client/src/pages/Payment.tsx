@@ -68,7 +68,7 @@ const Payment: React.FC = (props) => {
                     method: "POST",
                     headers: { "Content-type": "application/json" },
                     body: JSON.stringify({
-                        riderEmail: account?.account?.email,
+                        Rider_ID: account?.account?.email,
                         driverPayPalEmail: driverPayPalEmail,
                         rideCost: amount,
                     }),
