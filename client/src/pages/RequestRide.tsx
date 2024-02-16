@@ -145,14 +145,10 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
 
     const handleUseCurrentLocation = () => {
         if (currentPosition.lat !== 0 && currentPosition.lng !== 0) {
-            // Clear the building search input and set selected building to null
             setOrigin('');
             setSelectedOriginBuilding(null);
-
-            // Change the radio button to normal search
             setSearchOriginFilter('normal');
 
-            // Using the Geocoding API to get the address from coordinates
             const geocoder = new window.google.maps.Geocoder();
             const latlng = new window.google.maps.LatLng(currentPosition.lat, currentPosition.lng);
 
@@ -242,16 +238,14 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
 
     const handleOriginSearchFilterChange = (filter: 'normal' | 'building') => {
         setSearchOriginFilter(filter);
-        // Clear origin input when switching filters
         setOrigin('');
-        setSelectedOriginBuilding(null); // Clear selected building
+        setSelectedOriginBuilding(null);
     };
 
     const handleDestinationSearchFilterChange = (filter: 'normal' | 'building') => {
         setSearchDestinationFilter(filter);
-        // Clear destination input when switching filters
         setDestination('');
-        setSelectedDestinationBuilding(null); // Clear selected building
+        setSelectedDestinationBuilding(null);
     };
 
     return (
@@ -366,7 +360,6 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
                                     />
                                 )}
                             </div>
-
                         </div>
                         <div className={`search-filter-container ${searchDestinationFilter === 'building' ? 'search-filter-margin' : ''}`}>
                             <div className="normal-search-container">
@@ -418,10 +411,7 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
                                         zoom={20}
                                         center={mapCenter || { lat: 0, lng: 0 }}
                                     >
-                                        {/* Marker for the user's current location */}
                                         <MarkerF position={currentPosition} />
-
-                                        {/* DirectionsRenderer for the searched directions */}
                                         {directions && <DirectionsRenderer directions={directions} />}
                                     </GoogleMap>
                                 </div>

@@ -55,12 +55,14 @@ const RideinProgress: React.FC = () => {
 
     useEffect(() => {
         if (currentLocation && destinationLocation) {
-            const intervalId = setInterval(() => {
-                calculateETA();
-                updateCurrentTime();
-            }, 1); // Update every minute
-            calculateETA(); // Call initially to update arrival time immediately
-            return () => clearInterval(intervalId); // Cleanup interval on component unmount
+            calculateETA();
+            updateCurrentTime();
+            // const intervalId = setInterval(() => {
+            //     calculateETA();
+            //     updateCurrentTime();
+            // }, 1);
+            // calculateETA();
+            // return () => clearInterval(intervalId);
         }
     }, [currentLocation, destinationLocation]);
 
@@ -101,7 +103,7 @@ const RideinProgress: React.FC = () => {
         <PageTitle title='Ride in Progress'>
             <main id='ride-in-progress'>
                 <div className="map-container">
-                    <div style={{ width: '100vw', height: '90.6vh', position: 'absolute' }}>
+                    <div style={{ width: '100vw', height: '90.3vh', position: 'absolute' }}>
                         {errorMessage && (
                             <div
                                 style={{
