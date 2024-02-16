@@ -11,6 +11,7 @@ import sqlite3 from 'sqlite3';
 import sqlite, { open } from 'sqlite';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { table } from 'console';
+import { randomInt, randomUUID } from 'crypto';
 //const fs = require("fs");
 //const sqlite = require("sqlite")
 //const sqlite3 = require("sqlite3");
@@ -36,7 +37,9 @@ const saltRounds: number = 10;
 let dbPromise: any
 
 //creating the table and storing it in
-const database = new Database("./database.db");
+const database = new Database("./database.db", (err: Error | null) => {
+	if (err) return console.error(err.message);
+});
 (async () => {
 	dbPromise = await open({
 		filename: './database.db',
@@ -82,6 +85,7 @@ makeTableExist("RATINGS", fs.readFileSync(__dirname + '/Tables/CREATE_RATINGS_TA
 makeTableExist("REPORTS", fs.readFileSync(__dirname + '/Tables/CREATE_REPORTS_TABLE.sql').toString());
 makeTableExist("RIDE_HISTORY", fs.readFileSync(__dirname + '/Tables/CREATE_RIDEHISTORY_TABLE.sql').toString());
 makeTableExist("RIDE_QUEUE", fs.readFileSync(__dirname + '/Tables/CREATE_RIDEQUEUE_TABLE.sql').toString());
+makeTableExist("REGISTER", fs.readFileSync(__dirname + '/Tables/CREATE_REGISTER_TABLE.sql').toString());
 
 //app.get("/message", (req: Request, res: Response) => {
 //	res.json({
@@ -122,18 +126,18 @@ const sendRegisterVerifyEmail = (email: string, verifyID: string) => {
 
 /**
  * body contains the properties email, firstName, lastName, password
- * @todo failed registrations don't display errors at first. FIXME
  */
 app.post("/registration", async (req: Request, res: Response) => {
 	//console.log(req.body.firstName);
 	const salt: string = await bcrypt.genSalt(saltRounds);
 	const hashedPassword: string = await bcrypt.hash(req.body.password, salt)
 	//console.log("Hash: " + hashedPassword);
-
-	const db = new Database("./database/user_info.db", (err: Error | null) => {
-		if (err) return console.log(err.message);
+	database.all("SELECT * FROM REGISTER", (err: Error, rows: Object) => {
+		console.log(rows);
 	});
-	db.run('INSERT INTO USER_INFO (FIRST_NAME, LAST_NAME, PASSWORD_USER, EMAIL) VALUES(?,?,?,?)', [req.body.firstName, req.body.lastName, hashedPassword, req.body.email], (err: Error, rows: Object) => {
+	let UUID: string = ('0000' + randomInt(99999)).slice(-5);
+	console.log("UUID: " + UUID);
+	database.run('INSERT OR REPLACE INTO REGISTER (First_Name, Last_Name, Password_User, Email, Register_ID) VALUES(?,?,?,?,?)', [req.body.firstName, req.body.lastName, hashedPassword, req.body.email, UUID], (err: Error, rows: Object) => {
 		if (err) {
 			hadError = true;
 			message = err.message;
@@ -141,7 +145,9 @@ app.post("/registration", async (req: Request, res: Response) => {
 			hadError = false;
 			message = undefined;
 		}
-
+		database.all("SELECT * FROM REGISTER", (err: Error, rows: Object) => {
+			console.log(rows);
+		});
 		//console.log(message + " | " + req.body.email);
 
 		res.json({
@@ -152,10 +158,30 @@ app.post("/registration", async (req: Request, res: Response) => {
 });
 
 /**
- * body contains the property 
+ * @todo do this after email can be sent
+ */
+app.post("/resend_registration", async(req: Request, res: Response) => {
+
+});
+
+/**
+ * body contains the property email, register_ID
  */
 app.post("/registration_verification", (req: Request, res: Response) => {
 
+	database.get(`SELECT Register_ID FROM REGISTER WHERE Email = ${req.body.email};`, (err: Error, row: any) => {
+		if (row === undefined) {
+			hadError = true; message = "Something went wrong";
+		} else if (err) {
+			hadError = true; message = err.message;
+		} else {
+			hadError = false;
+			message = undefined;
+		}
+		console.log("Compare " + row.Register_ID + " = " + req.body.register_ID);
+	});
+
+	
 });
 
 /**
