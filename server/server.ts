@@ -74,7 +74,13 @@ const makeTableExist = (tableName: string, createTableSQL: string, fillTableSQL?
 	});
 }
 
-makeTableExist("USER_INFO", fs.readFileSync(__dirname + '/Tables/CREATE_USER_INFO.sql').toString(), fs.readFileSync(__dirname + '/Tables/INSERT_USER_INFO.sql').toString());
+makeTableExist("USER_INFO", fs.readFileSync(__dirname + '/Tables/CREATE_USERINFO_TABLE.sql').toString(), fs.readFileSync(__dirname + '/Tables/INSERT_USERINFO_TABLE.sql').toString());
+makeTableExist("BLOCKED", fs.readFileSync(__dirname + '/Tables/CREATE_BLOCKED_TABLE.sql').toString())
+makeTableExist("FAVORITES", fs.readFileSync(__dirname + '/Tables/CREATE_FAVORITES_TABLE.sql').toString())
+makeTableExist("PAYMENTS", fs.readFileSync(__dirname + '/Tables/CREATE_PAYMENTS_TABLE.sql').toString())
+makeTableExist("RATINGS", fs.readFileSync(__dirname + '/Tables/CREATE_RATINGS_TABLE.sql').toString())
+makeTableExist("REPORTS", fs.readFileSync(__dirname + '/Tables/CREATE_REPORTS_TABLE.sql').toString())
+makeTableExist("RIDE_HISTORY", fs.readFileSync(__dirname + '/Tables/CREATE_RIDEHISTORY_TABLE.sql').toString())
 
 
 //app.get("/message", (req: Request, res: Response) => {

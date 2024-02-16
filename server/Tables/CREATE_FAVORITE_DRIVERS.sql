@@ -1,4 +1,0 @@
-CREATE TABLE FAVORITE_DRIVERS (
-	Rider_ID int NOT NULL,
-	Driver_ID int
-);
