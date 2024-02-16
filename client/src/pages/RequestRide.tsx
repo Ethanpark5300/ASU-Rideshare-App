@@ -5,6 +5,7 @@ import PageTitle from '../components/PageTitle/PageTitle';
 import { FaMapMarkerAlt } from "react-icons/fa";
 import Select from 'react-select';
 import buildingsData from '../databases/Buildings.json';
+import { Link } from 'react-router-dom';
 const libraries = ['places'] as any;
 
 interface RequestRideProps {
@@ -197,7 +198,6 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
         setSelectedDestinationBuilding(null);
     };
 
-    /**@TODO Send pickup and dropoff location */
     const handleSubmit = () => {
         try {
             getPickupLocation()
@@ -394,7 +394,9 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
                         <div className="request-btns-container">
                             <button className='preview-btn' onClick={handlePreview}>Directions</button>
                             <button className='clear-btn' onClick={handleClear}>Clear</button>
-                            <button className='request-btn' onClick={handleSubmit}>Submit</button>
+                            <Link to="/ChooseDriver">
+                                <button className='request-btn' onClick={handleSubmit}>Submit</button>
+                            </Link>
                         </div>
                     </LoadScript>
                     {distance && duration && (

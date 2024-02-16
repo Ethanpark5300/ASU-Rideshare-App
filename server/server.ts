@@ -75,13 +75,13 @@ const makeTableExist = (tableName: string, createTableSQL: string, fillTableSQL?
 }
 
 makeTableExist("USER_INFO", fs.readFileSync(__dirname + '/Tables/CREATE_USERINFO_TABLE.sql').toString(), fs.readFileSync(__dirname + '/Tables/INSERT_USERINFO_TABLE.sql').toString());
-makeTableExist("BLOCKED", fs.readFileSync(__dirname + '/Tables/CREATE_BLOCKED_TABLE.sql').toString())
-makeTableExist("FAVORITES", fs.readFileSync(__dirname + '/Tables/CREATE_FAVORITES_TABLE.sql').toString())
-makeTableExist("PAYMENTS", fs.readFileSync(__dirname + '/Tables/CREATE_PAYMENTS_TABLE.sql').toString())
-makeTableExist("RATINGS", fs.readFileSync(__dirname + '/Tables/CREATE_RATINGS_TABLE.sql').toString())
-makeTableExist("REPORTS", fs.readFileSync(__dirname + '/Tables/CREATE_REPORTS_TABLE.sql').toString())
-makeTableExist("RIDE_HISTORY", fs.readFileSync(__dirname + '/Tables/CREATE_RIDEHISTORY_TABLE.sql').toString())
-
+makeTableExist("BLOCKED", fs.readFileSync(__dirname + '/Tables/CREATE_BLOCKED_TABLE.sql').toString());
+makeTableExist("FAVORITES", fs.readFileSync(__dirname + '/Tables/CREATE_FAVORITES_TABLE.sql').toString());
+makeTableExist("PAYMENTS", fs.readFileSync(__dirname + '/Tables/CREATE_PAYMENTS_TABLE.sql').toString());
+makeTableExist("RATINGS", fs.readFileSync(__dirname + '/Tables/CREATE_RATINGS_TABLE.sql').toString());
+makeTableExist("REPORTS", fs.readFileSync(__dirname + '/Tables/CREATE_REPORTS_TABLE.sql').toString());
+makeTableExist("RIDE_HISTORY", fs.readFileSync(__dirname + '/Tables/CREATE_RIDEHISTORY_TABLE.sql').toString());
+makeTableExist("RIDE_QUEUE", fs.readFileSync(__dirname + '/Tables/CREATE_RIDEQUEUE_TABLE.sql').toString());
 
 //app.get("/message", (req: Request, res: Response) => {
 //	res.json({
@@ -401,13 +401,13 @@ app.get("/available-drivers", async (req: Request, res: Response) => {
 	let getBlockedDriversListResults = await db.all(`SELECT * FROM BLOCKED WHERE Blocker_ID = ?`, [riderEmail]);
 
 	// Extracting email ids from the result sets
-	const favoriteDriverEmails = getFavoriteDriversListResults.map((driver: { Driver_ID: any; }) => driver.Driver_ID);
-	const blockedDriverEmails = getBlockedDriversListResults.map((block: { Blockee_ID: any; }) => block.Blockee_ID);
+	let favoriteDriverEmails = getFavoriteDriversListResults.map((driver: { Driver_ID: string; }) => driver.Driver_ID);
+	let blockedDriverEmails = getBlockedDriversListResults.map((block: { Blockee_ID: string; }) => block.Blockee_ID);
 
 	// Filtering available drivers
-	const availableFavoriteDrivers = getAvailableDriversListResults.filter((driver: { Email: any; }) => favoriteDriverEmails.includes(driver.Email));
+	let availableFavoriteDrivers = getAvailableDriversListResults.filter((driver: { Email: string; }) => favoriteDriverEmails.includes(driver.Email));
 
-	const otherAvailableDrivers = getAvailableDriversListResults.filter((driver: { Email: any; }) => {
+	let otherAvailableDrivers = getAvailableDriversListResults.filter((driver: { Email: string; }) => {
 		return !blockedDriverEmails.includes(driver.Email) && !favoriteDriverEmails.includes(driver.Email);
 	});
 
@@ -417,53 +417,36 @@ app.get("/available-drivers", async (req: Request, res: Response) => {
 	});
 });
 
-
 app.post("/ride-queue", async (req: Request, res: Response) => {
-	(async () => {
-		let riderEmail = req.body.rider_id;
-		let pickupLocation = req.body.pickupLocation;
-		let dropoffLocation = req.body.dropoffLocation;
+	let db = await dbPromise;
+	let rider_id = req.body.rider_id;
+	let pickupLocation = req.body.pickupLocation;
+	let dropoffLocation = req.body.dropoffLocation;
 
-		const [dbUserInfoPromise, dbRideQueuePromise] = await Promise.all([
-			open({
-				filename: './database/user_info.db',
-				driver: sqlite3.Database
-			}),
-			open({
-				filename: './database/ride_queue.sqlite',
-				driver: sqlite3.Database
-			}),
-		])
+	let Rider_FirstName = await db.get(`SELECT First_Name FROM USER_INFO WHERE Email='${rider_id}'`)
+	let Rider_LastName = await db.get(`SELECT Last_Name FROM USER_INFO WHERE Email='${rider_id}'`)
 
-		let Rider_FirstName = await dbUserInfoPromise.get(`SELECT First_Name FROM USER_INFO WHERE Email='${riderEmail}'`)
-		let Rider_LastName = await dbUserInfoPromise.get(`SELECT Last_Name FROM USER_INFO WHERE Email='${riderEmail}'`)
+	await db.run(`INSERT INTO Ride_Queue (Rider_ID, Rider_FirstName, Rider_LastName, Pickup_Location, Dropoff_Location, Status) VALUES (?,?,?,?,?,?)`, rider_id, Rider_FirstName.First_Name, Rider_LastName.Last_Name, pickupLocation, dropoffLocation, "FALSE")
+});
 
-		await dbRideQueuePromise.run(`INSERT INTO Ride_Queue (Rider_ID, Rider_FirstName, Rider_LastName, Pickup, Dropoff, Status) VALUES (?,?,?,?,?,?)`, riderEmail, Rider_FirstName.First_Name, Rider_LastName.Last_Name, pickupLocation, dropoffLocation, "FALSE")
-	})()
+app.get("/cancel-request", async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let rider_id = req.query.riderid;
+
+	await db.run(`DELETE FROM RIDE_QUEUE WHERE Rider_ID = '${rider_id}'`)
 });
 
 app.get("/ride-queue", async (req: Request, res: Response) => {
-	(async () => {
-		let accountEmail = req.query.accountEmail;
+	let db = await dbPromise;
+	let driverEmail = req.query.driveremail;
 
-		const [dbGetRideQueuePromise] = await Promise.all([
-			open({
-				filename: './database/ride_queue.sqlite',
-				driver: sqlite3.Database
-			}),
-			// open({
-			// 	filename: '/tmp/database2.db',
-			// 	driver: sqlite3.Database
-			// }),
-		])
+	let allRequestsList = await db.all(`SELECT * FROM Ride_Queue`);
+	let getBlockedDriversListResults = await db.all(`SELECT * FROM BLOCKED WHERE Blocker_ID = ?`, [driverEmail]);
 
-		let allRequestsList = await dbGetRideQueuePromise.all(`SELECT * FROM Ride_Queue`)
-
-		res.json({
-			// pendingRequestsList: allPendingRequestsList,
-			allRequestsList: allRequestsList,
-		});
-	})()
+	res.json({
+		// pendingRequestsList: allPendingRequestsList,
+		allRequestsList: allRequestsList,
+	});
 })
 
 app.listen(PORT, () => {

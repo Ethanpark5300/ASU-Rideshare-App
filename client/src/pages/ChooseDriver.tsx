@@ -20,6 +20,15 @@ const ChooseDriver: React.FC = (props) => {
         }
     }, [account?.account?.email]);
 
+    const cancelRideRequest = useCallback(async () => {
+        try {
+            const response = await fetch(`/cancel-request?riderid=${account?.account?.email}`);
+            const data = await response.json();
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    }, [account?.account?.email]);
+
     useEffect(() => {
         refreshDriversList();
     }, [refreshDriversList]);
@@ -69,7 +78,7 @@ const ChooseDriver: React.FC = (props) => {
                             Refresh List
                         </button>
 
-                        <button className="cancel-btn">
+                        <button className="cancel-btn" onClick={cancelRideRequest}>
                             Cancel
                         </button>
 

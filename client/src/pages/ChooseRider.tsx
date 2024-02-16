@@ -11,7 +11,7 @@ function ChooseRider() {
 
     const refreshRideQueueList = useCallback(async () => {
         try {
-            const response = await fetch(`/ride-queue?accountEmail=${account?.account?.email}`);
+            const response = await fetch(`/ride-queue?driveremail=${account?.account?.email}`);
             const data = await response.json();
             setAllRequestsList(data.allRequestsList)
         } catch (error) {
@@ -34,7 +34,7 @@ function ChooseRider() {
                     <div>
                         {allRequestsList.map((ride) => (
                             <div key={ride.RideQueue_ID}>
-                                <p>{ride.Rider_FirstName} {ride.Rider_LastName} {ride.Pickup} {ride.Dropoff} <button>Accept</button></p>
+                                <p>{ride.Rider_FirstName} {ride.Rider_LastName} {ride.Pickup_Location} {ride.Dropoff_Location} <button>Accept</button></p>
                             </div>
                         ))}
                     </div>

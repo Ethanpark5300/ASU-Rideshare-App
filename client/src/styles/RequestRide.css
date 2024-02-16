@@ -64,6 +64,7 @@
 
 #request-ride .request-btn {
     background-color: var(--brand-gold);
+    width: 100%;
 }
 
 #request-ride .preview-btn:hover,
