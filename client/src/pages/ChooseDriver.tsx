@@ -11,7 +11,7 @@ const ChooseDriver: React.FC = (props) => {
 
     const refreshDriversList = useCallback(async () => {
         try {
-            const response = await fetch(`/available-drivers?riderEmail=${account?.account?.email}`);
+            const response = await fetch(`/available-drivers?riderid=${account?.account?.email}`);
             const data = await response.json();
             setFavoriteDriversAvailableList(data.availableFavoriteDrivers);
             setDriversAvailableList(data.otherAvailableDrivers);
@@ -36,9 +36,9 @@ const ChooseDriver: React.FC = (props) => {
                     {favoriteDriversAvailableList.length > 0 ? (
                         <div>
                             {favoriteDriversAvailableList.map((driver) => (
-                                <div key={driver.email}>
+                                <div key={driver.Email}>
                                     {/** @TODO Request specific driver */}
-                                    <p>{driver.first_name} {driver.last_name}<button className="request-btn">Request</button></p>
+                                    <p>{driver.First_Name} {driver.Last_Name}<button className="request-btn">Request</button></p>
                                 </div>
                             ))}
                         </div>

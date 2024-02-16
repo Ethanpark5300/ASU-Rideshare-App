@@ -385,24 +385,32 @@ app.get("/ride-history", async (req: Request, res: Response) => {
 
 app.get("/available-drivers", async (req: Request, res: Response) => {
 	let db = await dbPromise;
-	let riderEmail = req.query.riderEmail;
+	let riderEmail = req.query.riderid;
 
 	// Set rider status to false
-	await db.run(`UPDATE USER_INFO SET Status_User = 'FALSE' WHERE Email = '${riderEmail}'`);
+	await db.run(`UPDATE USER_INFO SET Status_User = 'FALSE' WHERE Email = ?`, [riderEmail]);
 
-	let getFavoriteDriversListResults = await db.all(`SELECT * FROM Favorites WHERE Rider_Email = '${riderEmail}'`);
+	let getFavoriteDriversListResults = await db.all(`SELECT * FROM FAVORITES WHERE Rider_ID = ?`, [riderEmail]);
 	let getAvailableDriversListResults = await db.all(`SELECT * FROM USER_INFO WHERE Type_User IN (2, 3) AND Status_User = 'TRUE'`);
-	let getBlockedDriversListResults = await db.all(`SELECT * FROM BLOCKED WHERE rider_id = '${riderEmail}'`);
+	let getBlockedDriversListResults = await db.all(`SELECT * FROM BLOCKED WHERE Blocker_ID = ?`, [riderEmail]);
 
+	// Extracting email ids from the result sets
+	const favoriteDriverEmails = getFavoriteDriversListResults.map((driver: { Driver_ID: any; }) => driver.Driver_ID);
+	const blockedDriverEmails = getBlockedDriversListResults.map((block: { Blockee_ID: any; }) => block.Blockee_ID);
 
+	// Filtering available drivers
+	const availableFavoriteDrivers = getAvailableDriversListResults.filter((driver: { Email: any; }) => favoriteDriverEmails.includes(driver.Email));
 
-	/** @TODO Drivers who blocked the rider should not show */
+	const otherAvailableDrivers = getAvailableDriversListResults.filter((driver: { Email: any; }) => {
+		return !blockedDriverEmails.includes(driver.Email) && !favoriteDriverEmails.includes(driver.Email);
+	});
 
 	res.json({
-		// availableFavoriteDrivers: availableFavoriteDrivers,
-		// otherAvailableDrivers: otherAvailableDrivers
+		availableFavoriteDrivers: availableFavoriteDrivers,
+		otherAvailableDrivers: otherAvailableDrivers
 	});
 });
+
 
 app.post("/ride-queue", async (req: Request, res: Response) => {
 	(async () => {
