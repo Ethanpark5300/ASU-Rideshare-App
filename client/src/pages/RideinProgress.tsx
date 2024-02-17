@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { LoadScriptNext, GoogleMap, Marker, useJsApiLoader, MarkerF } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, MarkerF } from '@react-google-maps/api';
 import PageTitle from '../components/PageTitle/PageTitle';
 import "../styles/RideinProgress.css";
+import { MdLocalPolice } from "react-icons/md";
 
 const RideinProgress: React.FC = () => {
     const [currentLocation, setCurrentLocation] = useState<{ lat: number, lng: number }>(null);
-    const [destinationAddress, setDestinationAddress] = useState<string>(''); // Initialize empty
+    const [destinationAddress, setDestinationAddress] = useState<string>('');
     const [destinationLocation, setDestinationLocation] = useState<{ lat: number, lng: number }>(null);
     const [errorMessage, setErrorMessage] = useState<string>('');
     const [mapLoaded, setMapLoaded] = useState<boolean>(false);
     const { isLoaded: mapsLoaded, loadError } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
-    const [estimatedTimeArrival, setEstimatedTimeArrival] = useState<string>(''); // State for estimated time of arrival
-    const [arrivalTime, setArrivalTime] = useState<string>(''); // State for arrival time
-    const [currentTime, setCurrentTime] = useState<string>(''); // State for current time
+    const [estimatedTimeArrival, setEstimatedTimeArrival] = useState<string>('');
+    const [estimatedRemainingDistance, setEstimatedRemainingDistance] = useState<string>('');
+    const [arrivalTime, setArrivalTime] = useState<string>('');
+    const [currentTime, setCurrentTime] = useState<string>('');
 
     let dropoffAddress = "301 E Orange St., Tempe, AZ 85281";
 
@@ -37,7 +39,7 @@ const RideinProgress: React.FC = () => {
         } else {
             setErrorMessage('Geolocation is not supported by this browser.');
         }
-    }, []);
+    }, [dropoffAddress]);
 
     useEffect(() => {
         if (!mapsLoaded || !destinationAddress) return;
@@ -54,18 +56,21 @@ const RideinProgress: React.FC = () => {
     }, [mapsLoaded, destinationAddress]);
 
     useEffect(() => {
-        if (currentLocation && destinationLocation) {
-            calculateETA();
+        // if (currentLocation && destinationLocation) {
+        //     calculateETA();
+        //     updateCurrentTime();
+        //     const intervalId = setInterval(() => {
+        //         calculateETA();
+        //         updateCurrentTime();
+        //     }, 1);
+        //     calculateETA();
+        //     return () => clearInterval(intervalId);
+        // }
+        const intervalId = setInterval(() => {
             updateCurrentTime();
-            // const intervalId = setInterval(() => {
-            //     calculateETA();
-            //     updateCurrentTime();
-            // }, 1);
-            // calculateETA();
-            // return () => clearInterval(intervalId);
-        }
+        }, 1);
+        return () => clearInterval(intervalId);
     }, [currentLocation, destinationLocation]);
-
 
     const calculateETA = () => {
         const directionsService = new window.google.maps.DirectionsService();
@@ -79,13 +84,20 @@ const RideinProgress: React.FC = () => {
                 if (status === 'OK' && response.routes.length > 0) {
                     const route = response.routes[0];
                     const leg = route.legs[0];
-                    setEstimatedTimeArrival(leg.duration.text); // Update estimated time of arrival
+
+                    const remainingDistanceInMeters = leg.distance.value;
+                    const remainingDistanceInMiles = remainingDistanceInMeters * 0.000621371; // Convert meters to miles
+
+                    setEstimatedTimeArrival(leg.duration.text);
+                    setEstimatedRemainingDistance(remainingDistanceInMiles.toFixed(2) + ' miles');
+
                     const estimatedDurationInSeconds = leg.duration.value;
                     const arrivalTimeInMilliseconds = Date.now() + (estimatedDurationInSeconds * 1000);
                     setArrivalTime(new Date(arrivalTimeInMilliseconds).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
                 } else {
                     setEstimatedTimeArrival('N/A');
                     setArrivalTime('N/A');
+                    setEstimatedRemainingDistance('N/A');
                 }
             }
         );
@@ -132,10 +144,13 @@ const RideinProgress: React.FC = () => {
                 </div>
                 <aside className="ride-info-container">
                     <h1>Ride in Progress</h1>
-                    <p><b>Selected Destination:</b> {dropoffAddress} </p>
-                    <p><b>Estimated Time Arrival:</b> {estimatedTimeArrival}</p>
-                    <p><b>Current Time:</b> {currentTime}</p>
-                    <p><b>Arrival Time:</b> {arrivalTime}</p>
+                    <p><b>Destination:</b> {dropoffAddress} </p>
+                    <p><b>Estimated Arrival Time:</b> {arrivalTime} ({estimatedTimeArrival}) </p>
+                    <p><b>Distance Remaining:</b> {estimatedRemainingDistance} </p>
+                    <div className="btns-container">
+                        <button className='refresh-btn' onClick={calculateETA}>Refresh</button>
+                        <button className="emergency-btn"><MdLocalPolice/></button>
+                    </div>
                 </aside>
             </main>
         </PageTitle>

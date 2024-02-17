@@ -1,10 +1,11 @@
 #ride-in-progress .ride-info-container {
     background-color: white;
-    padding: 2rem;
+    padding: 1rem;
     position: absolute;
     bottom: 0;
     right: 0;
     line-height: 2;
+    box-shadow: 0 .125rem .3125rem 0 rgba(0, 0, 0, 0.16), 0 .125rem .625rem 0 rgba(0, 0, 0, 0.12);
 }
 
 #ride-in-progress .ride-info-container h1 {
@@ -12,5 +13,34 @@
     font-size: 2.5rem;
     text-align: center;
     margin-top: 0;
-    margin-bottom: 1rem;
+    margin-bottom: .5rem;
+}
+
+#ride-in-progress .btns-container {
+    margin-top: .5rem;
+    display: flex;
+    gap: 1rem;
+}
+
+#ride-in-progress button {
+    cursor: pointer;
+    padding: .5rem 1.5rem;
+    border-radius: 1000px;
+    line-height: 1rem;
+    transition: .03s ease-in-out;
+}
+
+#ride-in-progress .refresh-btn {
+    background-color: black;
+    color: white;
+    font-weight: 700;
+}
+
+#ride-in-progress .emergency-btn {
+    background-color: var(--brand-maroon);
+    color: #fff;
+}
+
+#ride-in-progress button:hover {
+    transform: scale(1.05);
 }
