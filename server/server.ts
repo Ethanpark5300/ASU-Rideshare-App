@@ -336,6 +336,7 @@ const verifyToken = function (token: string): Object | undefined {
 	}
 
 }
+
 /** Send block info to the blocked database*/
 app.post("/send-blocked", async (req: Request, res: Response) => {
 	let db = await dbPromise;
@@ -420,28 +421,33 @@ app.get("/available-drivers", async (req: Request, res: Response) => {
 	let riderEmail = req.query.riderid;
 
 	// Set rider status to false
-	await db.run(`UPDATE USER_INFO SET Status_User = 'FALSE' WHERE Email = ?`, [riderEmail]);
+	await db.run(`UPDATE USER_INFO SET Status_User = 'FALSE' WHERE Email = '${riderEmail}'`);
 
-	let getFavoriteDriversListResults = await db.all(`SELECT * FROM FAVORITES WHERE Rider_ID = ?`, [riderEmail]);
-	let getAvailableDriversListResults = await db.all(`SELECT * FROM USER_INFO WHERE Type_User IN (2, 3) AND Status_User = 'TRUE'`);
-	let getBlockedDriversListResults = await db.all(`SELECT * FROM BLOCKED WHERE Blocker_ID = ?`, [riderEmail]);
+	// Get favorite drivers who are available and not blocked
+	let getFavoriteDriversList = await db.all(`SELECT * FROM FAVORITES WHERE Rider_ID = ?`, [riderEmail]);
+	let favoriteDriverEmails = getFavoriteDriversList.map((driver: { Driver_ID: any; }) => driver.Driver_ID);
 
-	// Extracting email ids from the result sets
-	let favoriteDriverEmails = getFavoriteDriversListResults.map((driver: { Driver_ID: string; }) => driver.Driver_ID);
-	let blockedDriverEmails = getBlockedDriversListResults.map((block: { Blockee_ID: string; }) => block.Blockee_ID);
+	let getBlockedDriversList = await db.all(`SELECT Blockee_ID FROM BLOCKED WHERE Blocker_ID = ?`, [riderEmail]);
+	let blockedDriverEmails = getBlockedDriversList.map((driver: { Blockee_ID: any; }) => driver.Blockee_ID);
 
-	// Filtering available drivers
-	let availableFavoriteDrivers = getAvailableDriversListResults.filter((driver: { Email: string; }) => favoriteDriverEmails.includes(driver.Email));
+	let getBlockeeDriversList = await db.all(`SELECT Blocker_ID FROM BLOCKED WHERE Blockee_ID = ?`, [riderEmail]);
+	let blockingDriverEmails = getBlockeeDriversList.map((driver: { Blocker_ID: any; }) => driver.Blocker_ID);
 
-	let otherAvailableDrivers = getAvailableDriversListResults.filter((driver: { Email: string; }) => {
-		return !blockedDriverEmails.includes(driver.Email) && !favoriteDriverEmails.includes(driver.Email);
-	});
+	// Combine both lists to create a list of all blocked drivers
+	let excludedDriverEmails = [...blockedDriverEmails, ...blockingDriverEmails];
+
+	// Filter available favorite drivers
+	let availableFavoriteDrivers = await db.all(`SELECT * FROM USER_INFO WHERE Email IN (${favoriteDriverEmails.map(() => '?').join(', ')}) AND Type_User IN (2, 3) AND Status_User = 'TRUE'`, favoriteDriverEmails);
+
+	// Filter other available drivers excluding favorite drivers and blocked drivers
+	let otherAvailableDrivers = await db.all(`SELECT * FROM USER_INFO WHERE Type_User IN (2, 3) AND Status_User = 'TRUE' AND Email NOT IN (${[...favoriteDriverEmails, ...excludedDriverEmails].map(() => '?').join(', ')})`, [...favoriteDriverEmails, ...excludedDriverEmails]);
 
 	res.json({
 		availableFavoriteDrivers: availableFavoriteDrivers,
 		otherAvailableDrivers: otherAvailableDrivers
 	});
 });
+
 
 app.post("/ride-queue", async (req: Request, res: Response) => {
 	let db = await dbPromise;
@@ -466,12 +472,23 @@ app.get("/ride-queue", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let driverEmail = req.query.driveremail;
 
-	let allRequestsList = await db.all(`SELECT * FROM Ride_Queue`);
-	let getBlockedDriversListResults = await db.all(`SELECT * FROM BLOCKED WHERE Blocker_ID = ?`, [driverEmail]);
+	// Get all ride requests with status "TRUE"
+	let getRidersRequests = await db.all(`SELECT * FROM Ride_Queue WHERE Status="TRUE"`);
+
+	// Get all riders who blocked the driver
+	let getBlockedRiders = await db.all(`SELECT Blockee_ID FROM BLOCKED WHERE Blocker_ID = ?`, [driverEmail]);
+
+	// Get all riders whom the driver blocked
+	let getBlockeeRiders = await db.all(`SELECT Blocker_ID FROM BLOCKED WHERE Blockee_ID = ?`, [driverEmail]);
+
+	// Combine both lists to create a list of all blocked riders
+	let excludedRiderEmails = [...getBlockedRiders.map((rider: { Blockee_ID: any; }) => rider.Blockee_ID), ...getBlockeeRiders.map((rider: { Blocker_ID: any; }) => rider.Blocker_ID)];
+
+	// Filter out blocked riders from all ride requests
+	let allRequestsList = getRidersRequests.filter((request: { Rider_ID: any; }) => !excludedRiderEmails.includes(request.Rider_ID));
 
 	res.json({
-		// pendingRequestsList: allPendingRequestsList,
-		allRequestsList: allRequestsList,
+		allRequestsList: allRequestsList
 	});
 })
 
