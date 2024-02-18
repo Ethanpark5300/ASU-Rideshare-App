@@ -72,7 +72,7 @@ const makeTableExist = (tableName: string, createTableSQL: string, fillTableSQL?
 				//inserting dummy data
 				database.exec(fillTableSQL);
 			}
-			
+
 		}
 	});
 }
@@ -160,7 +160,7 @@ app.post("/registration", async (req: Request, res: Response) => {
 /**
  * @todo do this after email can be sent
  */
-app.post("/resend_registration", async(req: Request, res: Response) => {
+app.post("/resend_registration", async (req: Request, res: Response) => {
 
 });
 
@@ -181,7 +181,7 @@ app.post("/registration_verification", (req: Request, res: Response) => {
 		console.log("Compare " + row.Register_ID + " = " + req.body.register_ID);
 	});
 
-	
+
 });
 
 /**
@@ -292,6 +292,7 @@ function accountObject(rows: any) {
 		LastName: rows?.Last_Name ?? undefined,
 		PhoneNumber: rows?.Phone_Number ?? undefined,
 		AccountType: rows?.Type_User ?? 0,
+		PayPalEmail: rows?.Pay_Pal ?? undefined,
 	};
 }
 
@@ -337,7 +338,7 @@ const verifyToken = function (token: string): Object | undefined {
 
 }
 
-/** Send block info to the blocked database*/
+/** Send block info to the blocked database */
 app.post("/send-blocked", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let blocker_ID = req.body.blocker;
@@ -352,7 +353,7 @@ app.post("/send-blocked", async (req: Request, res: Response) => {
 	await db.run('INSERT INTO BLOCKED (Blocker_ID, Blockee_ID, Blockee_FirstName, Blockee_LastName, Date, Time) VALUES (?,?,?,?,?,?)', blocker_ID, blockee_ID, blockee_FirstName, blockee_LastName, currentDate, currentTime);
 });
 
-/** Send ratings to the ratings database*/
+/** Send ratings to the ratings database */
 app.post("/send-ratings", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let rater_ID = req.body.rater;
@@ -403,6 +404,7 @@ app.post("/send-payment", async (req: Request, res: Response) => {
 	await db.run(`DELETE FROM PAYMENTS WHERE Payment_ID NOT IN (SELECT MIN(Payment_ID) FROM PAYMENTS GROUP BY Rider_ID, Driver_ID, Ride_Cost, Date, Time)`);
 });
 
+/** @returns ride/drive history */
 app.get("/ride-history", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let accountEmail = req.query.accountEmail;
@@ -414,8 +416,19 @@ app.get("/ride-history", async (req: Request, res: Response) => {
 		ridersHistoryList: getRiderHistoryResults,
 		driversHistoryList: getDriverHistoryResults
 	});
-})
+});
 
+app.post("/edit-account", async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let firstName = req.body.newFirstName;
+	let lastName = req.body.newLastName;
+	let accountType = req.body.newAccountType;
+	let phoneNumber = req.body.newPhoneNumber;
+
+
+});
+
+/** @returns available drivers */
 app.get("/available-drivers", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let riderEmail = req.query.riderid;
@@ -425,13 +438,13 @@ app.get("/available-drivers", async (req: Request, res: Response) => {
 
 	// Get favorite drivers who are available and not blocked
 	let getFavoriteDriversList = await db.all(`SELECT * FROM FAVORITES WHERE Rider_ID = ?`, [riderEmail]);
-	let favoriteDriverEmails = getFavoriteDriversList.map((driver: { Driver_ID: any; }) => driver.Driver_ID);
+	let favoriteDriverEmails = getFavoriteDriversList.map((driver: { Driver_ID: string; }) => driver.Driver_ID);
 
 	let getBlockedDriversList = await db.all(`SELECT Blockee_ID FROM BLOCKED WHERE Blocker_ID = ?`, [riderEmail]);
-	let blockedDriverEmails = getBlockedDriversList.map((driver: { Blockee_ID: any; }) => driver.Blockee_ID);
+	let blockedDriverEmails = getBlockedDriversList.map((driver: { Blockee_ID: string; }) => driver.Blockee_ID);
 
 	let getBlockeeDriversList = await db.all(`SELECT Blocker_ID FROM BLOCKED WHERE Blockee_ID = ?`, [riderEmail]);
-	let blockingDriverEmails = getBlockeeDriversList.map((driver: { Blocker_ID: any; }) => driver.Blocker_ID);
+	let blockingDriverEmails = getBlockeeDriversList.map((driver: { Blocker_ID: string; }) => driver.Blocker_ID);
 
 	// Combine both lists to create a list of all blocked drivers
 	let excludedDriverEmails = [...blockedDriverEmails, ...blockingDriverEmails];
@@ -448,7 +461,7 @@ app.get("/available-drivers", async (req: Request, res: Response) => {
 	});
 });
 
-
+/** Sends ride information to ride queue table */
 app.post("/ride-queue", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let rider_id = req.body.rider_id;
@@ -458,9 +471,10 @@ app.post("/ride-queue", async (req: Request, res: Response) => {
 	let Rider_FirstName = await db.get(`SELECT First_Name FROM USER_INFO WHERE Email='${rider_id}'`)
 	let Rider_LastName = await db.get(`SELECT Last_Name FROM USER_INFO WHERE Email='${rider_id}'`)
 
-	await db.run(`INSERT INTO Ride_Queue (Rider_ID, Rider_FirstName, Rider_LastName, Pickup_Location, Dropoff_Location, Status) VALUES (?,?,?,?,?,?)`, rider_id, Rider_FirstName.First_Name, Rider_LastName.Last_Name, pickupLocation, dropoffLocation, "FALSE")
+	await db.run(`INSERT INTO Ride_Queue (Rider_ID, Rider_FirstName, Rider_LastName, Pickup_Location, Dropoff_Location, Status) VALUES (?,?,?,?,?,?)`, rider_id, Rider_FirstName.First_Name, Rider_LastName.Last_Name, pickupLocation, dropoffLocation, "TRUE")
 });
 
+//** Riders cancelling */
 app.get("/cancel-request", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let rider_id = req.query.riderid;
@@ -468,6 +482,7 @@ app.get("/cancel-request", async (req: Request, res: Response) => {
 	await db.run(`DELETE FROM RIDE_QUEUE WHERE Rider_ID = '${rider_id}'`)
 });
 
+/** @returns available riders */
 app.get("/ride-queue", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let driverEmail = req.query.driveremail;
@@ -482,15 +497,15 @@ app.get("/ride-queue", async (req: Request, res: Response) => {
 	let getBlockeeRiders = await db.all(`SELECT Blocker_ID FROM BLOCKED WHERE Blockee_ID = ?`, [driverEmail]);
 
 	// Combine both lists to create a list of all blocked riders
-	let excludedRiderEmails = [...getBlockedRiders.map((rider: { Blockee_ID: any; }) => rider.Blockee_ID), ...getBlockeeRiders.map((rider: { Blocker_ID: any; }) => rider.Blocker_ID)];
+	let excludedRiderEmails = [...getBlockedRiders.map((rider: { Blockee_ID: string; }) => rider.Blockee_ID), ...getBlockeeRiders.map((rider: { Blocker_ID: string; }) => rider.Blocker_ID)];
 
 	// Filter out blocked riders from all ride requests
-	let allRequestsList = getRidersRequests.filter((request: { Rider_ID: any; }) => !excludedRiderEmails.includes(request.Rider_ID));
+	let allRequestsList = getRidersRequests.filter((request: { Rider_ID: string; }) => !excludedRiderEmails.includes(request.Rider_ID));
 
 	res.json({
 		allRequestsList: allRequestsList
 	});
-})
+});
 
 app.listen(PORT, () => {
 	console.log(`Server is running on port ${PORT}.`);

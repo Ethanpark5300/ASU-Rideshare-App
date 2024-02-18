@@ -4,17 +4,19 @@ export class Account {
 	public readonly lastName: string;
 	public readonly phoneNumber: string;
 	public readonly accountType: AccountTypeFlag;
+	public readonly paypalEmail: string;
 
 
 	//do not store password
 	//or do, as long as we don't store the hashed password
-	constructor(email: string, firstName: string, lastName: string, phoneNumber: string, accountType:number) {
+	constructor(email: string, firstName: string, lastName: string, phoneNumber: string, accountType:number, payPalEmail: string) {
 		//TODO more stuff here
 		this.email = email;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.phoneNumber = phoneNumber;
 		this.accountType = accountType;
+		this.paypalEmail = payPalEmail;
 	}
 }
 

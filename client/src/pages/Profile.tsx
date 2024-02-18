@@ -7,6 +7,7 @@ import { Button } from "../components/Buttons/Button";
 import { useAppDispatch } from "../store/hooks";
 import { setAccountStore } from "../store/features/accountSlice";
 import { Account } from "../account/Account";
+import { Link } from 'react-router-dom';
 
 const Profile: React.FC = (props) => {
     const dispatch = useAppDispatch();
@@ -22,7 +23,7 @@ const Profile: React.FC = (props) => {
 			if (data !== null) {
 				
 				console.log(data.Email + " " + data.FirstName + " " + data.LastName + " " + data.PhoneNumber + " " + data.AccountType);
-                dispatch(setAccountStore(new Account(data.Email, data.FirstName, data.LastName, data.PhoneNumber, data.AccountType)));
+                dispatch(setAccountStore(new Account(data.Email, data.FirstName, data.LastName, data.PhoneNumber, data.AccountType, data.PayPalEmail)));
             } else {
                 dispatch(setAccountStore(undefined));
             }
@@ -72,6 +73,9 @@ const Profile: React.FC = (props) => {
                     <button>Save</button>
                     <Button label="Check Cookie" onClickFn={readCookie} />
                     <Button label="Nom Cookie(logout)" onClickFn={eatCookie} />
+                    <Link to="/EditAccount">
+                        <button>Edit Account</button>
+                    </Link>
                 </div>
 
                 <div className="paymentInfo">
