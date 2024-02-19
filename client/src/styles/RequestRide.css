@@ -1,7 +1,5 @@
 #request-ride {
     display: flex;
-    align-items: center;
-    overflow: hidden;
 }
 
 #request-ride .map-container {
@@ -18,6 +16,7 @@
 }
 
 #request-ride .search-bar {
+    margin-top: 4rem;
     position: absolute;
     z-index: 1;
     background-color: #fff;

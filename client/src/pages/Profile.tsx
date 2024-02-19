@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import '../styles/Profile.css';
 import { useAppSelector } from '../store/hooks';
 import PageTitle from '../components/PageTitle/PageTitle';
@@ -11,6 +11,31 @@ import { Link } from 'react-router-dom';
 
 const Profile: React.FC = (props) => {
     const dispatch = useAppDispatch();
+    const account = useAppSelector((state) => state.account);
+
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [userType, setUserType] = useState(1);
+    const [paypalEmail, setPaypalEmail] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
+
+    const getAccountInformation = useCallback(async () => {
+        try {
+            const response = await fetch(`/edit-account?accountEmail=${account?.account?.email}`);
+            const data = await response.json();
+            setFirstName(data.account.First_Name);
+            setLastName(data.account.Last_Name);
+            setUserType(data.account.Type_User);
+            setPaypalEmail(data.account.Pay_Pal);
+            setPhoneNumber(data.account.Phone_Number);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    }, [account?.account?.email]);
+
+    useEffect(() => {
+        getAccountInformation();
+    }, [getAccountInformation]);
 
     const readCookie = async () => {
         fetch(`/read-cookie`, {
@@ -40,8 +65,6 @@ const Profile: React.FC = (props) => {
         } catch { }
     };
 
-    const account = useAppSelector((state) => state.account);
-
     return (
         <PageTitle title="Profile">
             <main id="profile">
@@ -53,23 +76,28 @@ const Profile: React.FC = (props) => {
                 </div>
                 <div className="profileInfo">
                     <h2>Account Info</h2>
-                    <p><strong>Name: </strong> {account?.account?.firstName} {account?.account?.lastName} </p>
+                    <p><strong>Name: </strong> {firstName} {lastName} </p>
 
-                    {/** @Returns user type */}
                     {
-                        (account?.account?.accountType === 1) && (
+                        (userType === 1) && (
                             <p><strong>Type: </strong> Rider</p>
                         )
                     }
                     {
-                        (account?.account?.accountType === 2) && (
+                        (userType === 2) && (
                             <p><strong>Type: </strong> Driver</p>
                         )
                     }
-                    <p><strong>Address: </strong> {} </p>
-                    <p><strong>ASU ID: </strong> {}</p>
+                    {
+                        (userType === 3) && (
+                            <p><strong>Type: </strong> Both</p>
+                        )
+                    }
+                    {/* <p><strong>Address: </strong> {} </p>
+                    <p><strong>ASU ID: </strong> {}</p> */}
                     <p><strong>E-Mail: </strong> {account?.account?.email}</p>
-                    <p><strong>Phone Number: </strong> {account?.account?.phoneNumber}</p>
+                    <p><strong>Phone Number: </strong> {phoneNumber}</p>
+                    <p><strong>PayPal Account: </strong> {paypalEmail}</p>
                     <button>Save</button>
                     <Button label="Check Cookie" onClickFn={readCookie} />
                     <Button label="Nom Cookie(logout)" onClickFn={eatCookie} />

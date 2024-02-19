@@ -418,8 +418,7 @@ app.get("/ride-history", async (req: Request, res: Response) => {
 	});
 });
 
-/** Edit account */
-/** @FIXME Changes should update on the client side */
+/** Update account information */
 app.post("/edit-account", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let userEmail = req.body.userEmail;
@@ -431,6 +430,18 @@ app.post("/edit-account", async (req: Request, res: Response) => {
 
 	await db.run(`UPDATE USER_INFO SET First_Name = ?, Last_Name = ?, Type_User = ?, Pay_Pal = ?, Phone_Number = ? WHERE Email = ?`, [firstName, lastName, accountType, paypalAccount, phoneNumber, userEmail]);
 });
+
+/** @returns Updated account information */
+app.get("/edit-account", async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let userEmail = req.query.accountEmail;
+
+	let account = await db.all(`SELECT * FROM USER_INFO WHERE Email = ?`, [userEmail])
+
+	res.json({
+		account: account[0]
+	});
+})
 
 /** @returns available drivers */
 app.get("/available-drivers", async (req: Request, res: Response) => {

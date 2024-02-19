@@ -12,7 +12,7 @@ function RideHistory() {
 
     const refreshRideHistoryList = useCallback(async () => {
         try {
-            const response = await fetch(`/ride-history?accountType=${account?.account?.accountType}&accountEmail=${account?.account?.email}`);
+            const response = await fetch(`/ride-history?accountEmail=${account?.account?.email}`);
             const data = await response.json();
             setRidersHistoryList(data.ridersHistoryList);
             setDriversHistoryList(data.driversHistoryList);
@@ -20,7 +20,6 @@ function RideHistory() {
             console.error("Error fetching data:", error);
         }
     }, [account?.account?.email]);
-
 
     useEffect(() => {
         refreshRideHistoryList();

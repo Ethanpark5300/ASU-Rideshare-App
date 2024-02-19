@@ -2,7 +2,7 @@ import '../styles/EditAccount.css';
 import PageTitle from '../components/PageTitle/PageTitle';
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '../store/hooks';
-import { useState, useEffect, SetStateAction } from 'react';
+import { useState, useEffect, SetStateAction, useCallback } from 'react';
 
 function EditAccount() {
     const account = useAppSelector((state) => state.account);
@@ -24,6 +24,24 @@ function EditAccount() {
             setPhoneNumber(account.account.phoneNumber);
         }
     }, [account]);
+
+    const getAccountInformation = useCallback(async () => {
+        try {
+            const response = await fetch(`/edit-account?accountEmail=${account?.account?.email}`);
+            const data = await response.json();
+            setFirstName(data.account.First_Name);
+            setLastName(data.account.Last_Name);
+            setUserType(data.account.Type_User);
+            setPaypalEmail(data.account.Pay_Pal);
+            setPhoneNumber(data.account.Phone_Number);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    }, [account?.account?.email]);
+
+    useEffect(() => {
+        getAccountInformation();
+    }, [getAccountInformation]);
 
     if (loading) { return <div>Loading...</div>; }
 
