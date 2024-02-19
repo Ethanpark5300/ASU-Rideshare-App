@@ -22,6 +22,7 @@ import Report from './pages/Report';
 import FavoritesList from './pages/FavoritesList';
 import BlockedList from './pages/BlockedList';
 import EditAccount from './pages/EditAccount';
+import Verify from './pages/Verify';
 
 function App() {
 	const dispatch = useAppDispatch();
@@ -65,6 +66,7 @@ function App() {
 				<Route path="/Payment" element={<Payment/>}/>
 				<Route path="/Profile" element={<Profile/>}/>
 				<Route path="/Register" element={<Register/>}/>
+				<Route path="/Verify" element={<Verify/>}/>
 				<Route path="/RequestRide" element={<RequestRide riderEmail={account?.account?.email}/>}/>
 				<Route path="/RideHistory" element={<RideHistory/>}/>
 				<Route path="/RideinProgress" element={<RideinProgress/>}/>

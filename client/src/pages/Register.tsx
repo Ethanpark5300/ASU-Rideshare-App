@@ -3,6 +3,7 @@ import { TextInput } from "../components/TextInput/TextInput";
 import "../styles/Register.css";
 import { Button } from "../components/Buttons/Button";
 import PageTitle from "../components/PageTitle/PageTitle";
+import { useNavigate } from "react-router-dom";
 
 function Register() {
     const emailRef = useRef<string>("");
@@ -17,6 +18,8 @@ function Register() {
     const [isSending, setIsSending] = useState(false);
 
     const [registerMessage, setRegisterMessage] = useState<string | undefined>();
+
+	const navigate = useNavigate();
 
     const registerRequest = useCallback(async () => {
         //console.log("register request");
@@ -68,7 +71,13 @@ function Register() {
             .then((res) => res.json())
             .then((data) => {
                 setRegisterMessage(data.message);
-                setRegisterFailed(!data.registrationSuccess);
+				setRegisterFailed(!data.registrationSuccess);
+				
+				if (data.registrationSuccess) {
+					setIsSending(false);
+					navigate("/Verify");
+				}
+				
             });
         setIsSending(false);
     }, [isSending]);

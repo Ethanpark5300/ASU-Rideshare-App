@@ -132,28 +132,38 @@ app.post("/registration", async (req: Request, res: Response) => {
 	const salt: string = await bcrypt.genSalt(saltRounds);
 	const hashedPassword: string = await bcrypt.hash(req.body.password, salt)
 	//console.log("Hash: " + hashedPassword);
-	database.all("SELECT * FROM REGISTER", (err: Error, rows: Object) => {
-		console.log(rows);
-	});
-	let UUID: string = ('0000' + randomInt(99999)).slice(-5);
-	console.log("UUID: " + UUID);
-	database.run('INSERT OR REPLACE INTO REGISTER (First_Name, Last_Name, Password_User, Email, Register_ID) VALUES(?,?,?,?,?)', [req.body.firstName, req.body.lastName, hashedPassword, req.body.email, UUID], (err: Error, rows: Object) => {
-		if (err) {
-			hadError = true;
-			message = err.message;
-		} else {
-			hadError = false;
-			message = undefined;
-		}
-		database.all("SELECT * FROM REGISTER", (err: Error, rows: Object) => {
-			console.log(rows);
-		});
-		//console.log(message + " | " + req.body.email);
+	//database.all("SELECT * FROM REGISTER", (err: Error, rows: Object) => {
+	//	console.log(rows);
+	//});
 
-		res.json({
-			registrationSuccess: !hadError,
-			message: message,
-		});
+	database.get("SELECT 1 FROM USER_INFO WHERE Email = ?", [req.body.email], (err:Error, userExist:any) => {
+		if (userExist) {
+			res.json({
+				registrationSuccess: false,
+				message: "User already exists!",
+			})
+		} else {
+			let UUID: string = generateRegisterID();
+			//console.log("UUID: " + UUID);
+			database.run('INSERT OR REPLACE INTO REGISTER (First_Name, Last_Name, Password_User, Email, Register_ID) VALUES(?,?,?,?,?)', [req.body.firstName, req.body.lastName, hashedPassword, req.body.email, UUID], (err: Error, rows: Object) => {
+				if (err) {
+					hadError = true;
+					message = err.message;
+				} else {
+					hadError = false;
+					message = undefined;
+				}
+				//database.all("SELECT * FROM REGISTER", (err: Error, rows: Object) => {
+				//	console.log(rows);
+				//});
+				//console.log(message + " | " + req.body.email);
+				setVerifyCookie(res, req.body.email);
+				res.json({
+					registrationSuccess: !hadError,
+					message: message,
+				});
+			});
+		}
 	});
 });
 
@@ -165,23 +175,78 @@ app.post("/resend_registration", async (req: Request, res: Response) => {
 });
 
 /**
- * body contains the property email, register_ID
+ * body contains the property register_ID
  */
 app.post("/registration_verification", (req: Request, res: Response) => {
 
-	database.get(`SELECT Register_ID FROM REGISTER WHERE Email = ${req.body.email};`, (err: Error, row: any) => {
+	//console.log(req.signedCookies.registerCookie);
+	if (req.signedCookies.registerCookie === undefined) {
+		res.json({
+			registrationSuccess: false,
+			message: "Verification ID expired!",
+		});
+		return;
+	}
+
+	database.get("SELECT Register_ID, Email, First_Name, Last_Name, Password_User FROM REGISTER WHERE Email = ?;", [req.signedCookies.registerCookie], (err: Error, row: any) => {
 		if (row === undefined) {
-			hadError = true; message = "Something went wrong";
+			hadError = true; message = err.message ?? "Something went wrong";
 		} else if (err) {
 			hadError = true; message = err.message;
 		} else {
 			hadError = false;
 			message = undefined;
 		}
-		console.log("Compare " + row.Register_ID + " = " + req.body.register_ID);
+		//console.log(row);
+		if (hadError) {
+			res.json({
+				registrationSuccess: false,
+				message: message,
+			});
+			return;
+		}
+		
+		//console.log("Compare " + row.Register_ID + " = " + req.body.register_ID);
+
+		if (row.Register_ID === req.body.register_ID) {
+			//do registration
+			row.Type_User = 1;
+			database.run('INSERT INTO USER_INFO (First_Name, Last_Name, Password_User, Email, Type_User) VALUES(?,?,?,?,?)', [row.First_Name, row.Last_Name, row.Password_User, row.Email, row.Type_User], (err: Error, rows: Object) => {
+				let accObj = accountObject(row);
+				if (err) {
+					hadError = true;
+					message = err.message;
+				} else {
+					hadError = false;
+					message = undefined;
+					setTokenCookie(res, accObj);
+				}
+				//database.all("SELECT * FROM USER_INFO", (err: Error, rows: Object) => {
+				//	console.log(rows);
+				//});
+				
+				res.json({
+					registrationSuccess: !hadError,
+					message: message,
+					account: accObj,
+				});
+			});
+
+			database.run('DELETE FROM REGISTER WHERE Email = ?', [row.Email], (err: Error, rows: Object) => {
+				if (err) {
+					console.error(err.message);
+				}
+				//database.all("SELECT * FROM REGISTER", (err: Error, rows: Object) => {
+				//	console.log(rows);
+				//});
+			});
+		} else {
+			res.json({
+				registrationSuccess: false,
+				message: message,
+			});
+		}
 	});
-
-
 });
 
 /**
@@ -257,7 +322,7 @@ app.get('/read-cookie', (req: Request, res: Response) => {
 	//cookie should store something and we can get the user info afterwards
 
 	const verifyAcc: Object | undefined = verifyToken(req.signedCookies.sessionToken);
-
+	console.log(verifyAcc);
 	//return null for json to not throw out errors on the client side
 	res.json(verifyAcc ?? null);
 });
@@ -305,7 +370,7 @@ function setTokenCookie(res: Response, accObj: any) {
 		httpOnly: true,
 		signed: true,
 		sameSite: 'lax' as const,
-		maxAge: 2 * 60 * 60 * 1000, //2 hours
+		maxAge: 24 * 60 * 60 * 1000, //24 hours
 	};
 
 	const sessionTokenOptions = {
@@ -321,7 +386,21 @@ function setTokenCookie(res: Response, accObj: any) {
 
 	//cookie(name of cookie, value of cookie, options of cookie)
 	res.cookie('sessionToken', sessionToken, options);
+}
 
+function setVerifyCookie(res: Response, email: string) {
+	const options = {
+		httpOnly: true,
+		signed: true,
+		sameSite: 'lax' as const,
+		maxAge: 5 * 60 * 1000, //5 minutes
+	};
+
+	res.cookie('registerCookie', email, options);
+}
+
+function generateRegisterID(): string {
+	return ('0000' + randomInt(99999)).slice(-5);
 }
 
 /**
