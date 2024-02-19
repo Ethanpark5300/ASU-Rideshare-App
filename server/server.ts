@@ -322,7 +322,7 @@ app.get('/read-cookie', (req: Request, res: Response) => {
 	//cookie should store something and we can get the user info afterwards
 
 	const verifyAcc: Object | undefined = verifyToken(req.signedCookies.sessionToken);
-	console.log(verifyAcc);
+	//console.log(verifyAcc);
 	//return null for json to not throw out errors on the client side
 	res.json(verifyAcc ?? null);
 });
@@ -500,14 +500,18 @@ app.get("/ride-history", async (req: Request, res: Response) => {
 /** Update account information */
 app.post("/edit-account", async (req: Request, res: Response) => {
 	let db = await dbPromise;
-	let userEmail = req.body.userEmail;
-	let firstName = req.body.newFirstName;
-	let lastName = req.body.newLastName;
-	let accountType = req.body.newAccountType;
-	let paypalAccount = req.body.newPaypalEmail;
-	let phoneNumber = req.body.newPhoneNumber;
+	let account = {
+		Email: req.body.userEmail,
+		FirstName: req.body.newFirstName,
+		LastName: req.body.newLastName,
+		AccountType: req.body.newAccountType,
+		PayPalEmail: req.body.newPaypalEmail,
+		PhoneNumber: req.body.newPhoneNumber,
+	};
 
-	await db.run(`UPDATE USER_INFO SET First_Name = ?, Last_Name = ?, Type_User = ?, Pay_Pal = ?, Phone_Number = ? WHERE Email = ?`, [firstName, lastName, accountType, paypalAccount, phoneNumber, userEmail]);
+
+	await db.run(`UPDATE USER_INFO SET First_Name = ?, Last_Name = ?, Type_User = ?, Pay_Pal = ?, Phone_Number = ? WHERE Email = ?`, [account.FirstName, account.LastName, account.AccountType, account.PayPalEmail, account.PhoneNumber, account.Email]);
+	setTokenCookie(res, account);
 });
 
 /** @returns Updated account information */
