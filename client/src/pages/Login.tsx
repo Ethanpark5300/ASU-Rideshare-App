@@ -5,7 +5,7 @@ import { useAppDispatch } from "../store/hooks";
 import { setAccountStore } from "../store/features/accountSlice";
 import { TextInput } from "../components/TextInput/TextInput";
 // import { DatabaseAccessor } from "../databases/DatabaseAccessor";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../components/Buttons/Button";
 import PageTitle from "../components/PageTitle/PageTitle";
 
@@ -14,6 +14,7 @@ import PageTitle from "../components/PageTitle/PageTitle";
 function Login() {
     // let databaseAccessor: DatabaseAccessor = DatabaseAccessor.getInstance();
     const dispatch = useAppDispatch();
+	const navigate = useNavigate();
 
     const emailRef = useRef<string>("");
     const passwordRef = useRef<string>("");
@@ -37,7 +38,8 @@ function Login() {
                     setLoginFailed(!data.loginSuccess);
                     if (data.loginSuccess) {
                         dispatch(setAccountStore(new Account(data.account.Email, data.account.FirstName, data.account.LastName, data.account.PhoneNumber, data.account.AccountType, data.account.PayPalEmail)));
-                    } else {
+						navigate("/Profile");
+					} else {
                         dispatch(setAccountStore(undefined));
                     }
                 });
