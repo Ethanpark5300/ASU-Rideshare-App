@@ -418,14 +418,18 @@ app.get("/ride-history", async (req: Request, res: Response) => {
 	});
 });
 
+/** Edit account */
+/** @FIXME Changes should update on the client side */
 app.post("/edit-account", async (req: Request, res: Response) => {
 	let db = await dbPromise;
+	let userEmail = req.body.userEmail;
 	let firstName = req.body.newFirstName;
 	let lastName = req.body.newLastName;
 	let accountType = req.body.newAccountType;
+	let paypalAccount = req.body.newPaypalEmail;
 	let phoneNumber = req.body.newPhoneNumber;
 
-
+	await db.run(`UPDATE USER_INFO SET First_Name = ?, Last_Name = ?, Type_User = ?, Pay_Pal = ?, Phone_Number = ? WHERE Email = ?`, [firstName, lastName, accountType, paypalAccount, phoneNumber, userEmail]);
 });
 
 /** @returns available drivers */

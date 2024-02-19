@@ -34,19 +34,12 @@ function EditAccount() {
     const handlePaypalEmailChange = (e: { target: { value: SetStateAction<string>; }; }) => { setPaypalEmail(e.target.value); };
 
     const handleSaveChanges = () => {
-        // const updatedAccount = {
-        //     firstName: firstName,
-        //     lastName: lastName,
-        //     accountType: userType,
-        //     paypalEmail: paypalEmail,
-        //     phoneNumber: phoneNumber
-        // };
-
         try {
             fetch(`/edit-account`, {
                 method: "POST",
                 headers: { "Content-type": "application/json" },
                 body: JSON.stringify({
+                    userEmail: account?.account?.email,
                     newFirstName: firstName,
                     newLastName: lastName,
                     newAccountType: userType,
@@ -54,7 +47,6 @@ function EditAccount() {
                     newPhoneNumber: phoneNumber
                 }),
             });
-
             alert('Changes saved!');
         }
         catch (e: any) {
@@ -112,10 +104,7 @@ function EditAccount() {
                 <Link to="/Profile">
                     <button>Back to Profile Page</button>
                 </Link>
-                <button
-                    onClick={handleSaveChanges}>
-                    Save Changes
-                </button>
+                <button onClick={handleSaveChanges}> Save Changes </button>
             </main>
         </PageTitle>
     );
