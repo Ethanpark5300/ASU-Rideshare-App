@@ -29,11 +29,14 @@ function EditAccount() {
         try {
             const response = await fetch(`/edit-account?accountEmail=${account?.account?.email}`);
             const data = await response.json();
-            setFirstName(data.account.First_Name);
-            setLastName(data.account.Last_Name);
-            setUserType(data.account.Type_User);
-            setPaypalEmail(data.account.Pay_Pal);
-            setPhoneNumber(data.account.Phone_Number);
+
+            if (data.account) {
+                setFirstName(data.account.First_Name);
+                setLastName(data.account.Last_Name);
+                setUserType(data.account.Type_User);
+                setPaypalEmail(data.account.Pay_Pal);
+                setPhoneNumber(data.account.Phone_Number);
+            }
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -81,7 +84,7 @@ function EditAccount() {
                     type="text"
                     name="firstName"
                     id="firstName"
-                    value={firstName}
+                    value={firstName || ''}
                     onChange={handleFirstNameChange}
                 />
                 <label htmlFor="lastName">Last Name</label>
@@ -89,14 +92,14 @@ function EditAccount() {
                     type="text"
                     name="lastName"
                     id="lastName"
-                    value={lastName}
+                    value={lastName || ''}
                     onChange={handleLastNameChange}
                 />
                 <label htmlFor="userType">User Type</label>
                 <select
                     name="userType"
                     id="userType"
-                    value={userType}
+                    value={userType || ''}
                     onChange={handleUserTypeChange}
                 >
                     <option value="1">Rider</option>
@@ -108,17 +111,17 @@ function EditAccount() {
                     type="text"
                     name="phoneNumber"
                     id="phoneNumber"
-                    value={phoneNumber}
+                    value={phoneNumber || ''}
                     onChange={handlePhoneNumberChange}
                 />
-                    <label htmlFor="payPalEmail">PayPal Email</label>
-                    <input
-                        type="text"
-                        name="payPalEmail"
-                        id="payPalEmail"
-                        value={paypalEmail}
-                        onChange={handlePaypalEmailChange}
-                    />
+                <label htmlFor="payPalEmail">PayPal Email</label>
+                <input
+                    type="text"
+                    name="payPalEmail"
+                    id="payPalEmail"
+                    value={paypalEmail || ''}
+                    onChange={handlePaypalEmailChange}
+                />
                 <Link to="/Profile">
                     <button>Back to Profile Page</button>
                 </Link>

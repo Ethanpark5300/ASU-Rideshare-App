@@ -23,11 +23,14 @@ const Profile: React.FC = (props) => {
         try {
             const response = await fetch(`/edit-account?accountEmail=${account?.account?.email}`);
             const data = await response.json();
-            setFirstName(data.account.First_Name);
-            setLastName(data.account.Last_Name);
-            setUserType(data.account.Type_User);
-            setPaypalEmail(data.account.Pay_Pal);
-            setPhoneNumber(data.account.Phone_Number);
+
+            if (data.account) {
+                setFirstName(data.account.First_Name);
+                setLastName(data.account.Last_Name);
+                setUserType(data.account.Type_User);
+                setPaypalEmail(data.account.Pay_Pal);
+                setPhoneNumber(data.account.Phone_Number);
+            }
         } catch (error) {
             console.error("Error fetching data:", error);
         }
