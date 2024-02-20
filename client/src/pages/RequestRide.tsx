@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { GoogleMap, LoadScript, Marker, MarkerF, DirectionsRenderer, Autocomplete } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, MarkerF, DirectionsRenderer, Autocomplete } from '@react-google-maps/api';
 import '../styles/RequestRide.css';
 import PageTitle from '../components/PageTitle/PageTitle';
 import { FaMapMarkerAlt } from "react-icons/fa";
 import Select from 'react-select';
 import buildingsData from '../databases/Buildings.json';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 const libraries = ['places'] as any;
 
 interface RequestRideProps {
@@ -28,7 +28,9 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
     const destinationAutocomplete = useRef<google.maps.places.Autocomplete>(null);
     const [selectedOriginBuilding, setSelectedOriginBuilding] = useState<BuildingOption | null>(null);
     const [selectedDestinationBuilding, setSelectedDestinationBuilding] = useState<BuildingOption | null>(null);
-    let pickupLocation, dropoffLocation;
+    let [pickupLocation, setPickupLocation] = useState<any>(null);
+    let [dropoffLocation, setDropoffLocation] = useState<any>(null);
+    const navigate = useNavigate();
 
     interface Building {
         code: string;
@@ -51,7 +53,6 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
                 setError(null);
             },
             (error) => {
-                // console.error('Error getting user location:', error);
                 if (error.code === error.PERMISSION_DENIED) {
                     setError('User denied the request for Geolocation.');
                 } else {
@@ -69,44 +70,47 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
         setMapLoaded(true);
     };
 
-    // useEffect(() => {
-    //     if (navigator.geolocation) {
-    //         navigator.geolocation.getCurrentPosition(
-    //             (position) => {
-    //                 const { latitude, longitude } = position.coords;
-    //                 setCurrentPosition({ lat: latitude, lng: longitude });
-    //                 setMapCenter({ lat: latitude, lng: longitude });
-    //             },
-    //             (error) => {
-    //                 console.error('Error getting user location:', error);
-    //                 setError('Error getting user location. Please enable location services.');
-    //             }
-    //         );
-    //     } else {
-    //         console.error('Geolocation is not supported by this browser.');
-    //         setError('Geolocation is not supported by this browser.');
-    //     }
-    // }, []);
-
     function getPickupLocation() {
-        if (origin === null || origin === undefined || origin === "") {
-            pickupLocation = selectedOriginBuilding.address
+        let updatedPickupLocation = '';
+        if (origin === null || origin === "") {
+            updatedPickupLocation = selectedOriginBuilding ? selectedOriginBuilding.address : '';
+            setPickupLocation(updatedPickupLocation);
+        } else {
+            updatedPickupLocation = origin;
+            setPickupLocation(updatedPickupLocation);
         }
-
-        if (selectedOriginBuilding === null || selectedOriginBuilding.address === undefined || selectedOriginBuilding.address === "") {
-            pickupLocation = origin
-        }
+        return updatedPickupLocation;
     }
 
     function getDropoffLocation() {
-        if (destination === null || destination === undefined || destination === "") {
-            dropoffLocation = selectedDestinationBuilding.address
+        let updatedDropoffLocation = '';
+        if (destination === null || destination === "") {
+            updatedDropoffLocation = selectedDestinationBuilding ? selectedDestinationBuilding.address : '';
+            setDropoffLocation(updatedDropoffLocation);
+        } else {
+            updatedDropoffLocation = destination;
+            setDropoffLocation(updatedDropoffLocation);
         }
-
-        if (selectedDestinationBuilding === null || selectedDestinationBuilding.address === undefined || selectedDestinationBuilding.address === "") {
-            dropoffLocation = destination
-        }
+        return updatedDropoffLocation;
     }
+
+    const handlePreview = () => {
+        pickupLocation = getPickupLocation();
+        dropoffLocation = getDropoffLocation();
+
+        if (pickupLocation && dropoffLocation) {
+            const directionsService = new window.google.maps.DirectionsService();
+
+            directionsService.route(
+                {
+                    origin: pickupLocation,
+                    destination: dropoffLocation,
+                    travelMode: window.google.maps.TravelMode.DRIVING,
+                },
+                handleDirectionsResponse
+            );
+        }
+    };
 
     const handleDirectionsResponse = (response: any) => {
         if (response !== null && response.status === 'OK') {
@@ -121,25 +125,6 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
             }
         } else {
             console.error('Error calculating directions:', response);
-            /** @TODO Display error to the rider */
-        }
-    };
-
-    const handlePreview = () => {
-        getPickupLocation()
-        getDropoffLocation()
-
-        if (pickupLocation && dropoffLocation) {
-            const directionsService = new window.google.maps.DirectionsService();
-
-            directionsService.route(
-                {
-                    origin: pickupLocation,
-                    destination: dropoffLocation,
-                    travelMode: window.google.maps.TravelMode.DRIVING,
-                },
-                handleDirectionsResponse
-            );
         }
     };
 
@@ -158,7 +143,6 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
                     setOrigin(formattedAddress);
                 } else {
                     console.error('Error getting address from coordinates:', status);
-                    /** @TODO Display error to the rider */
                 }
             });
         }
@@ -196,22 +180,25 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
 
     const handleSubmit = () => {
         try {
-            getPickupLocation()
-            getDropoffLocation()
-            // console.log("Pickup Location: " + pickupLocation)
-            // console.log("Dropoff Location: " + dropoffLocation)
+            pickupLocation = getPickupLocation();
+            dropoffLocation = getDropoffLocation();
 
-            fetch(`/ride-queue`, {
-                method: "POST",
-                headers: { "Content-type": "application/json" },
-                body: JSON.stringify({
-                    rider_id: props.riderEmail,
-                    pickupLocation: pickupLocation,
-                    dropoffLocation: dropoffLocation,
-                }),
-            })
+            if (pickupLocation && dropoffLocation) {
+                fetch(`/ride-queue`, {
+                    method: "POST",
+                    headers: { "Content-type": "application/json" },
+                    body: JSON.stringify({
+                        rider_id: props.riderEmail,
+                        pickupLocation: pickupLocation,
+                        dropoffLocation: dropoffLocation,
+                    }),
+                });
+                navigate("/ChooseDriver");
+            } else {
+                alert('Please provide both pick-up and drop-off locations.');
+            }
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
     };
 
@@ -387,9 +374,7 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
                         <div className="request-btns-container">
                             <button className='preview-btn' onClick={handlePreview}>Directions</button>
                             <button className='clear-btn' onClick={handleClear}>Clear</button>
-                            <Link to="/ChooseDriver">
-                                <button className='request-btn' onClick={handleSubmit}>Submit</button>
-                            </Link>
+                            <button className='request-btn' onClick={handleSubmit}>Submit</button>
                         </div>
                     </LoadScript>
                     {distance && duration && (
@@ -409,7 +394,7 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
                                     <GoogleMap
                                         mapContainerStyle={{ height: '100%', width: '100%' }}
                                         zoom={20}
-                                        center={mapCenter || { lat: 0, lng: 0 }}
+                                        center={mapCenter}
                                     >
                                         <MarkerF position={currentPosition} />
                                         {directions && <DirectionsRenderer directions={directions} />}
