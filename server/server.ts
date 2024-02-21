@@ -453,7 +453,17 @@ app.post("/send-ratings", async (req: Request, res: Response) => {
 	await db.run('SELECT Ratee_FirstName, Ratee_LastName, AVG(Star_Rating) FROM RATINGS WHERE Ratee_ID = ?', [ratee_ID]);
 	/** @TODO Add driver to the rider's favorites list if favoritedDriver is true */
 });
+/** Send Favorites to favorites database*/
+app.post("/send-favorites", async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let favorite_ID = req.body.favorite;
+	let rider_ID = req.body.riderID;
+	let driver_ID = req.body.driverID;
+	let driver_FirstName = req.body.driverFirst;
+	let driver_LastName = req.body.driverLast;
 
+	await db.run('INSERT INTO FAVORITES(Favorite_ID, Rider_ID, Driver_ID, Driver_FirstName, Driver_LastName) VALUES(?,?,?,?,?)', favorite_ID, rider_ID, driver_ID, driver_FirstName, driver_LastName);
+});
 /** Send report to reports database */
 app.post("/send-report", async (req: Request, res: Response) => {
 	let db = await dbPromise;
