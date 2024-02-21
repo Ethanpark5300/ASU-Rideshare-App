@@ -451,19 +451,24 @@ app.post("/send-ratings", async (req: Request, res: Response) => {
 
 	/**  Calculate new average user rating with aggregate average */
 	await db.run('SELECT Ratee_FirstName, Ratee_LastName, AVG(Star_Rating) FROM RATINGS WHERE Ratee_ID = ?', [ratee_ID]);
+
 	/** @TODO Add driver to the rider's favorites list if favoritedDriver is true */
 });
-/** Send Favorites to favorites database*/
-app.post("/send-favorites", async (req: Request, res: Response) => {
+/**Update user info for drivers*/
+app.post("/getnew-info", async (req: Request, res: Response) => {
 	let db = await dbPromise;
-	let favorite_ID = req.body.favorite;
-	let rider_ID = req.body.riderID;
-	let driver_ID = req.body.driverID;
-	let driver_FirstName = req.body.driverFirst;
-	let driver_LastName = req.body.driverLast;
+	let info = {
+		Email: req.body.email,
+		Ratee_ID: req.body.rateeID,
+		Star_Rating: req.body.newstarrating
+	};
+	/*let email = req.body.email;
+	let ratee_ID = req.body.rateeID;
+	let star_rating = req.body.newstarrating;*/
 
-	await db.run('INSERT INTO FAVORITES(Favorite_ID, Rider_ID, Driver_ID, Driver_FirstName, Driver_LastName) VALUES(?,?,?,?,?)', favorite_ID, rider_ID, driver_ID, driver_FirstName, driver_LastName);
-});
+	await db.run('UPDATE USER_INFO SET Rating_Driver = (SELECT AVG(Star_Rating) FROM RATINGS WHERE RATINGS.Ratee_ID = ?)' [info.Ratee_ID]);
+}); 
+ 
 /** Send report to reports database */
 app.post("/send-report", async (req: Request, res: Response) => {
 	let db = await dbPromise;
