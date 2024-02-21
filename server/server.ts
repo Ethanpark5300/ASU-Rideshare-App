@@ -455,9 +455,9 @@ app.post("/send-ratings", async (req: Request, res: Response) => {
 	/** @TODO Add driver to the rider's favorites list if favoritedDriver is true */
 });
 /**Update user info for drivers*/
-app.post("/getnew-info", async (req: Request, res: Response) => {
+app.post("/get-info", async (req: Request, res: Response) => {
 	let db = await dbPromise;
-	let info = {
+	let Info = {
 		Email: req.body.email,
 		Ratee_ID: req.body.rateeID,
 		Star_Rating: req.body.newstarrating
@@ -466,7 +466,7 @@ app.post("/getnew-info", async (req: Request, res: Response) => {
 	let ratee_ID = req.body.rateeID;
 	let star_rating = req.body.newstarrating;*/
 
-	await db.run('UPDATE USER_INFO SET Rating_Driver = (SELECT AVG(Star_Rating) FROM RATINGS WHERE RATINGS.Ratee_ID = ?)' [info.Ratee_ID]);
+	await db.run('UPDATE USER_INFO SET Rating_Driver = (SELECT AVG(Star_Rating) FROM RATINGS WHERE RATINGS.Ratee_ID = ?)' [Info.Ratee_ID]);
 }); 
  
 /** Send report to reports database */
