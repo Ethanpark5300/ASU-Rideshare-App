@@ -449,7 +449,8 @@ app.post("/send-ratings", async (req: Request, res: Response) => {
 
 	await db.run('INSERT INTO RATINGS (Rater_ID, Ratee_ID, Ratee_FirstName, Ratee_LastName, Star_Rating, Comments, Date, Time) VALUES (?,?,?,?,?,?,?,?)', rater_ID, ratee_ID, ratee_FirstName, ratee_LastName, star_rating, comments, currentDate, currentTime);
 
-	/** @TODO Calculate new average user rating with aggregate average */
+	/**  Calculate new average user rating with aggregate average */
+	await db.run('SELECT Ratee_FirstName, Ratee_LastName, AVG(Star_Rating) FROM RATINGS WHERE Ratee_ID = ?', [ratee_ID]);
 	/** @TODO Add driver to the rider's favorites list if favoritedDriver is true */
 });
 
