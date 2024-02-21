@@ -594,6 +594,7 @@ app.post("/ride-queue", async (req: Request, res: Response) => {
 	let Rider_LastName = await db.get(`SELECT Last_Name FROM USER_INFO WHERE Email='${rider_id}'`)
 
 	await db.run(`INSERT INTO Ride_Queue (Rider_ID, Rider_FirstName, Rider_LastName, Pickup_Location, Dropoff_Location, Status) VALUES (?,?,?,?,?,?)`, rider_id, Rider_FirstName.First_Name, Rider_LastName.Last_Name, pickupLocation, dropoffLocation, "TRUE")
+	await db.run('SELECT USER_INFO.Email, ')
 });
 
 //** Riders cancelling */
