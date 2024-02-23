@@ -425,58 +425,52 @@ app.post("/send-blocked", async (req: Request, res: Response) => {
 	let currentDate = new Date().toLocaleDateString();
 	let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-	/** @TODO Get blockee first and last name with reportee email */
-	let blockee_FirstName = "Test";
-	let blockee_LastName = "Test";
-
-	await db.run('INSERT INTO BLOCKED (Blocker_ID, Blockee_ID, Blockee_FirstName, Blockee_LastName, Date, Time) VALUES (?,?,?,?,?,?)', blocker_ID, blockee_ID, blockee_FirstName, blockee_LastName, currentDate, currentTime);
+	await db.run('INSERT INTO BLOCKED (Blocker_ID, Blockee_ID, Date, Time) VALUES (?,?,?,?)', blocker_ID, blockee_ID, currentDate, currentTime);
 });
 
-/** Send ratings to the ratings database */
+// Insert ratings to ratings table and calculate/update average ratings
 app.post("/send-ratings", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let rater_ID = req.body.rater;
 	let ratee_ID = req.body.ratee;
 	let star_rating = req.body.star_rating;
 	let comments = req.body.comments;
-	let favorite_driver = req.body.favorited_driver /** @returns true if favorited/false if not favorited */
 	let currentDate = new Date().toLocaleDateString();
 	let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-	let favorite_ID = req.body.favoriteid;
-	let rider_ID = req.body.riderid;
-	let driver_ID = req.body.driverid;
-	let driver_FirstName = req.body.driverfirst;
-	let driver_LastName = req.body.driverlast;
+	let rateeUserType = await db.get(`SELECT Type_User FROM USER_INFO WHERE Email = '${ratee_ID}'`);
 
-	/** @TODO Get ratee first and last name with ratee email */
-	let ratee_FirstName = "Test"
-	let ratee_LastName = "Test"
+	// Insert ratings to ratings table
+	await db.run('INSERT INTO RATINGS (Rater_ID, Ratee_ID, Star_Rating, Comments, Date, Time) VALUES (?,?,?,?,?,?)', rater_ID, ratee_ID, star_rating, comments, currentDate, currentTime);
 
-	await db.run('INSERT INTO RATINGS (Rater_ID, Ratee_ID, Ratee_FirstName, Ratee_LastName, Star_Rating, Comments, Date, Time) VALUES (?,?,?,?,?,?,?,?)', rater_ID, ratee_ID, ratee_FirstName, ratee_LastName, star_rating, comments, currentDate, currentTime);
+	// Calculate and update driver's average rating
+	if (rateeUserType.Type_User === 2 || rateeUserType.Type_User === 3) {
+		let defaultRating = await db.get(`SELECT Rating_Driver FROM USER_INFO WHERE Email = '${ratee_ID}'`);
+		let ratings = await db.all(`SELECT Star_Rating FROM RATINGS WHERE Ratee_ID = '${ratee_ID}'`);
+		let totalRating = 0;
+		
+		for (let i = 0; i < ratings.length; i++) {
+			totalRating += ratings[i].Star_Rating;
+		}
+		
+		let updatedAvgRating = (defaultRating.Rating_Driver * ratings.length + star_rating) / (ratings.length + 1);
+		await db.run(`UPDATE USER_INFO SET Rating_Driver = ? WHERE Email = ?`, updatedAvgRating, ratee_ID);
+		// console.log(`${ratee_ID}'s average rating updated`);
+	} 
+	else { // Calculate and update rider's average rating
+		let defaultRating = await db.get(`SELECT Rating_Passenger FROM USER_INFO WHERE Email = '${ratee_ID}'`);
+		let ratings = await db.all(`SELECT Star_Rating FROM RATINGS WHERE Ratee_ID = '${ratee_ID}'`);
+		let totalRating = 0;
 
-	/**  Calculate new average user rating with aggregate average */
-	await db.run('SELECT Ratee_FirstName, Ratee_LastName, AVG(Star_Rating) FROM RATINGS WHERE Ratee_ID = ?', [ratee_ID]);
+		for (let i = 0; i < ratings.length; i++) {
+			totalRating += ratings[i].Star_Rating;
+		}
 
-	/** Add driver to the rider's favorites list if favoritedDriver is true */
-	if (favorite_driver == true) {
-		await db.run('INSERT INTO FAVORITES (Favorite_ID, Rider_ID, Driver_ID, Driver_FirstName, Driver_LastName) VALUES(?,?,?,?,?)', favorite_ID, rider_ID, driver_ID, driver_FirstName, driver_LastName);
+		let updatedAvgRating = (defaultRating.Rating_Passenger * ratings.length + star_rating) / (ratings.length + 1);
+		await db.run(`UPDATE USER_INFO SET Rating_Passenger = ? WHERE Email = ?`, updatedAvgRating, ratee_ID);
+		// console.log(`${ratee_ID}'s average rating updated`);
 	}
 });
-/**Update user info for drivers*/
-app.post("/get-info", async (req: Request, res: Response) => {
-	let db = await dbPromise;
-	let Info = {
-		Email: req.body.email,
-		Ratee_ID: req.body.rateeID,
-		Star_Rating: req.body.newstarrating
-	};
-	/*let email = req.body.email;
-	let ratee_ID = req.body.rateeID;
-	let star_rating = req.body.newstarrating;*/
 
-	await db.run('UPDATE USER_INFO SET Rating_Driver = (SELECT AVG(Star_Rating) FROM RATINGS WHERE RATINGS.Ratee_ID = ?)' [Info.Ratee_ID]);
-}); 
- 
 /** Send report to reports database */
 app.post("/send-report", async (req: Request, res: Response) => {
 	let db = await dbPromise;
@@ -495,16 +489,13 @@ app.post("/send-payment", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let rider_ID = req.body.Rider_ID;
 	let driverPayPalEmail = req.body.driverPayPalEmail;
+	let driverEmail = "Test" /** @TODO Replace value with actual driver email ID */
 	let rideCost = req.body.rideCost;
 	let currentDate = new Date().toLocaleDateString();
 	let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 
-	let driverEmail = "Test" /** @TODO Replace value with actual driver email ID */
-
 	await db.run(`INSERT INTO PAYMENTS (Rider_ID, Driver_ID, Ride_Cost, Date, Time) VALUES (?,?,?,?,?)`, rider_ID, driverEmail, rideCost, currentDate, currentTime);
-
-	/* Delete duplicate records from the table */
-	await db.run(`DELETE FROM PAYMENTS WHERE Payment_ID NOT IN (SELECT MIN(Payment_ID) FROM PAYMENTS GROUP BY Rider_ID, Driver_ID, Ride_Cost, Date, Time)`);
+	await db.run(`DELETE FROM PAYMENTS WHERE Payment_ID NOT IN (SELECT MIN(Payment_ID) FROM PAYMENTS GROUP BY Rider_ID, Driver_ID, Ride_Cost, Date, Time)`); /* Delete duplicate records from the table */
 });
 
 /** @returns ride/drive history */
@@ -538,8 +529,8 @@ app.post("/edit-account", async (req: Request, res: Response) => {
 	setTokenCookie(res, account);
 });
 
-/** @returns Updated account information */
-app.get("/edit-account", async (req: Request, res: Response) => {
+/** @returns account information */
+app.get("/view-account-info", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let userEmail = req.query.accountEmail;
 

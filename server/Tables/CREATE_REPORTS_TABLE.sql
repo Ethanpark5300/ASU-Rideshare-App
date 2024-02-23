@@ -1,5 +1,5 @@
 CREATE TABLE "REPORTS" (
-	"Report_ID"	INTEGER UNIQUE,
+	"Report_ID"	INTEGER,
 	"Reporter_ID"	TEXT,
 	"Reportee_ID"	TEXT,
 	"Reason"	TEXT,

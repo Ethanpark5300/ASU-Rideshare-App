@@ -21,7 +21,7 @@ const Profile: React.FC = (props) => {
 
     const getAccountInformation = useCallback(async () => {
         try {
-            const response = await fetch(`/edit-account?accountEmail=${account?.account?.email}`);
+            const response = await fetch(`/view-account-info?accountEmail=${account?.account?.email}`);
             const data = await response.json();
 
             if (data.account) {

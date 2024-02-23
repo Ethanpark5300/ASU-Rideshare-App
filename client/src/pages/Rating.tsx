@@ -16,6 +16,7 @@ const Rating: React.FC = (props) => {
     /** @TODO Replace value with ratee name */
     const rateeUser = "FirstName LastName";
 
+    // eslint-disable-next-line
     const [formData, setFormData] = useState<RatingFormState>({
         rating: 0,
         comment: '',
