@@ -84,7 +84,7 @@ makeTableExist("PAYMENTS", fs.readFileSync(__dirname + '/Tables/CREATE_PAYMENTS_
 makeTableExist("RATINGS", fs.readFileSync(__dirname + '/Tables/CREATE_RATINGS_TABLE.sql').toString());
 makeTableExist("REPORTS", fs.readFileSync(__dirname + '/Tables/CREATE_REPORTS_TABLE.sql').toString());
 makeTableExist("RIDE_HISTORY", fs.readFileSync(__dirname + '/Tables/CREATE_RIDEHISTORY_TABLE.sql').toString());
-makeTableExist("RIDE_QUEUE", fs.readFileSync(__dirname + '/Tables/CREATE_RIDEQUEUE_TABLE.sql').toString());
+makeTableExist("RIDE_LIST", fs.readFileSync(__dirname + '/Tables/CREATE_RIDELIST_TABLE.sql').toString());
 makeTableExist("REGISTER", fs.readFileSync(__dirname + '/Tables/CREATE_REGISTER_TABLE.sql').toString());
 
 //app.get("/message", (req: Request, res: Response) => {
@@ -550,7 +550,7 @@ app.get("/available-drivers", async (req: Request, res: Response) => {
 	await db.run(`UPDATE USER_INFO SET Status_User = 'FALSE' WHERE Email = '${riderEmail}'`);
 
 	// Get favorite drivers who are available and not blocked
-	let getFavoriteDriversList = await db.all(`SELECT * FROM FAVORITES WHERE Rider_ID = ?`, [riderEmail]);
+	let getFavoriteDriversList = await db.all(`SELECT Driver_ID FROM FAVORITES WHERE Rider_ID = ?`, [riderEmail]);
 	let favoriteDriverEmails = getFavoriteDriversList.map((driver: { Driver_ID: string; }) => driver.Driver_ID);
 
 	let getBlockedDriversList = await db.all(`SELECT Blockee_ID FROM BLOCKED WHERE Blocker_ID = ?`, [riderEmail]);
@@ -563,10 +563,10 @@ app.get("/available-drivers", async (req: Request, res: Response) => {
 	let excludedDriverEmails = [...blockedDriverEmails, ...blockingDriverEmails];
 
 	// Filter available favorite drivers
-	let availableFavoriteDrivers = await db.all(`SELECT * FROM USER_INFO WHERE Email IN (${favoriteDriverEmails.map(() => '?').join(', ')}) AND Type_User IN (2, 3) AND Status_User = 'TRUE'`, favoriteDriverEmails);
+	let availableFavoriteDrivers = await db.all(`SELECT First_Name, Last_Name FROM USER_INFO WHERE Email IN (${favoriteDriverEmails.map(() => '?').join(', ')}) AND Type_User IN (2, 3) AND Status_User = 'TRUE'`, favoriteDriverEmails);
 
 	// Filter other available drivers excluding favorite drivers and blocked drivers
-	let otherAvailableDrivers = await db.all(`SELECT * FROM USER_INFO WHERE Type_User IN (2, 3) AND Status_User = 'TRUE' AND Email NOT IN (${[...favoriteDriverEmails, ...excludedDriverEmails].map(() => '?').join(', ')})`, [...favoriteDriverEmails, ...excludedDriverEmails]);
+	let otherAvailableDrivers = await db.all(`SELECT First_Name, Last_Name FROM USER_INFO WHERE Type_User IN (2, 3) AND Status_User = 'TRUE' AND Email NOT IN (${[...favoriteDriverEmails, ...excludedDriverEmails].map(() => '?').join(', ')})`, [...favoriteDriverEmails, ...excludedDriverEmails]);
 
 	res.json({
 		availableFavoriteDrivers: availableFavoriteDrivers,
@@ -584,8 +584,8 @@ app.post("/ride-queue", async (req: Request, res: Response) => {
 	let Rider_FirstName = await db.get(`SELECT First_Name FROM USER_INFO WHERE Email='${rider_id}'`)
 	let Rider_LastName = await db.get(`SELECT Last_Name FROM USER_INFO WHERE Email='${rider_id}'`)
 
-	await db.run(`INSERT INTO Ride_Queue (Rider_ID, Rider_FirstName, Rider_LastName, Pickup_Location, Dropoff_Location, Status) VALUES (?,?,?,?,?,?)`, rider_id, Rider_FirstName.First_Name, Rider_LastName.Last_Name, pickupLocation, dropoffLocation, "TRUE")
-	await db.run('SELECT USER_INFO.Email, ')
+	await db.run(`INSERT INTO Ride_List (Rider_ID, Rider_FirstName, Rider_LastName, Pickup_Location, Dropoff_Location, Queue_Status) VALUES (?,?,?,?,?,?)`, rider_id, Rider_FirstName.First_Name, Rider_LastName.Last_Name, pickupLocation, dropoffLocation, "TRUE")
+	// await db.run('SELECT USER_INFO.Email, ')
 });
 
 //** Riders cancelling */
@@ -602,7 +602,7 @@ app.get("/ride-queue", async (req: Request, res: Response) => {
 	let driverEmail = req.query.driveremail;
 
 	// Get all ride requests with status "TRUE"
-	let getRidersRequests = await db.all(`SELECT * FROM Ride_Queue WHERE Status="TRUE"`);
+	let getRidersRequests = await db.all(`SELECT Rider_ID, First_Name, Last_Name, Pickup_Location, Dropoff_Location FROM Ride_List INNER JOIN USER_INFO ON Ride_List.Rider_ID = USER_INFO.Email WHERE Queue_Status="TRUE"`);
 
 	// Get all riders who blocked the driver
 	let getBlockedRiders = await db.all(`SELECT Blockee_ID FROM BLOCKED WHERE Blocker_ID = ?`, [driverEmail]);

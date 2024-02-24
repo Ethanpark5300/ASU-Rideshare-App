@@ -34,7 +34,7 @@ function ChooseRider() {
                     <div>
                         {allRequestsList.map((ride) => (
                             <div key={ride.RideQueue_ID}>
-                                <p>{ride.Rider_FirstName} {ride.Rider_LastName} {ride.Pickup_Location} {ride.Dropoff_Location} <button>Accept</button></p>
+                                <p>{ride.First_Name} {ride.Last_Name} {ride.Pickup_Location} {ride.Dropoff_Location} <button>Accept</button></p>
                             </div>
                         ))}
                     </div>
