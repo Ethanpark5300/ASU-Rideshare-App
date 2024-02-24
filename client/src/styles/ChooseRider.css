@@ -1,0 +1,22 @@
+#choose-rider {
+  height: calc(100vh - 68.5px);
+  position: relative;
+}
+
+#choose-rider .chooserider-panel {
+  position: absolute;
+  background-color: #fff;
+  padding: 0 3rem 1.5rem 3rem;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  outline: 1px solid #dddddd;
+  z-index: 1;
+  top: 10%;
+  left: 0%;
+  display: block;
+}
+
+#choose-rider h1 {
+  display: inline-block;
+  background-color: var(--brand-gold);
+  padding: 0.25rem;
+}
