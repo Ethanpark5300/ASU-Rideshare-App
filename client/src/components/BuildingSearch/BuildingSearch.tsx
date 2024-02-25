@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import buildingsData from '../../databases/Buildings.json';
+import buildingsData from './Buildings.json';
 import Select from 'react-select';
 import './BuildingSearch.css';
 

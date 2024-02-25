@@ -4,7 +4,7 @@ import '../styles/RequestRide.css';
 import PageTitle from '../components/PageTitle/PageTitle';
 import { FaMapMarkerAlt } from "react-icons/fa";
 import Select from 'react-select';
-import buildingsData from '../databases/Buildings.json';
+import buildingsData from '../components/BuildingSearch/Buildings.json';
 import { useNavigate } from 'react-router-dom';
 const libraries = ['places'] as any;
 
