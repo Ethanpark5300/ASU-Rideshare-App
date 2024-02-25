@@ -66,9 +66,14 @@ function ChooseRider() {
               <div>No ride requests available.</div>
             )}
           </section>
-          <button className="refresh-list-rider" onClick={refreshRideQueueList}>
-            Refresh
-          </button>
+          <section id="rider-button-container">
+            <button
+              className="refresh-list-rider"
+              onClick={refreshRideQueueList}
+            >
+              Refresh
+            </button>
+          </section>
         </aside>
       </main>
     </PageTitle>

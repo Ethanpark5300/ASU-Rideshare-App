@@ -36,3 +36,10 @@
 #choose-rider button:hover {
   transform: scale(1.05);
 }
+
+#choose-rider #rider-button-container {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 1rem;
+}
