@@ -20,3 +20,19 @@
   background-color: var(--brand-gold);
   padding: 0.25rem;
 }
+
+#choose-rider .refresh-list-rider {
+  border-radius: 1000px;
+  cursor: pointer;
+  padding: 12px 24px;
+  font-weight: 700;
+  transition: 0.03s ease-in-out;
+  line-height: 16px;
+  margin-inline: auto;
+  color: white;
+  background-color: var(--brand-maroon);
+}
+
+#choose-rider button:hover {
+  transform: scale(1.05);
+}
