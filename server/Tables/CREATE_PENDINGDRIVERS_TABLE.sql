@@ -1,0 +1,7 @@
+CREATE TABLE "PENDING_DRIVERS" (
+	"PendingDriver_ID"	INTEGER,
+	"Rider_ID"	TEXT,
+	"Driver_ID"	TEXT,
+	"Time"	TEXT,
+	PRIMARY KEY("PendingDriver_ID" AUTOINCREMENT)
+)

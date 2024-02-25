@@ -37,7 +37,7 @@ function Navbar() {
 
     const account = useAppSelector((state) => state.account);
 
-	console.log(account?.account?.accountType);
+	// console.log(account?.account?.accountType);
 
     return (
         <nav>

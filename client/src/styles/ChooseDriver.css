@@ -21,6 +21,11 @@
     display: block;
 }
 
+.driver-item {
+    display: flex;
+    margin-block: .75rem;
+}
+
 #choose-driver .choose-btns-container {
     display: flex;
     flex-direction: column;
@@ -28,35 +33,30 @@
     margin-top: 1rem;
 }
 
-#choose-driver .refresh-btn,
-#choose-driver .nearest-btn {
+#choose-driver .refresh-list-btn,
+#choose-driver .cancel-ride-btn {
     border-radius: 1000px;
     cursor: pointer;
     padding: 12px 24px;
     font-weight: 700;
     transition: 0.03s ease-in-out;
     line-height: 16px;
-    color: white;
     width: 80%;
     margin-inline: auto;
+}
+
+#choose-driver .refresh-list-btn {
+    color: white;
     background-color: var(--brand-maroon);
 }
 
-#choose-driver .cancel-btn {
-    border-radius: 1000px;
-    cursor: pointer;
-    padding: 12px 24px;
-    font-weight: 700;
-    transition: 0.03s ease-in-out;
-    line-height: 16px;
-    color: white;
-    width: 80%;
-    margin-inline: auto;
+#choose-driver .cancel-ride-btn,
+#choose-driver .cancel-driver-request-btn {
     background-color: black;
     color: white;
 }
-
-#choose-driver .request-btn {
+#choose-driver .cancel-driver-request-btn,
+#choose-driver .request-driver-btn {
     border-radius: 1000px;
     cursor: pointer;
     padding: 4px 8px;
@@ -65,14 +65,13 @@
     line-height: 16px;
     color: white;
     margin-left: 1rem;
+}
+
+#choose-driver .request-driver-btn {
     background-color: var(--brand-gold);
     color: black;
 }
 
 #choose-driver button:hover {
     transform: scale(1.05);
-}
-
-#choose-driver p {
-    line-height: 2;
 }
