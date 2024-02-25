@@ -184,21 +184,45 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
             dropoffLocation = getDropoffLocation();
 
             if (pickupLocation && dropoffLocation) {
-                fetch(`/ride-queue`, {
-                    method: "POST",
-                    headers: { "Content-type": "application/json" },
-                    body: JSON.stringify({
-                        rider_id: props.riderEmail,
-                        pickupLocation: pickupLocation,
-                        dropoffLocation: dropoffLocation,
-                    }),
-                });
-                navigate("/ChooseDriver");
+                const directionsService = new window.google.maps.DirectionsService();
+
+                directionsService.route(
+                    {
+                        origin: pickupLocation,
+                        destination: dropoffLocation,
+                        travelMode: window.google.maps.TravelMode.DRIVING,
+                    },
+                    (response, status) => {
+                        if (status === 'OK') {
+                            const route = response.routes[0];
+                            if (route) {
+                                const distance = route.legs.reduce((acc: number, leg: any) => acc + leg.distance.value, 0);
+                                const distanceInMiles = (distance / 1609.34).toFixed(2); // Convert meters to miles
+
+                                fetch(`/ride-queue`, {
+                                    method: "POST",
+                                    headers: { "Content-type": "application/json" },
+                                    body: JSON.stringify({
+                                        rider_id: props.riderEmail,
+                                        pickupLocation: pickupLocation,
+                                        dropoffLocation: dropoffLocation,
+                                        rideCost: distanceInMiles,
+                                    }),
+                                });
+                                navigate("/ChooseDriver");
+                            }
+                        } else {
+                            console.error('Error calculating directions:', status);
+                            alert('Error calculating directions. Please try again.');
+                        }
+                    }
+                );
             } else {
                 alert('Please provide both pick-up and drop-off locations.');
             }
         } catch (error) {
             console.log(error);
+            alert('An error occurred. Please try again.');
         }
     };
 
@@ -372,13 +396,14 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
                         </div>
 
                         <div className="request-btns-container">
-                            <button className='preview-btn' onClick={handlePreview}>Directions</button>
+                            <button className='preview-btn' onClick={handlePreview}>Preview</button>
                             <button className='clear-btn' onClick={handleClear}>Clear</button>
                             <button className='request-btn' onClick={handleSubmit}>Submit</button>
                         </div>
                     </LoadScript>
                     {distance && duration && (
                         <div className='request-results-container'>
+                            <p>Ride Cost: ${distance}</p>
                             <p>Distance: {distance}</p>
                             <p>Duration: {duration}</p>
                         </div>

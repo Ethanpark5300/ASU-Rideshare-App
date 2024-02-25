@@ -16,7 +16,6 @@
 }
 
 #request-ride .search-bar {
-    margin-top: 4rem;
     position: absolute;
     z-index: 1;
     background-color: #fff;

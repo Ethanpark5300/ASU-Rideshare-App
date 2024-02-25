@@ -3,6 +3,7 @@ import PageTitle from "../components/PageTitle/PageTitle";
 import { useState, useEffect, useCallback } from "react";
 import LiveTracking from "../components/GoogleMaps/LiveTracking";
 import { useAppSelector } from "../store/hooks";
+import { Link } from "react-router-dom";
 
 const ChooseDriver: React.FC = () => {
     const account = useAppSelector((state) => state.account);
@@ -50,7 +51,7 @@ const ChooseDriver: React.FC = () => {
                     selectedDriverLastName: selectedDriver?.Last_Name
                 }),
             });
-            setRequestedDrivers((prevDrivers) => prevDrivers.filter((driver) => driver.Email !== selectedDriver?.Email) );
+            setRequestedDrivers((prevDrivers) => prevDrivers.filter((driver) => driver.Email !== selectedDriver?.Email));
             refreshDriversList();
         } catch (error) {
             console.error("Error canceling request:", error);
@@ -130,7 +131,9 @@ const ChooseDriver: React.FC = () => {
                         <button className="refresh-list-btn" onClick={refreshDriversList}>Refresh List</button>
 
                         {/* Cancel Button */}
-                        <button className="cancel-ride-btn" onClick={cancelRideRequest}>Cancel</button>
+                        <Link to="/" className="center-horizontal">
+                            <button className="cancel-ride-btn" onClick={cancelRideRequest}>Cancel</button>
+                        </Link>
                     </section>
                 </aside>
                 <LiveTracking />

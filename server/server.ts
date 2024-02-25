@@ -83,9 +83,8 @@ makeTableExist("FAVORITES", fs.readFileSync(__dirname + '/Tables/CREATE_FAVORITE
 makeTableExist("PAYMENTS", fs.readFileSync(__dirname + '/Tables/CREATE_PAYMENTS_TABLE.sql').toString());
 makeTableExist("RATINGS", fs.readFileSync(__dirname + '/Tables/CREATE_RATINGS_TABLE.sql').toString());
 makeTableExist("REPORTS", fs.readFileSync(__dirname + '/Tables/CREATE_REPORTS_TABLE.sql').toString());
-makeTableExist("RIDE_HISTORY", fs.readFileSync(__dirname + '/Tables/CREATE_RIDEHISTORY_TABLE.sql').toString());
 makeTableExist("PENDING_DRIVERS", fs.readFileSync(__dirname + '/Tables/CREATE_PENDINGDRIVERS_TABLE.sql').toString());
-makeTableExist("RIDE_QUEUE", fs.readFileSync(__dirname + '/Tables/CREATE_RIDEQUEUE_TABLE.sql').toString());
+makeTableExist("RIDES", fs.readFileSync(__dirname + '/Tables/CREATE_RIDES_TABLE.sql').toString());
 makeTableExist("REGISTER", fs.readFileSync(__dirname + '/Tables/CREATE_REGISTER_TABLE.sql').toString());
 
 //app.get("/message", (req: Request, res: Response) => {
@@ -439,6 +438,7 @@ app.post("/send-ratings", async (req: Request, res: Response) => {
 	let currentDate = new Date().toLocaleDateString();
 	let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 	let rateeUserType = await db.get(`SELECT Type_User FROM USER_INFO WHERE Email = '${ratee_ID}'`);
+	let favoriteDriverRequest = req.body.favorited_driver;
 
 	// Insert ratings to ratings table
 	await db.run('INSERT INTO RATINGS (Rater_ID, Ratee_ID, Star_Rating, Comments, Date, Time) VALUES (?,?,?,?,?,?)', rater_ID, ratee_ID, star_rating, comments, currentDate, currentTime);
@@ -470,6 +470,8 @@ app.post("/send-ratings", async (req: Request, res: Response) => {
 		await db.run(`UPDATE USER_INFO SET Rating_Passenger = ? WHERE Email = ?`, updatedAvgRating, ratee_ID);
 		// console.log(`${ratee_ID}'s average rating updated`);
 	}
+
+	/** @TODO Send favorite request to specific driver if favoriteDriverRequest returns true */
 });
 
 /** Send report to reports database */
@@ -533,20 +535,22 @@ app.post("/ride-queue", async (req: Request, res: Response) => {
 	let rider_id = req.body.rider_id;
 	let pickupLocation = req.body.pickupLocation;
 	let dropoffLocation = req.body.dropoffLocation;
+	let cost = req.body.rideCost;
 
-	let Rider_FirstName = await db.get(`SELECT First_Name FROM USER_INFO WHERE Email='${rider_id}'`);
-	let Rider_LastName = await db.get(`SELECT Last_Name FROM USER_INFO WHERE Email='${rider_id}'`);
+	let riderFirstName = await db.get(`SELECT First_Name FROM USER_INFO WHERE Email='${rider_id}'`);
+	let riderLastName = await db.get(`SELECT Last_Name FROM USER_INFO WHERE Email='${rider_id}'`);
+	let rideCost = "$" + cost;
 
-	await db.run(`INSERT INTO RIDE_QUEUE (Rider_ID, Rider_FirstName, Rider_LastName, Pickup_Location, Dropoff_Location, Queue_Status) VALUES (?,?,?,?,?,?)`, rider_id, Rider_FirstName.First_Name, Rider_LastName.Last_Name, pickupLocation, dropoffLocation, "TRUE")
-	// await db.run('SELECT USER_INFO.Email, ')
+	await db.run(`INSERT INTO RIDES (Rider_ID, Rider_FirstName, Rider_LastName, Pickup_Location, Dropoff_Location, Ride_Cost, Queue_Status) VALUES (?,?,?,?,?,?,?)`, rider_id, riderFirstName.First_Name, riderLastName.Last_Name, pickupLocation, dropoffLocation, rideCost, "TRUE")
 });
 
-//** Riders cancelling */
+/** Riders cancelling */
 app.get("/cancel-request", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let rider_id = req.query.riderid;
 
-	await db.run(`DELETE FROM RIDE_QUEUE WHERE Rider_ID = '${rider_id}'`)
+	await db.run(`DELETE FROM RIDES WHERE Rider_ID = '${rider_id}' AND Queue_Status = "TRUE"`);
+	await db.run(`DELETE FROM PENDING_DRIVERS WHERE Rider_ID = '${rider_id}'`);
 });
 
 /** @returns available drivers */
@@ -624,7 +628,7 @@ app.get("/ride-queue", async (req: Request, res: Response) => {
 	let driverEmail = req.query.driveremail;
 
 	// Get all ride requests with status "TRUE"
-	let getRidersRequests = await db.all(`SELECT RIDE_QUEUE.Rider_ID,USER_INFO.First_Name,USER_INFO.Last_Name,RIDE_QUEUE.Pickup_Location,RIDE_QUEUE.Dropoff_Location FROM RIDE_QUEUE INNER JOIN USER_INFO ON RIDE_QUEUE.Rider_ID=USER_INFO.Email WHERE Queue_Status="TRUE"`);
+	let getRidersRequests = await db.all(`SELECT Ride_ID, Rider_ID, Rider_FirstName, Rider_LastName, Pickup_Location, Dropoff_Location FROM RIDES WHERE Queue_Status="TRUE"`);
 
 	// Get all riders who blocked the driver
 	let getBlockedRiders = await db.all(`SELECT Blockee_ID FROM BLOCKED WHERE Blocker_ID = ?`, [driverEmail]);
@@ -638,26 +642,30 @@ app.get("/ride-queue", async (req: Request, res: Response) => {
 	// Filter out blocked riders from all ride requests
 	let allRequestsList = getRidersRequests.filter((request: { Rider_ID: string; }) => !excludedRiderEmails.includes(request.Rider_ID));
 
+	// Get pending rider requests for the specific driver
+	let getPendingRiderRequests = await db.all(`SELECT RIDES.Ride_ID, RIDES.Rider_ID, RIDES.Rider_FirstName, RIDES.Rider_LastName, RIDES.Pickup_Location, RIDES.Dropoff_Location FROM PENDING_DRIVERS INNER JOIN RIDES ON PENDING_DRIVERS.Rider_ID = RIDES.Rider_ID WHERE PENDING_DRIVERS.Driver_ID = '${driverEmail}'`);
+	
 	res.json({
+		pendingRiderRequestsList: getPendingRiderRequests,
 		allRequestsList: allRequestsList
 	});
 });
 
 /** @returns ride/drive history */
-app.get("/ride-history", async (req: Request, res: Response) => {
-	let db = await dbPromise;
-	let accountEmail = req.query.accountEmail;
+/** @TODO Insert values after a ride is over (Save for end) */
+// app.get("/ride-history", async (req: Request, res: Response) => {
+// 	let db = await dbPromise;
+// 	let accountEmail = req.query.accountEmail;
 
-	/** @TODO Insert values after a ride is over */
 
-	let getRiderHistoryResults = await db.all(`SELECT Driver_FirstName, Driver_LastName, Pickup_Time, Dropoff_Location, Ride_Date, Cost, Given_Rider_Rating FROM RIDE_HISTORY WHERE Rider_ID='${accountEmail}'`)
-	let getDriverHistoryResults = await db.all(`SELECT Rider_FirstName, Rider_LastName, Ride_Date, Pickup_Time, Dropoff_Location, Earned, Given_Driver_Rating FROM RIDE_HISTORY WHERE Driver_ID='${accountEmail}'`);
+// 	let getRiderHistoryResults = await db.all(`SELECT Driver_FirstName, Driver_LastName, Pickup_Time, Dropoff_Location, Ride_Date, Cost, Given_Rider_Rating FROM RIDE_HISTORY WHERE Rider_ID='${accountEmail}'`)
+// 	let getDriverHistoryResults = await db.all(`SELECT Rider_FirstName, Rider_LastName, Ride_Date, Pickup_Time, Dropoff_Location, Earned, Given_Driver_Rating FROM RIDE_HISTORY WHERE Driver_ID='${accountEmail}'`);
 
-	res.json({
-		ridersHistoryList: getRiderHistoryResults,
-		driversHistoryList: getDriverHistoryResults
-	});
-});
+// 	res.json({
+// 		ridersHistoryList: getRiderHistoryResults,
+// 		driversHistoryList: getDriverHistoryResults
+// 	});
+// });
 
 app.listen(PORT, () => {
 	console.log(`Server is running on port ${PORT}.`);
