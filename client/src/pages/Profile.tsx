@@ -18,6 +18,7 @@ const Profile: React.FC = (props) => {
     const [userType, setUserType] = useState(1);
     const [paypalEmail, setPaypalEmail] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
+    const [status, setStatus] = useState('');
 
     const getAccountInformation = useCallback(async () => {
         try {
@@ -30,6 +31,7 @@ const Profile: React.FC = (props) => {
                 setUserType(data.account.Type_User);
                 setPaypalEmail(data.account.Pay_Pal);
                 setPhoneNumber(data.account.Phone_Number);
+                setStatus(data.account.Status_User);
             }
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -45,17 +47,15 @@ const Profile: React.FC = (props) => {
             method: "GET",
             headers: { "Content-type": "application/json" },
         })
-
-			.then((res) => res.json())
-			.then((data) => {
-			if (data !== null) {
-				
-				console.log(data.Email + " " + data.FirstName + " " + data.LastName + " " + data.PhoneNumber + " " + data.AccountType);
-                dispatch(setAccountStore(new Account(data.Email, data.FirstName, data.LastName, data.PhoneNumber, data.AccountType, data.PayPalEmail)));
-            } else {
-                dispatch(setAccountStore(undefined));
-            }
-        });
+            .then((res) => res.json())
+            .then((data) => {
+                if (data !== null) {
+                    console.log(data.Email + " " + data.FirstName + " " + data.LastName + " " + data.PhoneNumber + " " + data.AccountType);
+                    dispatch(setAccountStore(new Account(data.Email, data.FirstName, data.LastName, data.PhoneNumber, data.AccountType, data.PayPalEmail, data.Status)));
+                } else {
+                    dispatch(setAccountStore(undefined));
+                }
+            });
     };
 
     const eatCookie = async () => {
@@ -66,6 +66,22 @@ const Profile: React.FC = (props) => {
             });
             dispatch(setAccountStore(undefined));
         } catch { }
+    };
+
+    const changeStatus = async () => {
+        try {
+            fetch(`/change-status`, {
+                method: "POST",
+                headers: { "Content-type": "application/json" },
+                body: JSON.stringify({
+                    userEmail: account?.account?.email,
+                    currentStatus: status,
+                }),
+            })
+            getAccountInformation();
+        } catch (e: any) {
+            console.log(e);
+        }
     };
 
     return (
@@ -88,12 +104,18 @@ const Profile: React.FC = (props) => {
                     }
                     {
                         (userType === 2) && (
-                            <p><strong>Type: </strong> Driver</p>
+                            <>
+                                <p><strong>Type: </strong> Driver</p>
+                                <p><strong>Status: </strong> {status}</p>
+                            </>
                         )
                     }
                     {
                         (userType === 3) && (
-                            <p><strong>Type: </strong> Both</p>
+                            <>
+                                <p><strong>Type: </strong> Both</p>
+                                <p><strong>Status: </strong> {status}</p>
+                            </>
                         )
                     }
                     {/* <p><strong>Address: </strong> {} </p>
@@ -101,15 +123,17 @@ const Profile: React.FC = (props) => {
                     <p><strong>E-Mail: </strong> {account?.account?.email}</p>
                     <p><strong>Phone Number: </strong> {phoneNumber}</p>
                     <p><strong>PayPal Account: </strong> {paypalEmail}</p>
-                    <button>Save</button>
-                    <Button label="Check Cookie" onClickFn={readCookie} />
+                    {/* <button>Save</button> */}
+                    {/* <Button label="Check Cookie" onClickFn={readCookie} /> */}
+                    <button onClick={changeStatus}>Change Status</button>
+
                     <Button label="Nom Cookie(logout)" onClickFn={eatCookie} />
                     <Link to="/EditAccount">
                         <button>Edit Account</button>
                     </Link>
                 </div>
 
-                <div className="paymentInfo">
+                {/* <div className="paymentInfo">
                     <h2>Payment Info</h2>
                     <p><strong>PayPal Email: </strong> {}</p>
                     <button>Save</button>
@@ -117,9 +141,8 @@ const Profile: React.FC = (props) => {
 
                 <div className="rideHistory">
                     <h2>Ride History</h2>
-                    {/* filler box here for where we would put info */}
                     <button>Save</button>
-                </div>
+                </div> */}
             </main>
         </PageTitle>
     );

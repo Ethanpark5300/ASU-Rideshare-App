@@ -358,6 +358,7 @@ function accountObject(rows: any) {
 		PhoneNumber: rows?.Phone_Number ?? undefined,
 		AccountType: rows?.Type_User ?? 0,
 		PayPalEmail: rows?.Pay_Pal ?? undefined,
+		Status: rows?.Status_User ?? undefined
 	};
 }
 
@@ -522,11 +523,25 @@ app.get("/view-account-info", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let userEmail = req.query.accountEmail;
 
-	let account = await db.all(`SELECT * FROM USER_INFO WHERE Email = ?`, [userEmail])
+	let account = await db.all(`SELECT * FROM USER_INFO WHERE Email = ?`, [userEmail]);
 
 	res.json({
 		account: account[0]
 	});
+});
+
+/** Changes driver status to available/unavailable */
+app.post("/change-status", async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let email = req.body.userEmail;
+	let currentStatus = req.body.currentStatus;
+	// console.log("Current status:", currentStatus);
+
+	if (currentStatus === "Online") await db.run(`UPDATE USER_INFO SET Status_User = 'Offline' WHERE Email = '${email}'`);
+	else await db.run(`UPDATE USER_INFO SET Status_User = 'Online' WHERE Email = '${email}'`);
+
+	let account = { Status: currentStatus };
+	setTokenCookie(res, account);
 });
 
 /** Sends ride information to ride queue table */
@@ -559,7 +574,7 @@ app.get("/available-drivers", async (req: Request, res: Response) => {
 	let riderEmail = req.query.riderid;
 
 	// Set rider status to false
-	await db.run(`UPDATE USER_INFO SET Status_User = 'FALSE' WHERE Email = '${riderEmail}'`);
+	await db.run(`UPDATE USER_INFO SET Status_User = 'Offline' WHERE Email = '${riderEmail}'`);
 
 	// Get favorite drivers who are available and not blocked
 	let getFavoriteDriversList = await db.all(`SELECT Driver_ID FROM FAVORITES WHERE Rider_ID = ?`, [riderEmail]);
@@ -575,10 +590,10 @@ app.get("/available-drivers", async (req: Request, res: Response) => {
 	let excludedDriverEmails = [...blockedDriverEmails, ...blockingDriverEmails];
 
 	// Filter available favorite drivers
-	let availableFavoriteDrivers = await db.all(`SELECT Email, First_Name, Last_Name FROM USER_INFO WHERE Email IN (${favoriteDriverEmails.map(() => '?').join(', ')}) AND Type_User IN (2, 3) AND Status_User = 'TRUE'`, favoriteDriverEmails);
+	let availableFavoriteDrivers = await db.all(`SELECT Email, First_Name, Last_Name FROM USER_INFO WHERE Email IN (${favoriteDriverEmails.map(() => '?').join(', ')}) AND Type_User IN (2, 3) AND Status_User = 'Online'`, favoriteDriverEmails);
 
 	// Filter other available drivers excluding favorite drivers and blocked drivers
-	let otherAvailableDrivers = await db.all(`SELECT Email, First_Name, Last_Name FROM USER_INFO WHERE Type_User IN (2, 3) AND Status_User = 'TRUE' AND Email NOT IN (${[...favoriteDriverEmails, ...excludedDriverEmails].map(() => '?').join(', ')})`, [...favoriteDriverEmails, ...excludedDriverEmails]);
+	let otherAvailableDrivers = await db.all(`SELECT Email, First_Name, Last_Name FROM USER_INFO WHERE Type_User IN (2, 3) AND Status_User = 'Online' AND Email NOT IN (${[...favoriteDriverEmails, ...excludedDriverEmails].map(() => '?').join(', ')})`, [...favoriteDriverEmails, ...excludedDriverEmails]);
 
 	res.json({
 		availableFavoriteDrivers: availableFavoriteDrivers,

@@ -52,7 +52,7 @@ function Verify() {
 				setRegisterFailed(!data.registrationSuccess);
 
 				if (data.registrationSuccess) {
-					dispatch(setAccountStore(new Account(data.account.Email, data.account.FirstName, data.account.LastName, data.account.PhoneNumber, data.account.AccountType, data.account.PayPalEmail)));
+					dispatch(setAccountStore(new Account(data.account.Email, data.account.FirstName, data.account.LastName, data.account.PhoneNumber, data.account.AccountType, data.account.PayPalEmail, data.account.Status)));
 					navigate("/Profile");
 				}
             });

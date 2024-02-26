@@ -37,7 +37,7 @@ function Login() {
                     setLoginMessage(data.message);
                     setLoginFailed(!data.loginSuccess);
                     if (data.loginSuccess) {
-                        dispatch(setAccountStore(new Account(data.account.Email, data.account.FirstName, data.account.LastName, data.account.PhoneNumber, data.account.AccountType, data.account.PayPalEmail)));
+                        dispatch(setAccountStore(new Account(data.account.Email, data.account.FirstName, data.account.LastName, data.account.PhoneNumber, data.account.AccountType, data.account.PayPalEmail, data.account.Status)));
 						navigate("/Profile");
 					} else {
                         dispatch(setAccountStore(undefined));

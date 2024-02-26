@@ -41,7 +41,7 @@ function App() {
 				.then((data) => {
 					//console.log(data);
 					if (data !== null) {
-						const accountData = new Account(data.Email, data.FirstName, data.LastName, data.PhoneNumber, data.AccountType, data.PayPalEmail);
+						const accountData = new Account(data.Email, data.FirstName, data.LastName, data.PhoneNumber, data.AccountType, data.PayPalEmail, data.Status);
 						dispatch(setAccountStore(accountData));
 					} else {
 						dispatch(setAccountStore(undefined));
