@@ -329,7 +329,13 @@ app.get('/read-cookie', (req: Request, res: Response) => {
 /**
  * logout
  */
-app.get('/clear-cookie', (req: Request, res: Response) => {
+app.get('/clear-cookie', async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let user = req.query.userEmail;
+
+	//Set user status to 'Offline'
+	await db.run(`UPDATE USER_INFO SET Status_User = 'Offline' WHERE Email = '${user}'`);
+	
 	res.clearCookie('sessionToken').end();
 });
 

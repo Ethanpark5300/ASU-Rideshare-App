@@ -7,11 +7,12 @@ import { Button } from "../components/Buttons/Button";
 import { useAppDispatch } from "../store/hooks";
 import { setAccountStore } from "../store/features/accountSlice";
 import { Account } from "../account/Account";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Profile: React.FC = (props) => {
     const dispatch = useAppDispatch();
     const account = useAppSelector((state) => state.account);
+    const navigate = useNavigate();
 
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -59,13 +60,9 @@ const Profile: React.FC = (props) => {
     };
 
     const eatCookie = async () => {
-        try {
-            fetch(`/clear-cookie`, {
-                method: "GET",
-                headers: { "Content-type": "application/json" },
-            });
-            dispatch(setAccountStore(undefined));
-        } catch { }
+        await fetch(`/clear-cookie?userEmail=${account?.account?.email}`);
+        dispatch(setAccountStore(undefined));
+        navigate("/Login");
     };
 
     const changeStatus = async () => {
