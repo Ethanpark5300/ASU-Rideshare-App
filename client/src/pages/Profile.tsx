@@ -84,7 +84,6 @@ const Profile: React.FC = (props) => {
     return (
         <PageTitle title="Profile">
             <main id="profile">
-                    <h1>Account Page</h1>
                 <div className="sidebar">
                     <div className="paymentInfo">
                         <Link to= "/EditPayment">
@@ -118,7 +117,20 @@ const Profile: React.FC = (props) => {
 
                     {
                         (userType === 1) && (
-                            <p><strong>Type: </strong> Rider</p>
+                            <>
+                                <p><strong>Type: </strong> Rider</p>
+                                <p><strong>Status: Online</strong></p>
+                                {/* <p><strong>ASU ID: </strong> {}</p> */}
+                                <p><strong>E-Mail: </strong> {account?.account?.email}</p>
+                                <p><strong>Phone Number: </strong> {phoneNumber}</p>
+                                <p><strong>PayPal Account: </strong> {paypalEmail}</p>
+                                {/* <Button label="Check Cookie" onClickFn={readCookie} /> */}
+
+                                <Button label="Nom Cookie(logout)" onClickFn={eatCookie} />
+                                <Link to="/EditAccount">
+                                    <button>Edit Account</button>
+                                </Link>
+                            </>
                         )
                     }
                     {
@@ -126,6 +138,17 @@ const Profile: React.FC = (props) => {
                             <>
                                 <p><strong>Type: </strong> Driver</p>
                                 <p><strong>Status: </strong> {status}</p>
+                                {/* <p><strong>ASU ID: </strong> {}</p> */}
+                                <p><strong>E-Mail: </strong> {account?.account?.email}</p>
+                                <p><strong>Phone Number: </strong> {phoneNumber}</p>
+                                <p><strong>PayPal Account: </strong> {paypalEmail}</p>
+                                {/* <Button label="Check Cookie" onClickFn={readCookie} /> */}
+                                <button onClick={changeStatus}>Change Status</button>
+
+                                <Button label="Nom Cookie(logout)" onClickFn={eatCookie} />
+                                <Link to="/EditAccount">
+                                    <button>Edit Account</button>
+                                </Link>
                             </>
                         )
                     }
@@ -134,20 +157,20 @@ const Profile: React.FC = (props) => {
                             <>
                                 <p><strong>Type: </strong> Both</p>
                                 <p><strong>Status: </strong> {status}</p>
+                                {/* <p><strong>ASU ID: </strong> {}</p> */}
+                                <p><strong>E-Mail: </strong> {account?.account?.email}</p>
+                                <p><strong>Phone Number: </strong> {phoneNumber}</p>
+                                <p><strong>PayPal Account: </strong> {paypalEmail}</p>
+                                {/* <Button label="Check Cookie" onClickFn={readCookie} /> */}
+                                <button onClick={changeStatus}>Change Status</button>
+
+                                <Button label="Nom Cookie(logout)" onClickFn={eatCookie} />
+                                <Link to="/EditAccount">
+                                    <button>Edit Account</button>
+                                </Link>
                             </>
                         )
                     }
-                    {/* <p><strong>ASU ID: </strong> {}</p> */}
-                    <p><strong>E-Mail: </strong> {account?.account?.email}</p>
-                    <p><strong>Phone Number: </strong> {phoneNumber}</p>
-                    <p><strong>PayPal Account: </strong> {paypalEmail}</p>
-                    {/* <Button label="Check Cookie" onClickFn={readCookie} /> */}
-                    <button onClick={changeStatus}>Change Status</button>
-
-                    <Button label="Nom Cookie(logout)" onClickFn={eatCookie} />
-                    <Link to="/EditAccount">
-                        <button>Edit Account</button>
-                    </Link>
                 </div>
 
             </main>
