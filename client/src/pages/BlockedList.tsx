@@ -7,6 +7,8 @@ function BlockedList() {
             <main id="blocked-list">
                 <h1>Blocked List</h1>
             </main>
+            {/* display blocked users
+            add feature to unblock users. */}
         </PageTitle>
     );
 }

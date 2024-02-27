@@ -84,14 +84,10 @@ const Profile: React.FC = (props) => {
     return (
         <PageTitle title="Profile">
             <main id="profile">
-                <div className="picture">
                     <h1>Account Page</h1>
-                    <br />
-                    <br />
-                    <img src={profile_filler} alt="profile picture" className="profileFiller" />
-                </div>
                 <div className="profileInfo">
                     <h2>Account Info</h2>
+                    <br/>
                     <p><strong>Name: </strong> {firstName} {lastName} </p>
 
                     {
@@ -115,12 +111,10 @@ const Profile: React.FC = (props) => {
                             </>
                         )
                     }
-                    {/* <p><strong>Address: </strong> {} </p>
-                    <p><strong>ASU ID: </strong> {}</p> */}
+                    {/* <p><strong>ASU ID: </strong> {}</p> */}
                     <p><strong>E-Mail: </strong> {account?.account?.email}</p>
                     <p><strong>Phone Number: </strong> {phoneNumber}</p>
                     <p><strong>PayPal Account: </strong> {paypalEmail}</p>
-                    {/* <button>Save</button> */}
                     {/* <Button label="Check Cookie" onClickFn={readCookie} /> */}
                     <button onClick={changeStatus}>Change Status</button>
 
@@ -129,17 +123,25 @@ const Profile: React.FC = (props) => {
                         <button>Edit Account</button>
                     </Link>
                 </div>
+                <div className="sidebar">
+                    <div className="paymentInfo">
+                        <button>Change Payment Info</button>
+                    </div>
 
-                {/* <div className="paymentInfo">
-                    <h2>Payment Info</h2>
-                    <p><strong>PayPal Email: </strong> {}</p>
-                    <button>Save</button>
+                    <div className="rideHistory">
+                        <button>Ride History</button>
+                    </div>
+
+                    <div className="Favorites">
+                        <button>View Favorites</button>
+                    </div>
+
+                    <div className="Blocked">
+                        <button>View Blocked</button>
+                    </div>
                 </div>
+                
 
-                <div className="rideHistory">
-                    <h2>Ride History</h2>
-                    <button>Save</button>
-                </div> */}
             </main>
         </PageTitle>
     );

@@ -1,22 +1,11 @@
 #profile {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    gap: 10px;
-    height: 100vh;
+    display: flex;
+    height: 100%;
 }
 
 .profileFiller {
     border: 2px solid black;
     border-radius: 50%;
-}
-
-.picture {
-    grid-column: 1/2;
-    grid-row: 1/2;
-    padding-left: 50px;
-    padding-bottom: 50px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .profileInfo {
@@ -52,19 +41,16 @@
     background: maroon;
 }
 
+.sidebar {
+    display: flex;
+}
 .paymentInfo {
-    grid-column: 1/2;
-    grid-row: 2/2;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
 }
 
 .rideHistory {
-    grid-column: 2/2;
-    grid-row: 2/2;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
 }
+
+
 
 /* change to a flex display to allow for each box to encompass each element
 this will allow it to be only that size
