@@ -85,6 +85,24 @@ const Profile: React.FC = (props) => {
         <PageTitle title="Profile">
             <main id="profile">
                     <h1>Account Page</h1>
+                <div className="sidebar">
+                    <div className="paymentInfo">
+                        <button>Change Payment Info</button>
+                    </div>
+
+                    <div className="rideHistory">
+                        <button>Ride History</button>
+                    </div>
+
+                    <div className="Favorites">
+                        <button>View Favorites</button>
+                    </div>
+
+                    <div className="Blocked">
+                        <button>View Blocked</button>
+                    </div>
+                </div>
+                
                 <div className="profileInfo">
                     <h2>Account Info</h2>
                     <br/>
@@ -123,24 +141,6 @@ const Profile: React.FC = (props) => {
                         <button>Edit Account</button>
                     </Link>
                 </div>
-                <div className="sidebar">
-                    <div className="paymentInfo">
-                        <button>Change Payment Info</button>
-                    </div>
-
-                    <div className="rideHistory">
-                        <button>Ride History</button>
-                    </div>
-
-                    <div className="Favorites">
-                        <button>View Favorites</button>
-                    </div>
-
-                    <div className="Blocked">
-                        <button>View Blocked</button>
-                    </div>
-                </div>
-                
 
             </main>
         </PageTitle>

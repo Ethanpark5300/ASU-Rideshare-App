@@ -43,13 +43,35 @@
 
 .sidebar {
     display: flex;
+    flex-direction: column;
+    width: 250px;
+    height: 100%;
+    padding: 20px;
 }
+
 .paymentInfo {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
 }
 
 .rideHistory {
+    padding: 10px;
+    border: 1px solid #ddd;
+    cursor: pointer;
 }
 
+.Favorites {
+    padding: 10px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.Blocked {
+    padding: 10px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+}
 
 
 /* change to a flex display to allow for each box to encompass each element
