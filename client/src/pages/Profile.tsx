@@ -87,22 +87,30 @@ const Profile: React.FC = (props) => {
                     <h1>Account Page</h1>
                 <div className="sidebar">
                     <div className="paymentInfo">
-                        <button>Change Payment Info</button>
+                        <Link to= "/EditPayment">
+                            <button>Change Payment Info</button>
+                        </Link>
                     </div>
 
                     <div className="rideHistory">
-                        <button>Ride History</button>
+                        <Link to="/RideHistory">
+                            <button>Ride History</button>
+                        </Link>
                     </div>
 
                     <div className="Favorites">
-                        <button>View Favorites</button>
+                        <Link to= "/FavoritesList">
+                            <button>View Favorites</button>
+                        </Link>
                     </div>
 
                     <div className="Blocked">
-                        <button>View Blocked</button>
+                        <Link to= "/BlockedList">
+                            <button>View Blocked</button>
+                        </Link>
                     </div>
                 </div>
-                
+
                 <div className="profileInfo">
                     <h2>Account Info</h2>
                     <br/>

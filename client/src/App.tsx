@@ -23,6 +23,7 @@ import FavoritesList from './pages/FavoritesList';
 import BlockedList from './pages/BlockedList';
 import EditAccount from './pages/EditAccount';
 import Verify from './pages/Verify';
+import EditPayment from './pages/EditPayment';
 
 function App() {
 	const dispatch = useAppDispatch();
@@ -77,6 +78,7 @@ function App() {
 				<Route path="/FavoritesList" element={<FavoritesList />}/>
 				<Route path="/BlockedList" element={<BlockedList />}/>
 				<Route path="/EditAccount" element={<EditAccount/>}/>
+				<Route path="/EditPayment" element={<EditPayment/>}/>
 			</Routes>
 		</>
 	);
