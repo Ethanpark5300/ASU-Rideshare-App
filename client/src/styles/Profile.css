@@ -1,6 +1,8 @@
 #profile {
     display: flex;
     height: 100%;
+    padding-top: 150px;
+    padding-left: 500px;
 }
 
 .profileFiller {
@@ -11,16 +13,22 @@
 .profileInfo {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     align-items: center;
+    padding: 50px;
 }
 
 .profileInfo h2 {
     text-align: center;
+    padding-bottom: 20px;
 }
 
 .profileInfo p {
     font-size: 20px;
-    padding-left: 20px;
-    padding-bottom: 20px;
+    /* padding-left: 10px; */
+    padding-bottom: 30px;
+}
+
+.profileInfo button {
+    margin: 5px;
 }
 
 #profile button {
@@ -46,11 +54,13 @@
     width: 250px;
     height: 100%;
     padding: 20px;
-    padding-top: 50px;
+    padding-top: 100px;
 }
 
 .paymentInfo {
     padding: 10px;
+    padding-top: 20px;
+    padding-bottom: 20px;
     border-bottom: 1px solid #ddd;
     border-top: 1px solid #ddd;
     cursor: pointer;
@@ -58,18 +68,24 @@
 
 .rideHistory {
     padding: 10px;
+    padding-top: 20px;
+    padding-bottom: 20px;
     border-bottom: 1px solid #ddd;
     cursor: pointer;
 }
 
 .Favorites {
     padding: 10px;
+    padding-top: 20px;
+    padding-bottom: 20px;
     border-bottom: 1px solid #ddd;
     cursor: pointer;
 }
 
 .Blocked {
     padding: 10px;
+    padding-top: 20px;
+    padding-bottom: 20px;
     border-bottom: 1px solid #ddd;
     cursor: pointer;
 }
