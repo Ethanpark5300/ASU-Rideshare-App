@@ -11,13 +11,32 @@ function BlockedList() {
         try {
             const response = await fetch(`/get-blocked-list?userid=${account?.account?.email}`);
             const data = await response.json();
-            setBlockedList(data.blockedList)
+            setBlockedList(data.blockedList);
         } catch (error) {
             console.error("Error getting blocked list:", error);
         }
     }, [account?.account?.email]);
 
-    
+    const removedBlockedUser = async (selectedUser: { First_Name: string; Last_Name: string; }) => {
+        try {
+            await fetch(`/unblock-user`, {
+                method: "POST",
+                headers: { "Content-type": "application/json" },
+                body: JSON.stringify({
+                    user: account?.account?.email,
+                    selectedFirstName: selectedUser?.First_Name,
+                    selectedLastName: selectedUser?.Last_Name
+                }),
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    setBlockedList(data.blockedList);
+                    getBlockedList();
+                });
+        } catch (error) {
+            console.error("Error unblocking request:", error);
+        }
+    };
 
     useEffect(() => {
         getBlockedList();
@@ -29,15 +48,16 @@ function BlockedList() {
                 <h1>Blocked List</h1>
                 {blockedList.length > 0 ? (
                     <div>
-                        {blockedList.map((blocked) => (
-                            <div key={blocked.Blocked_ID}>
-                                <p>{blocked.First_Name} {blocked.Last_Name} {blocked.Date}</p>
+                        {blockedList.map((blockee) => (
+                            <div key={blockee.Blocked_ID}>
+                                <p>{blockee.First_Name} {blockee.Last_Name} {blockee.Date} <button onClick={() => removedBlockedUser(blockee)}>Remove</button></p>
                             </div>
                         ))}
                     </div>
                 ) : (
                     <div>No blocked list available.</div>
                 )}
+                <button onClick={getBlockedList}>Refresh</button>
             </main>
         </PageTitle>
     );

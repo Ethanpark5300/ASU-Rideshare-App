@@ -469,14 +469,32 @@ app.get("/get-blocked-list", async (req:  Request, res: Response) => {
 	let user = req.query.userid;
 
 	let getBlockedList = await db.all(`SELECT blocked.blocked_id,user_info.first_name,user_info.last_name,blocked.date FROM user_info INNER JOIN blocked ON user_info.email = blocked.blockee_id WHERE blocked.blocker_id = ?`, [user]);
-	// console.log(getBlockedList)
+	// console.log(getBlockedList);
 
 	res.json({
 		blockedList: getBlockedList,
 	});
 });
 
+/** Unblocking users for specific user */
+app.post("/unblock-user", async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let user = req.body.user;
+	let selectedUserFirstName = req.body.selectedFirstName;
+	let selectedUserLastName = req.body.selectedLastName;
+	
+	let blockeeUser = await db.get(`SELECT email FROM user_info WHERE first_name ='${selectedUserFirstName}' AND last_name ='${selectedUserLastName}'`);
+	// console.log(blockeeUser.Email);
 
+	await db.run(`DELETE FROM blocked WHERE blocker_id = '${user}' AND blockee_id = '${blockeeUser.Email}'`);
+	// console.log(`${user} unblocked ${blockeeUser.Email}`);
+
+	let getBlockedList = await db.all(`SELECT blocked.blocked_id,user_info.first_name,user_info.last_name,blocked.date FROM user_info INNER JOIN blocked ON user_info.email = blocked.blockee_id WHERE blocked.blocker_id = ?`, [user]);
+
+	res.json({
+		blockedList: getBlockedList,
+	});
+});
 
 /** Insert ratings to ratings table and calculate/update average ratings */
 app.post("/send-ratings", async (req: Request, res: Response) => {
