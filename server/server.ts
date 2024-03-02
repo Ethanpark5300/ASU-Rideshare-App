@@ -107,21 +107,23 @@ const transporter = nodemailer.createTransport({
  * @param email email to send to
  * @param verifyID unique generated ID that is sent in the content of the email
  */
-const sendRegisterVerifyEmail = (email: string, verifyID: string) => {
+const sendRegisterVerifyEmail = (email: string, verifyID: string): string|undefined => {
 	const mailOptions = {
 		from: process.env.EMAIL_USERNAME,
 		to: email,
 		subject: "Email Verification",
-		text: "This email was recently used in registration. Enter this string of characters to verify your email.\n" + verifyID + "\n\n If this wasn't you, ignore this email.",
+		text: "This email was recently used in registration. Enter this the following to verify your email:\n" + verifyID + "\n\n If this wasn't you, ignore this email.",
 	}
-
+	message = undefined;
 	transporter.sendMail(mailOptions, (err: Error | null, info: SMTPTransport.SentMessageInfo) => {
 		if (err) {
 			console.error(err.message);
+			message = err.message;
 		} else {
 			console.log('Email sent: ' + info.response);
 		}
 	});
+	return message;
 }
 
 /**
@@ -152,12 +154,18 @@ app.post("/registration", async (req: Request, res: Response) => {
 				} else {
 					hadError = false;
 					message = undefined;
+
+					setVerifyCookie(res, req.body.email);
+					message = sendRegisterVerifyEmail(req.body.email, UUID);
+					if (message != undefined) {
+						hadError = true;
+					}
 				}
 				//database.all("SELECT * FROM REGISTER", (err: Error, rows: Object) => {
 				//	console.log(rows);
 				//});
 				//console.log(message + " | " + req.body.email);
-				setVerifyCookie(res, req.body.email);
+				
 				res.json({
 					registrationSuccess: !hadError,
 					message: message,
@@ -168,10 +176,30 @@ app.post("/registration", async (req: Request, res: Response) => {
 });
 
 /**
- * @todo do this after email can be sent
+ * body contains the property email
  */
-app.post("/resend_registration", async (req: Request, res: Response) => {
-
+app.post("/resend_verification", async (req: Request, res: Response) => {
+	let UUID: string = generateRegisterID();
+	console.log("email: " + req.body.email);
+	database.run('UPDATE REGISTER SET Register_ID = ? WHERE Email = ?', [UUID, req.body.email], (err: Error, rows: Object) => {
+		if (err) {
+			hadError = true;
+			message = err.message;
+		} else {
+			hadError = false;
+			message = undefined;
+		}
+		//database.all("SELECT * FROM REGISTER", (err: Error, rows: Object) => {
+		//	console.log(rows);
+		//});
+		//console.log(message + " | " + req.body.email);
+		setVerifyCookie(res, req.body.email);
+		sendRegisterVerifyEmail(req.body.email, UUID);
+		res.json({
+			registrationSuccess: !hadError,
+			message: message,
+		});
+	});
 });
 
 /**

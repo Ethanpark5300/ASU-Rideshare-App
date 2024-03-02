@@ -75,7 +75,7 @@ function Register() {
 				
 				if (data.registrationSuccess) {
 					setIsSending(false);
-					navigate("/Verify");
+					navigate("/Verify", { state: { email: emailRef.current } });
 				}
 				
             });
