@@ -459,11 +459,26 @@ app.post("/send-blocked", async (req: Request, res: Response) => {
 	let blockee_ID = req.body.blockee;
 	let currentDate = new Date().toLocaleDateString();
 	let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
+	
 	await db.run('INSERT INTO BLOCKED (Blocker_ID, Blockee_ID, Date, Time) VALUES (?,?,?,?)', blocker_ID, blockee_ID, currentDate, currentTime);
 });
 
-// Insert ratings to ratings table and calculate/update average ratings
+/** @returns blocked list for specific user */
+app.get("/get-blocked-list", async (req:  Request, res: Response) => {
+	let db = await dbPromise;
+	let user = req.query.userid;
+
+	let getBlockedList = await db.all(`SELECT blocked.blocked_id,user_info.first_name,user_info.last_name,blocked.date FROM user_info INNER JOIN blocked ON user_info.email = blocked.blockee_id WHERE blocked.blocker_id = ?`, [user]);
+	// console.log(getBlockedList)
+
+	res.json({
+		blockedList: getBlockedList,
+	});
+});
+
+
+
+/** Insert ratings to ratings table and calculate/update average ratings */
 app.post("/send-ratings", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let rater_ID = req.body.rater;
@@ -475,10 +490,10 @@ app.post("/send-ratings", async (req: Request, res: Response) => {
 	let rateeUserType = await db.get(`SELECT Type_User FROM USER_INFO WHERE Email = '${ratee_ID}'`);
 	let favoriteDriverRequest = req.body.favorited_driver;
 
-	// Insert ratings to ratings table
+	/** Insert ratings to ratings table */
 	await db.run('INSERT INTO RATINGS (Rater_ID, Ratee_ID, Star_Rating, Comments, Date, Time) VALUES (?,?,?,?,?,?)', rater_ID, ratee_ID, star_rating, comments, currentDate, currentTime);
 
-	// Calculate and update driver's average rating
+	/** Calculate and update driver's average rating */
 	if (rateeUserType.Type_User === 2 || rateeUserType.Type_User === 3) {
 		let defaultRating = await db.get(`SELECT Rating_Driver FROM USER_INFO WHERE Email = '${ratee_ID}'`);
 		let ratings = await db.all(`SELECT Star_Rating FROM RATINGS WHERE Ratee_ID = '${ratee_ID}'`);
