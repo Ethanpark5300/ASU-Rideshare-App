@@ -11,7 +11,7 @@ function EditAccount() {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [userType, setUserType] = useState(0);
-    const [paypalEmail, setPaypalEmail] = useState('');
+    // const [paypalEmail, setPaypalEmail] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
 
     useEffect(() => {
@@ -20,7 +20,7 @@ function EditAccount() {
             setFirstName(account.account.firstName);
             setLastName(account.account.lastName);
             setUserType(account.account.accountType);
-            setPaypalEmail(account.account.paypalEmail);
+            // setPaypalEmail(account.account.paypalEmail);
             setPhoneNumber(account.account.phoneNumber);
         }
     }, [account]);
@@ -34,7 +34,7 @@ function EditAccount() {
                 setFirstName(data.account.First_Name);
                 setLastName(data.account.Last_Name);
                 setUserType(data.account.Type_User);
-                setPaypalEmail(data.account.Pay_Pal);
+                // setPaypalEmail(data.account.Pay_Pal);
                 setPhoneNumber(data.account.Phone_Number);
             }
         } catch (error) {
@@ -52,7 +52,7 @@ function EditAccount() {
     const handleLastNameChange = (e: { target: { value: SetStateAction<string>; }; }) => { setLastName(e.target.value); };
     const handleUserTypeChange = (e: { target: { value: SetStateAction<any>; }; }) => { setUserType(e.target.value); };
     const handlePhoneNumberChange = (e: { target: { value: SetStateAction<string>; }; }) => { setPhoneNumber(e.target.value); };
-    const handlePaypalEmailChange = (e: { target: { value: SetStateAction<string>; }; }) => { setPaypalEmail(e.target.value); };
+    // const handlePaypalEmailChange = (e: { target: { value: SetStateAction<string>; }; }) => { setPaypalEmail(e.target.value); };
 
     const handleSaveChanges = () => {
         try {
@@ -64,7 +64,7 @@ function EditAccount() {
                     newFirstName: firstName,
                     newLastName: lastName,
                     newAccountType: userType,
-                    newPaypalEmail: paypalEmail,
+                    // newPaypalEmail: paypalEmail,
                     newPhoneNumber: phoneNumber
                 }),
             });
@@ -114,18 +114,18 @@ function EditAccount() {
                     value={phoneNumber || ''}
                     onChange={handlePhoneNumberChange}
                 />
-                <label htmlFor="payPalEmail">PayPal Email</label>
+                {/* <label htmlFor="payPalEmail">PayPal Email</label>
                 <input
                     type="text"
                     name="payPalEmail"
                     id="payPalEmail"
                     value={paypalEmail || ''}
                     onChange={handlePaypalEmailChange}
-                />
+                /> */}
                 <Link to="/Profile">
                     <button>Back to Profile Page</button>
                 </Link>
-                <button onClick={handleSaveChanges}> Save Changes </button>
+                <button onClick={handleSaveChanges}>Save Changes</button>
             </main>
         </PageTitle>
     );

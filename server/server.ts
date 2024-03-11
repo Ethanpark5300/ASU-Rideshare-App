@@ -577,11 +577,24 @@ app.post("/edit-account", async (req: Request, res: Response) => {
 		FirstName: req.body.newFirstName,
 		LastName: req.body.newLastName,
 		AccountType: req.body.newAccountType,
-		PayPalEmail: req.body.newPaypalEmail,
+		// PayPalEmail: req.body.newPaypalEmail,
 		PhoneNumber: req.body.newPhoneNumber,
 	};
 
-	await db.run(`UPDATE USER_INFO SET First_Name = ?, Last_Name = ?, Type_User = ?, Pay_Pal = ?, Phone_Number = ? WHERE Email = ?`, [account.FirstName, account.LastName, account.AccountType, account.PayPalEmail, account.PhoneNumber, account.Email]);
+	// await db.run(`UPDATE USER_INFO SET First_Name = ?, Last_Name = ?, Type_User = ?, Pay_Pal = ?, Phone_Number = ? WHERE Email = ?`, [account.FirstName, account.LastName, account.AccountType, account.PayPalEmail, account.PhoneNumber, account.Email]);
+	await db.run(`UPDATE USER_INFO SET First_Name = ?, Last_Name = ?, Type_User = ?, Phone_Number = ? WHERE Email = ?`, [account.FirstName, account.LastName, account.AccountType, account.PhoneNumber, account.Email]);
+	setTokenCookie(res, account);
+});
+
+/** Update payment information */
+app.post("/edit-payment-information", async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let account = { 
+		Email: req.body.userEmail,
+		PayPalEmail: req.body.newPaypalEmail 
+	}
+
+	await db.run(`UPDATE user_info SET pay_pal = ? WHERE email = ?`, [account.PayPalEmail, account.Email]);
 	setTokenCookie(res, account);
 });
 
@@ -597,17 +610,19 @@ app.get("/view-account-info", async (req: Request, res: Response) => {
 	});
 });
 
-/** Changes driver status to available/unavailable */
+/** Changes driver status to online/offline */
 app.post("/change-status", async (req: Request, res: Response) => {
 	let db = await dbPromise;
-	let email = req.body.userEmail;
-	let currentStatus = req.body.currentStatus;
 	// console.log("Current status:", currentStatus);
 
-	if (currentStatus === "Online") await db.run(`UPDATE USER_INFO SET Status_User = 'Offline' WHERE Email = '${email}'`);
-	else await db.run(`UPDATE USER_INFO SET Status_User = 'Online' WHERE Email = '${email}'`);
+	let account = {
+		Email: req.body.userEmail,
+		currentStatus: req.body.currentStatus
+	}
 
-	let account = { Status: currentStatus };
+	if (account.currentStatus === "Online") await db.run(`UPDATE USER_INFO SET Status_User = 'Offline' WHERE Email = '${account.Email}'`);
+	else await db.run(`UPDATE USER_INFO SET Status_User = 'Online' WHERE Email = '${account.Email}'`);
+
 	setTokenCookie(res, account);
 });
 
