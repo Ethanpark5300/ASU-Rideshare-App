@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import "../styles/Payment.css"
 import PageTitle from '../components/PageTitle/PageTitle';
@@ -17,7 +17,6 @@ const paypalOptions = {
     clientId: process.env.REACT_APP_PAYPAL_CLIENT_ID || '',
     currency: 'USD',
 };
-
 
 const Payment: React.FC = (props) => {
     const account = useAppSelector((state) => state.account);
@@ -53,7 +52,7 @@ const Payment: React.FC = (props) => {
     };
 
     // Set PayPal loaded state to true once component mounts
-    React.useEffect(() => {
+    useEffect(() => {
         setPaypalLoaded(true);
     }, []);
 

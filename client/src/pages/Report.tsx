@@ -16,12 +16,12 @@ const Report: React.FC = (props) => {
     const reportedUser = "FirstName LastName";
 
     //function to handle change in dropdown selection
-    const handleReasonChange = (event) => {
+    const handleReasonChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
         setSelectedReason(event.target.value);
     };
 
     // Function to handle changes in the comments textarea
-    const handleCommentsChange = (event) => {
+    const handleCommentsChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
         setComments(event.target.value);
     };
 
