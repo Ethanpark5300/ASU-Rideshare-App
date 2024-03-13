@@ -479,7 +479,7 @@ app.get("/get-blocked-list", async (req:  Request, res: Response) => {
 /** Unblocking users for specific user */
 app.post("/unblock-user", async (req: Request, res: Response) => {
 	let db = await dbPromise;
-	let user = req.body.user;
+	let user = req.body.userid;
 	let selectedUserFirstName = req.body.selectedFirstName;
 	let selectedUserLastName = req.body.selectedLastName;
 	
@@ -500,7 +500,7 @@ app.post("/unblock-user", async (req: Request, res: Response) => {
 app.post("/send-ratings", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let rater_ID = req.body.rater;
-	let ratee_ID = req.body.ratee;
+	let ratee_ID = "zealsmeal@asu.edu";
 	let star_rating = req.body.star_rating;
 	let comments = req.body.comments;
 	let currentDate = new Date().toLocaleDateString();
@@ -539,7 +539,23 @@ app.post("/send-ratings", async (req: Request, res: Response) => {
 		// console.log(`${ratee_ID}'s average rating updated`);
 	}
 
-	/** @TODO Send favorite request to specific driver if favoriteDriverRequest returns true */
+	/** Send favorite request to specific driver if favoriteDriverRequest returns true */
+	if (favoriteDriverRequest) await db.run(`INSERT INTO favorites (rider_id, driver_id, date, status) VALUES (?,?,?,?)`, rater_ID, ratee_ID, currentDate, "Pending");
+});
+
+app.get("/get-favorites-list", async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let user = req.query.userid;
+
+	let setFavoritesList = await db.all(`SELECT favorites.favorite_id,user_info.first_name,user_info.last_name,favorites.status,favorites.date FROM user_info INNER JOIN favorites ON user_info.email = favorites.driver_id WHERE favorites.rider_id = ?`, [user]);
+	// console.log(setFavoritesList)
+
+	let setPendingFavoritesList = await db.all(`SELECT favorites.favorite_id,user_info.first_name,user_info.last_name,favorites.status,favorites.date FROM user_info INNER JOIN favorites ON user_info.email = favorites.rider_id WHERE status = "Pending" AND favorites.driver_id = ?`, [user]);
+	console.log(setPendingFavoritesList);
+
+	res.json ({
+		getFavoritesList: setFavoritesList
+	});
 });
 
 /** Send report to reports database */
@@ -659,7 +675,7 @@ app.get("/available-drivers", async (req: Request, res: Response) => {
 	await db.run(`UPDATE USER_INFO SET Status_User = 'Offline' WHERE Email = '${riderEmail}'`);
 
 	// Get favorite drivers who are available and not blocked
-	let getFavoriteDriversList = await db.all(`SELECT Driver_ID FROM FAVORITES WHERE Rider_ID = ?`, [riderEmail]);
+	let getFavoriteDriversList = await db.all(`SELECT Driver_ID FROM FAVORITES WHERE status = "Favorited" AND Rider_ID = ?`, [riderEmail]);
 	let favoriteDriverEmails = getFavoriteDriversList.map((driver: { Driver_ID: string; }) => driver.Driver_ID);
 
 	let getBlockedDriversList = await db.all(`SELECT Blockee_ID FROM BLOCKED WHERE Blocker_ID = ?`, [riderEmail]);

@@ -4,6 +4,6 @@ CREATE TABLE "FAVORITES" (
 	"Driver_ID"	TEXT,
 	"Date"	TEXT,
 	"Time"	TEXT,
-	"Pending_Status"	TEXT,
+	"Status"	TEXT,
 	PRIMARY KEY("Favorite_ID" AUTOINCREMENT)
 )

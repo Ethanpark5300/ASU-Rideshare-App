@@ -17,13 +17,13 @@ function BlockedList() {
         }
     }, [account?.account?.email]);
 
-    const removedBlockedUser = async (selectedUser: { First_Name: string; Last_Name: string; }) => {
+    const unblockUser = async (selectedUser: { First_Name: string; Last_Name: string; }) => {
         try {
             await fetch(`/unblock-user`, {
                 method: "POST",
                 headers: { "Content-type": "application/json" },
                 body: JSON.stringify({
-                    user: account?.account?.email,
+                    userid: account?.account?.email,
                     selectedFirstName: selectedUser?.First_Name,
                     selectedLastName: selectedUser?.Last_Name
                 }),
@@ -50,7 +50,7 @@ function BlockedList() {
                     <div>
                         {blockedList.map((blockee) => (
                             <div key={blockee.Blocked_ID}>
-                                <p>{blockee.First_Name} {blockee.Last_Name} {blockee.Date} <button onClick={() => removedBlockedUser(blockee)}>Remove</button></p>
+                                <p>{blockee.First_Name} {blockee.Last_Name} {blockee.Date} <button onClick={() => unblockUser(blockee)}>Remove</button></p>
                             </div>
                         ))}
                     </div>
