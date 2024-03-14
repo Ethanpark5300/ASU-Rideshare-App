@@ -1,0 +1,21 @@
+#favorites-list {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+#favorites-list table {
+    border-collapse: collapse;
+    width: 95%;
+}
+
+#favorites-list td,
+#favorites-list th {
+    border: 1px solid #dddddd;
+    text-align: center;
+    padding: 8px;
+}
+
+#favorites-list tr:nth-child(even) {
+    background-color: #f1f1f1;
+}

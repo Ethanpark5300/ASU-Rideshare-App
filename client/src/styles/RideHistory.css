@@ -7,13 +7,15 @@
     margin-top: 2em;
 }
 
-table { border: 2px solid black; 
+#ride-history table {
+    border: 2px solid black;
     border-collapse: collapse;
     margin: auto;
-    margin-top: 5em; }
+    margin-top: 5em;
+}
 
-td { padding: 0.5em; 
+#ride-history td {
+    padding: 0.5em;
     border: 2px solid black;
-    text-align: center; }
-
-
+    text-align: center;
+}

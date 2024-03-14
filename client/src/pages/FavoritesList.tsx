@@ -1,27 +1,65 @@
 import '../styles/FavoritesList.css';
 import PageTitle from '../components/PageTitle/PageTitle';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAppSelector } from '../store/hooks';
+import { AccountTypeFlag } from '../account/Account';
 
 function FavoritesList() {
     const account = useAppSelector((state) => state.account);
-    const [favoritesList, setFavoritesList] = useState<any[]>([]);
-    const [pendingFavoritesList, setPendingFavoritesList] = useState<any[]>([]);
+    const [ridersFavoritesList, setRidersFavoritesList] = useState<any[]>([]);
+    const [driversPendingFavoritesList, setDriversPendingFavoritesList] = useState<any[]>([]);
 
     const getFavoritesList = useCallback(async () => {
         try {
             const response = await fetch(`/get-favorites-list?userid=${account?.account?.email}`);
             const data = await response.json();
-            setFavoritesList(data.getFavoritesList);
+            setRidersFavoritesList(data.getRidersFavoritesList);
+            setDriversPendingFavoritesList(data.getDriversPendingFavoritesList)
         } catch (error) {
             console.error("Error getting blocked list:", error);
         }
     }, [account?.account?.email]);
- 
+
+    useEffect(() => {
+        getFavoritesList();
+    }, [getFavoritesList]);
+
     return (
         <PageTitle title="Favorites List">
             <main id="favorites-list">
-                <h1>Favorites List</h1>
+
+                {/** @returns rider's favorite and pending favorite list */}
+                {(AccountTypeFlag.Rider) && (
+                    <>
+                        <h1>Favorites List</h1>
+                        {ridersFavoritesList.length > 0 ? (
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {ridersFavoritesList.map((favorite) => (
+                                        <tr key={favorite.favorite_id}>
+                                            <td>{favorite.First_Name} {favorite.Last_Name}</td>
+                                            <td>{favorite.Status}</td>
+                                            <td>{favorite.Date}</td>
+                                            <td><button>Remove</button></td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        ) : (
+                            <div>No favorites list available.</div>
+                        )}
+                    </>
+                )}
+
+
                 <button onClick={getFavoritesList}>Refresh</button>
             </main>
         </PageTitle>

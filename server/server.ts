@@ -543,20 +543,34 @@ app.post("/send-ratings", async (req: Request, res: Response) => {
 	if (favoriteDriverRequest) await db.run(`INSERT INTO favorites (rider_id, driver_id, date, status) VALUES (?,?,?,?)`, rater_ID, ratee_ID, currentDate, "Pending");
 });
 
+/**
+ * @returns rider's favorite and pending favorite list
+ * @returns driver's pending favorite list
+ */
 app.get("/get-favorites-list", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let user = req.query.userid;
 
-	let setFavoritesList = await db.all(`SELECT favorites.favorite_id,user_info.first_name,user_info.last_name,favorites.status,favorites.date FROM user_info INNER JOIN favorites ON user_info.email = favorites.driver_id WHERE favorites.rider_id = ?`, [user]);
+	let setRidersFavoritesList = await db.all(`SELECT favorites.favorite_id,user_info.first_name,user_info.last_name,favorites.status,favorites.date FROM user_info INNER JOIN favorites ON user_info.email = favorites.driver_id WHERE favorites.rider_id = ?`, [user]);
 	// console.log(setFavoritesList)
 
-	let setPendingFavoritesList = await db.all(`SELECT favorites.favorite_id,user_info.first_name,user_info.last_name,favorites.status,favorites.date FROM user_info INNER JOIN favorites ON user_info.email = favorites.rider_id WHERE status = "Pending" AND favorites.driver_id = ?`, [user]);
-	console.log(setPendingFavoritesList);
+	let setDriversPendingFavoritesList = await db.all(`SELECT favorites.favorite_id,user_info.first_name,user_info.last_name,favorites.status,favorites.date FROM user_info INNER JOIN favorites ON user_info.email = favorites.rider_id WHERE status = "Pending" AND favorites.driver_id = ?`, [user]);
+	// console.log(setPendingFavoritesList);
 
 	res.json ({
-		getFavoritesList: setFavoritesList
+		getRidersFavoritesList: setRidersFavoritesList,
+		getDriversPendingFavoritesList: setDriversPendingFavoritesList
 	});
 });
+
+/** Unfavorite driver */
+
+
+/** Accept rider favorite request */
+
+
+/** Decline rider favorite request */
+
 
 /** Send report to reports database */
 app.post("/send-report", async (req: Request, res: Response) => {
@@ -629,12 +643,13 @@ app.get("/view-account-info", async (req: Request, res: Response) => {
 /** Changes driver status to online/offline */
 app.post("/change-status", async (req: Request, res: Response) => {
 	let db = await dbPromise;
-	// console.log("Current status:", currentStatus);
-
+	
 	let account = {
 		Email: req.body.userEmail,
 		currentStatus: req.body.currentStatus
 	}
+
+	// console.log("Current status:", account.currentStatus);
 
 	if (account.currentStatus === "Online") await db.run(`UPDATE USER_INFO SET Status_User = 'Offline' WHERE Email = '${account.Email}'`);
 	else await db.run(`UPDATE USER_INFO SET Status_User = 'Online' WHERE Email = '${account.Email}'`);
