@@ -1,21 +1,16 @@
-#favorites-list {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
+#favorites-list table,
+#favorites-list th,
+#favorites-list td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+#favorites-list th, #favorites-list td {
+    padding: 1rem;
 }
 
 #favorites-list table {
-    border-collapse: collapse;
     width: 95%;
-}
-
-#favorites-list td,
-#favorites-list th {
-    border: 1px solid #dddddd;
+    margin-inline: auto;
     text-align: center;
-    padding: 8px;
-}
-
-#favorites-list tr:nth-child(even) {
-    background-color: #f1f1f1;
 }

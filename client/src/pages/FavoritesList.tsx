@@ -14,11 +14,32 @@ function FavoritesList() {
             const response = await fetch(`/get-favorites-list?userid=${account?.account?.email}`);
             const data = await response.json();
             setRidersFavoritesList(data.getRidersFavoritesList);
-            setDriversPendingFavoritesList(data.getDriversPendingFavoritesList)
+            setDriversPendingFavoritesList(data.getDriversPendingFavoritesList);
         } catch (error) {
             console.error("Error getting blocked list:", error);
         }
     }, [account?.account?.email]);
+
+    const unfavoriteUser = async (selectedUser: { First_Name: string; Last_Name: string; }) => {
+        try {
+            await fetch(`/unfavorite-driver`, {
+                method: "POST",
+                headers: { "Content-type": "application/json" },
+                body: JSON.stringify({
+                    userid: account?.account?.email,
+                    selectedFirstName: selectedUser?.First_Name,
+                    selectedLastName: selectedUser?.Last_Name
+                }),
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    setRidersFavoritesList(data.getRidersFavoritesList);
+                    getFavoritesList();
+                });
+        } catch (error) {
+            console.error("Error unfavoriting request:", error);
+        }
+    };
 
     useEffect(() => {
         getFavoritesList();
@@ -48,7 +69,7 @@ function FavoritesList() {
                                             <td>{favorite.First_Name} {favorite.Last_Name}</td>
                                             <td>{favorite.Status}</td>
                                             <td>{favorite.Date}</td>
-                                            <td><button>Remove</button></td>
+                                            <td><button onClick={() => unfavoriteUser(favorite)}>Remove</button></td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -59,6 +80,7 @@ function FavoritesList() {
                     </>
                 )}
 
+                {/** @returns driver's pending favorite list */}
 
                 <button onClick={getFavoritesList}>Refresh</button>
             </main>
