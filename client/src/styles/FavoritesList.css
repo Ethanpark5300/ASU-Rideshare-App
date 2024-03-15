@@ -1,16 +1,78 @@
+#favorites-list header {
+    display: flex;
+    justify-content: center;
+}
+
+#favorites-list h1 {
+    background-color: var(--brand-gold);
+    display: block;
+    padding: .5rem;
+    text-align: center;
+}
+
 #favorites-list table,
 #favorites-list th,
 #favorites-list td {
-    border: 1px solid black;
+    border: 2px solid black;
     border-collapse: collapse;
 }
 
-#favorites-list th, #favorites-list td {
-    padding: 1rem;
+#favorites-list th {
+    font-size: 1.125rem;
+    background-color: var(--brand-maroon);
+    color: white;
+}
+
+#favorites-list th,
+#favorites-list td {
+    padding: .5rem;
+}
+
+#favorites-list tr:nth-child(even) {
+    background-color: #f2f2f2;
 }
 
 #favorites-list table {
-    width: 95%;
+    width: 75%;
     margin-inline: auto;
     text-align: center;
+}
+
+#favorites-list .favorites-btns-container {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem
+}
+
+#favorites-list button {
+    border-radius: 1000px;
+    cursor: pointer;
+    padding: 8px 16px;
+    font-weight: 700;
+    line-height: 16px;
+    transition: scale .03s ease-in-out;
+}
+
+#favorites-list button:hover {
+    transform: scale(1.05);
+}
+
+#favorites-list .refresh-btn,
+#favorites-list .back-to-profile-btn {
+    background-color: var(--brand-maroon);
+    color: white;
+}
+
+#favorites-list .remove-btn,
+#favorites-list .decline-btn {
+    background-color: black;
+    color: white;
+}
+
+#favorites-list .accept-btn {
+    background-color: var(--brand-gold);
+    color: black;
+    margin-inline-end: 1rem;
 }

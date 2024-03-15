@@ -554,8 +554,8 @@ app.get("/get-favorites-list", async (req: Request, res: Response) => {
 	let setRidersFavoritesList = await db.all(`SELECT favorites.favorite_id,user_info.first_name,user_info.last_name,favorites.status,favorites.date FROM user_info INNER JOIN favorites ON user_info.email = favorites.driver_id WHERE favorites.rider_id = ?`, [user]);
 	// console.log(setFavoritesList);
 
-	let setDriversPendingFavoritesList = await db.all(`SELECT favorites.favorite_id,user_info.first_name,user_info.last_name,favorites.status,favorites.date FROM user_info INNER JOIN favorites ON user_info.email = favorites.rider_id WHERE status = "Pending" AND favorites.driver_id = ?`, [user]);
-	// console.log(setPendingFavoritesList);
+	let setDriversPendingFavoritesList = await db.all(`SELECT favorites.favorite_id,user_info.first_name,user_info.last_name,favorites.date FROM user_info INNER JOIN favorites ON user_info.email = favorites.rider_id WHERE status = "Pending" AND favorites.driver_id = ?`, [user]);
+	// console.log(setDriversPendingFavoritesList);
 
 	res.json ({
 		getRidersFavoritesList: setRidersFavoritesList,
@@ -577,19 +577,57 @@ app.post("/unfavorite-driver", async (req: Request, res: Response) => {
 	await db.run(`DELETE FROM favorites WHERE rider_id = '${riderid}' AND driver_id = '${driverEmail.Email}'`);
 	// console.log(riderid + " unfavorited " + driverEmail.Email);
 
-	let setRidersFavoritesList = await db.all(`SELECT favorites.favorite_id,user_info.first_name,user_info.last_name,favorites.status,favorites.date FROM user_info INNER JOIN favorites ON user_info.email = favorites.driver_id WHERE favorites.rider_id = ?`, [riderid]);
+	let setRidersFavoritesList = await db.all(`SELECT favorites.favorite_id,user_info.first_name,user_info.last_name,favorites.status,favorites.date FROM user_info INNER JOIN favorites ON user_info.email = favorites.driver_id WHERE favorites.rider_id = '${riderid}'`);
 	// console.log(setFavoritesList);
 
 	res.json ({
-		getRidersFavoritesList: setRidersFavoritesList
-	})
+		getRidersFavoritesList: setRidersFavoritesList,
+	});
 });
 
 /** Accept rider favorite request */
+app.post("/accept-favorite-request", async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let driverid = req.body.userid;
+	let riderFirstName = req.body.selectedFirstName;
+	let riderLastName = req.body.selectedLastName;
+	// console.log("Selected rider: " + riderFirstName + " " + riderLastName);
 
+	let riderEmail = await db.get(`SELECT email FROM user_info WHERE first_name = '${riderFirstName}' AND last_name = '${riderLastName}'`);
+	// console.log("Selected rider email:", riderEmail.Email);
+
+	await db.run(`UPDATE favorites SET status = "Favorited" WHERE driver_id = '${driverid}' AND rider_id = '${riderEmail.Email}'`);
+	// console.log(`${driverid} accepted ${riderEmail.Email}'s favorite request`);
+
+	let setDriversPendingFavoritesList = await db.all(`SELECT favorites.favorite_id,user_info.first_name,user_info.last_name,favorites.date FROM user_info INNER JOIN favorites ON user_info.email = favorites.rider_id WHERE status = "Pending" AND favorites.driver_id = ?`, [driverid]);
+	// console.log(setPendingFavoritesList);
+
+	res.json({
+		getDriversPendingFavoritesList: setDriversPendingFavoritesList
+	});
+});
 
 /** Decline rider favorite request */
+app.post("/decline-favorite-request", async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let driverid = req.body.userid;
+	let riderFirstName = req.body.selectedFirstName;
+	let riderLastName = req.body.selectedLastName;
+	// console.log("Selected rider: " + riderFirstName + " " + riderLastName);
 
+	let riderEmail = await db.get(`SELECT email FROM user_info WHERE first_name = '${riderFirstName}' AND last_name = '${riderLastName}'`);
+	// console.log("Selected rider email:", riderEmail.Email);
+
+	await db.run(`DELETE FROM favorites WHERE driver_id = '${driverid}' AND rider_id = '${riderEmail.Email}'`);
+	// console.log(`${driverid} declined ${riderEmail.Email}'s favorite request`);
+
+	let setDriversPendingFavoritesList = await db.all(`SELECT favorites.favorite_id,user_info.first_name,user_info.last_name,favorites.date FROM user_info INNER JOIN favorites ON user_info.email = favorites.rider_id WHERE status = "Pending" AND favorites.driver_id = ?`, [driverid]);
+	// console.log(setPendingFavoritesList);
+
+	res.json({
+		getDriversPendingFavoritesList: setDriversPendingFavoritesList
+	});
+});
 
 /** Send report to reports database */
 app.post("/send-report", async (req: Request, res: Response) => {
@@ -653,6 +691,7 @@ app.get("/view-account-info", async (req: Request, res: Response) => {
 	let userEmail = req.query.accountEmail;
 
 	let account = await db.all(`SELECT * FROM USER_INFO WHERE Email = ?`, [userEmail]);
+	// console.log(account);
 
 	res.json({
 		account: account[0]
