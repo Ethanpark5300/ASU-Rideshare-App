@@ -24,6 +24,8 @@ import BlockedList from './pages/BlockedList';
 import EditAccount from './pages/EditAccount';
 import Verify from './pages/Verify';
 import EditPayment from './pages/EditPayment';
+import PickupRider from './pages/PickupRider';
+import Waiting from './pages/Waiting';
 
 function App() {
 	const dispatch = useAppDispatch();
@@ -62,23 +64,25 @@ function App() {
 		<>
 			<NavigationBar />
 			<Routes>
-				<Route path="/" element={<Home />}/>
-				<Route path="/Login" element={<Login />}/>
-				<Route path="/Payment" element={<Payment/>}/>
-				<Route path="/Profile" element={<Profile/>}/>
-				<Route path="/Register" element={<Register/>}/>
-				<Route path="/Verify" element={<Verify/>}/>
-				<Route path="/RequestRide" element={<RequestRide riderEmail={account?.account?.email}/>}/>
-				<Route path="/RideHistory" element={<RideHistory/>}/>
-				<Route path="/RideinProgress" element={<RideinProgress/>}/>
-				<Route path="/ChooseDriver" element={<ChooseDriver/>}/>
-				<Route path="/ChooseRider" element={<ChooseRider/>}/>
-				<Route path="/Rating" element={<Rating/>}/>
-				<Route path="/Report" element={<Report/>}/>
-				<Route path="/FavoritesList" element={<FavoritesList />}/>
-				<Route path="/BlockedList" element={<BlockedList />}/>
-				<Route path="/EditAccount" element={<EditAccount/>}/>
-				<Route path="/EditPayment" element={<EditPayment/>}/>
+				<Route path="/" element={<Home />} />
+				<Route path="/Login" element={<Login />} />
+				<Route path="/Payment" element={<Payment />} />
+				<Route path="/Profile" element={<Profile />} />
+				<Route path="/Register" element={<Register />} />
+				<Route path="/Verify" element={<Verify />} />
+				<Route path="/RequestRide" element={<RequestRide riderEmail={account?.account?.email} />} />
+				<Route path="/RideHistory" element={<RideHistory />} />
+				<Route path="/RideinProgress" element={<RideinProgress />} />
+				<Route path="/ChooseDriver" element={<ChooseDriver />} />
+				<Route path="/ChooseRider" element={<ChooseRider />} />
+				<Route path="/Rating" element={<Rating />} />
+				<Route path="/Report" element={<Report />} />
+				<Route path="/FavoritesList" element={<FavoritesList />} />
+				<Route path="/BlockedList" element={<BlockedList />} />
+				<Route path="/EditAccount" element={<EditAccount />} />
+				<Route path="/EditPayment" element={<EditPayment />} />
+				<Route path="/PickupRider" element={<PickupRider />} />
+				<Route path="/Waiting" element={<Waiting />} />
 			</Routes>
 		</>
 	);

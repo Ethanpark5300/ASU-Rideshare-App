@@ -14,7 +14,7 @@ const RideinProgress: React.FC = () => {
     const [estimatedTimeArrival, setEstimatedTimeArrival] = useState<string>('');
     const [estimatedRemainingDistance, setEstimatedRemainingDistance] = useState<string>('');
     const [arrivalTime, setArrivalTime] = useState<string>('');
-    const [currentTime, setCurrentTime] = useState<string>('');
+    // const [currentTime, setCurrentTime] = useState<string>('');
 
     let dropoffAddress = "301 E Orange St., Tempe, AZ 85281";
 
@@ -55,22 +55,22 @@ const RideinProgress: React.FC = () => {
         });
     }, [mapsLoaded, destinationAddress]);
 
-    useEffect(() => {
-        // if (currentLocation && destinationLocation) {
-        //     calculateETA();
-        //     updateCurrentTime();
-        //     const intervalId = setInterval(() => {
-        //         calculateETA();
-        //         updateCurrentTime();
-        //     }, 1);
-        //     calculateETA();
-        //     return () => clearInterval(intervalId);
-        // }
-        const intervalId = setInterval(() => {
-            updateCurrentTime();
-        }, 1);
-        return () => clearInterval(intervalId);
-    }, [currentLocation, destinationLocation]);
+    // useEffect(() => {
+    //     if (currentLocation && destinationLocation) {
+    //         calculateETA();
+    //         updateCurrentTime();
+    //         const intervalId = setInterval(() => {
+    //             calculateETA();
+    //             updateCurrentTime();
+    //         }, 1);
+    //         calculateETA();
+    //         return () => clearInterval(intervalId);
+    //     }
+    //     const intervalId = setInterval(() => {
+    //         updateCurrentTime();
+    //     }, 1);
+    //     return () => clearInterval(intervalId);
+    // }, [currentLocation, destinationLocation]);
 
     const calculateETA = () => {
         const directionsService = new window.google.maps.DirectionsService();
@@ -103,9 +103,9 @@ const RideinProgress: React.FC = () => {
         );
     };
 
-    const updateCurrentTime = () => {
-        setCurrentTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-    };
+    // const updateCurrentTime = () => {
+    //     setCurrentTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    // };
 
     const handleMapLoad = () => {
         setMapLoaded(true);
