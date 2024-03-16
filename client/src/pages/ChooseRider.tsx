@@ -2,7 +2,6 @@ import "../styles/ChooseRider.css";
 import PageTitle from "../components/PageTitle/PageTitle";
 import { useAppSelector } from "../store/hooks";
 import { useCallback, useEffect, useState } from "react";
-import LiveTracking from "../components/GoogleMaps/LiveTracking";
 
 function ChooseRider() {
     const account = useAppSelector((state) => state.account);
@@ -27,56 +26,66 @@ function ChooseRider() {
     return (
         <PageTitle title="Choose Rider">
             <main id="choose-rider">
-                <aside className="chooserider-panel">
-                    <header>
-                        <h1>Choose Rider</h1>
-                    </header>
-                    <section id="pending-rider-requests-container">
-                        <h2>Pending Rider Requests</h2>
-                        {pendingRequestsList.length > 0 ? (
-                            <div>
+                <header>
+                    <h1>Choose Rider</h1>
+                </header>
+                <section className="pending-rider-requests-container">
+                    <h2>Pending Rider Requests</h2>
+                    {pendingRequestsList.length > 0 ? (
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Rider Name</th>
+                                    <th>Pick-up Location</th>
+                                    <th>Drop-off Location</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
                                 {pendingRequestsList.map((ride) => (
-                                    <div key={ride.Ride_ID}>
-                                        <p>
-                                            {ride.Rider_FirstName} {ride.Rider_LastName}{" "}
-                                            {ride.Pickup_Location} {ride.Dropoff_Location}{" "}
-                                            <button>Accept</button>
-                                        </p>
-                                    </div>
+                                    <tr key={ride.Ride_ID}>
+                                        <td>{ride.Rider_FirstName} {ride.Rider_LastName}</td>
+                                        <td>{ride.Pickup_Location}</td>
+                                        <td>{ride.Dropoff_Location}</td>
+                                        <td><button className="accept-request-btn">Accept Request</button></td>
+                                    </tr>
                                 ))}
-                            </div>
-                        ) : (
-                            <div>No pending ride requests available.</div>
-                        )}
-                    </section>
-                    <section id="all-rider-requests-container">
-                        <h2>All Rider Requests</h2>
-                        {allRequestsList.length > 0 ? (
-                            <div>
+                            </tbody>
+                        </table>
+                    ) : (
+                        <div className="none-error">No pending ride requests available.</div>
+                    )}
+                </section>
+                <section className="all-rider-requests-container">
+                    <h2>All Rider Requests</h2>
+                    {allRequestsList.length > 0 ? (
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Rider Name</th>
+                                    <th>Pick-up Location</th>
+                                    <th>Drop-off Location</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
                                 {allRequestsList.map((ride) => (
-                                    <div key={ride.Ride_ID}>
-                                        <p>
-                                            {ride.Rider_FirstName} {ride.Rider_LastName}{" "}
-                                            {ride.Pickup_Location} {ride.Dropoff_Location}{" "}
-                                            <button>Accept</button>
-                                        </p>
-                                    </div>
+                                    <tr key={ride.Ride_ID}>
+                                        <td>{ride.Rider_FirstName} {ride.Rider_LastName}</td>
+                                        <td>{ride.Pickup_Location}</td>
+                                        <td>{ride.Dropoff_Location}</td>
+                                        <td><button className="accept-request-btn">Accept Request</button></td>
+                                    </tr>
                                 ))}
-                            </div>
-                        ) : (
-                            <div>No ride requests available.</div>
-                        )}
-                    </section>
-                    <section id="rider-button-container">
-                        <button
-                            className="refresh-list-rider"
-                            onClick={refreshRideQueueList}
-                        >
-                            Refresh
-                        </button>
-                    </section>
-                </aside>
-                <LiveTracking />
+                            </tbody>
+                        </table>
+                    ) : (
+                        <div className="none-error">No pending ride requests available.</div>
+                    )}
+                </section>
+                <section className="btns-container">
+                    <button className="refresh-rider-list-btn" onClick={refreshRideQueueList}>Refresh</button>
+                </section>
             </main>
         </PageTitle>
     );

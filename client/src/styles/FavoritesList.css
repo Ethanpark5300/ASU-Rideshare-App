@@ -1,3 +1,8 @@
+#favorites-list {
+    height: calc(100vh - 68.5px);
+    background-color: #f1f1f1;
+}
+
 #favorites-list header {
     display: flex;
     justify-content: center;
@@ -13,7 +18,7 @@
 #favorites-list table,
 #favorites-list th,
 #favorites-list td {
-    border: 2px solid black;
+    border: 1px solid black;
     border-collapse: collapse;
 }
 
@@ -28,8 +33,12 @@
     padding: .5rem;
 }
 
+#favorites-list tr:nth-child(odd) {
+    background-color: #fff;
+}
+
 #favorites-list tr:nth-child(even) {
-    background-color: #f2f2f2;
+    background-color: #f8f9fa;
 }
 
 #favorites-list table {
@@ -75,4 +84,8 @@
     background-color: var(--brand-gold);
     color: black;
     margin-inline-end: 1rem;
+}
+
+#favorites-list .none-error {
+    text-align: center;
 }

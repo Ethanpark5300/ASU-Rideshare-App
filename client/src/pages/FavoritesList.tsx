@@ -110,7 +110,7 @@ function FavoritesList() {
                 {(userType === 1 || userType === 3) && (
                     <>
                         <header>
-                            <h1>Favorites</h1>
+                            <h1>Favorites List</h1>
                         </header>
                         {ridersFavoritesList.length > 0 ? (
                             <table>
@@ -134,7 +134,7 @@ function FavoritesList() {
                                 </tbody>
                             </table>
                         ) : (
-                            <div>No favorites list available.</div>
+                            <div className='none-error'>No favorites list available.</div>
                         )}
                     </>
                 )}
@@ -168,7 +168,7 @@ function FavoritesList() {
                                 </tbody>
                             </table>
                         ) : (
-                            <div>No pending rider favorites.</div>
+                            <div className='none-error'>No pending rider favorite requests.</div>
                         )}
                     </>
                 )}
