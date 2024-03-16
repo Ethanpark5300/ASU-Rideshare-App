@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { Account } from './account/Account';
 import { setAccountStore } from './store/features/accountSlice';
@@ -31,30 +31,29 @@ function App() {
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {
+		const readCookie = async () => {
+			try {
+				fetch(`/read-cookie`, {
+					method: 'GET',
+					headers: { 'Content-type': 'application/json' },
+				})
+					.then((res) => res.json())
+					.then((data) => {
+						//console.log(data);
+						if (data !== null) {
+							const accountData = new Account(data.Email, data.FirstName, data.LastName, data.PhoneNumber, data.AccountType, data.PayPalEmail, data.Status);
+							dispatch(setAccountStore(accountData));
+						} else {
+							dispatch(setAccountStore(undefined));
+						}
+					});
+			} catch (error) {
+				// Handle the error if necessary
+				console.error(error);
+			}
+		};
 		readCookie();
-	}, []);
-
-	const readCookie = async () => {
-		try {
-			fetch(`/read-cookie`, {
-				method: 'GET',
-				headers: { 'Content-type': 'application/json' },
-			})
-				.then((res) => res.json())
-				.then((data) => {
-					//console.log(data);
-					if (data !== null) {
-						const accountData = new Account(data.Email, data.FirstName, data.LastName, data.PhoneNumber, data.AccountType, data.PayPalEmail, data.Status);
-						dispatch(setAccountStore(accountData));
-					} else {
-						dispatch(setAccountStore(undefined));
-					}
-				});
-		} catch (error) {
-			// Handle the error if necessary
-			console.error(error);
-		}
-	};
+	}, [dispatch]);
 
 	const account = useAppSelector((state) => state.account);
 	//console.log("----")
