@@ -74,7 +74,9 @@ const ChooseDriver: React.FC = () => {
         <PageTitle title="Choose Driver">
             <main id="choose-driver">
                 <aside className="choosedriver-panel">
-                    <h1>Choose a Driver</h1>
+                    <header>
+                        <h1>Choose Driver</h1>
+                    </header>
 
                     {/* List of available riders favorite drivers */}
                     <section id="available-favorite-drivers-container">
@@ -128,7 +130,7 @@ const ChooseDriver: React.FC = () => {
 
                     <section className="choose-btns-container">
                         {/* Refresh Button */}
-                        <button className="refresh-list-btn" onClick={refreshDriversList}>Refresh List</button>
+                        <button className="refresh-list-btn" onClick={refreshDriversList}>Refresh</button>
 
                         {/* Cancel Button */}
                         <Link to="/" className="center-horizontal">

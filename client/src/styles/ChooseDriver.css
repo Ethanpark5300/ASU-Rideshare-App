@@ -3,10 +3,19 @@
     position: relative;
 }
 
+#choose-driver header {
+    display: flex;
+    justify-content: center;
+}
+
 #choose-driver h1 {
     display: inline-block;
     background-color: var(--brand-gold);
-    padding: 0.25rem;
+    padding: .5rem;
+}
+
+#choose-driver section {
+    margin-bottom: 1rem;
 }
 
 #choose-driver .choosedriver-panel {

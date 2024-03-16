@@ -1,11 +1,14 @@
 import { Link } from "react-router-dom";
 import "./NavigationBar.css";
 import Navbar_Logo from "./Navbar-Logo.svg";
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAppSelector } from "../../store/hooks";
-import { Account, AccountTypeFlag } from "../../account/Account";
+import { AccountTypeFlag } from "../../account/Account";
 
 function Navbar() {
+    const account = useAppSelector((state) => state.account);
+    const [userType, setUserType] = useState();
+
     useEffect(() => {
         const navEl = document.querySelector('.navbar-links') as HTMLElement;
         const hamburgerEl = document.querySelector('.hamburger') as HTMLElement;
@@ -26,7 +29,6 @@ function Navbar() {
             navItemEl.addEventListener('click', closeNav);
         });
 
-        // Cleanup function to remove event listeners when the component unmounts
         return () => {
             hamburgerEl.removeEventListener('click', toggleNav);
             navItemEls.forEach((navItemEl) => {
@@ -35,9 +37,22 @@ function Navbar() {
         };
     }, []);
 
-    const account = useAppSelector((state) => state.account);
+    const getAccountInformation = useCallback(async () => {
+        try {
+            const response = await fetch(`/view-account-info?accountEmail=${account?.account?.email}`);
+            const data = await response.json();
 
-	// console.log(account?.account?.accountType);
+            if (data.account) {
+                setUserType(data.account.Type_User);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    }, [account?.account?.email]);
+
+    useEffect(() => {
+        getAccountInformation();
+    }, [getAccountInformation]);
 
     return (
         <nav>
@@ -48,87 +63,74 @@ function Navbar() {
                 </Link>
 
                 <div className="navbar-links">
-                    {/* Rider Navbar */}
-                    
-					
-						{
-						((account?.account?.accountType & (AccountTypeFlag.Rider | AccountTypeFlag.Driver)) !== 0) && (
-							<ul className="nav__list">
-								
-									<li className="nav__item">
-										<Link className="nav__link fromLeft" to="/">Home</Link>
-									</li>
-									<li className="nav__item">
-										<Link className="nav__link fromLeft" to="/Profile">Profile</Link>
-									</li>
-									{/* Drivers get a single extra tab, for now */ }
-											{
-												((account?.account?.accountType & AccountTypeFlag.Driver) !== 0) && (
-													<li className="nav__item">
-														<Link className="nav__link fromLeft" to="/FavoritesList">Favorites</Link>
-													</li>
-												)
-											}
-									<li className="nav__item">
-										<Link className="nav__link fromLeft" to="/BlockedList">Blocked</Link>
-									</li>
-									<li className="nav__item">
-										<Link className="nav__link fromLeft" to="/RideHistory">Ride History</Link>
-									</li>
-									<li>
-										<Link to="/RequestRide">
-											<button>Request Ride</button>
-										</Link>
-									</li>
-								
-								</ul>
-							)
-						}
-                        
-                     
 
-                    {/* Driver Navbar */}
-                    {/*{*/}
-                    {/*    (account?.account?.accountType & AccountTypeFlag.Driver) && (*/}
-                    {/*        <ul className="nav__list">*/}
-                    {/*            <li className="nav__item">*/}
-                    {/*                <Link className="nav__link fromLeft" to="/">Home</Link>*/}
-                    {/*            </li>*/}
-                    {/*            <li className="nav__item">*/}
-                    {/*                <Link className="nav__link fromLeft" to="/Profile">Profile</Link>*/}
-                    {/*            </li>*/}
-                    {/*            <li className="nav__item">*/}
-                    {/*                <Link className="nav__link fromLeft" to="/BlockedList">Blocked</Link>*/}
-                    {/*            </li>*/}
-                    {/*            <li className="nav__item">*/}
-                    {/*                <Link className="nav__link fromLeft" to="/RideHistory">Ride History</Link>*/}
-                    {/*            </li>*/}
-                    {/*            <li>*/}
-                    {/*                <Link to="/ChooseRider">*/}
-                    {/*                    <button>View Requests</button>*/}
-                    {/*                </Link>*/}
-                    {/*            </li>*/}
-                    {/*        </ul>*/}
-                    {/*    )*/}
-                    {/*}*/}
+                    {/** Rider navbar */}
+                    {(userType === 1 || userType === 3) && (
+                        <ul className="nav__list">
+                            <li className="nav__item">
+                                <Link className="nav__link fromLeft" to="/">Home</Link>
+                            </li>
+                            <li className="nav__item">
+                                <Link className="nav__link fromLeft" to="/Profile">Profile</Link>
+                            </li>
+                            <li className="nav__item">
+                                <Link className="nav__link fromLeft" to="/FavoritesList">Favorites</Link>
+                            </li>
+                            <li className="nav__item">
+                                <Link className="nav__link fromLeft" to="/BlockedList">Blocked</Link>
+                            </li>
+                            <li className="nav__item">
+                                <Link className="nav__link fromLeft" to="/RideHistory">Ride History</Link>
+                            </li>
+                            <li>
+                                <Link to="/RequestRide">
+                                    <button>Request Ride</button>
+                                </Link>
+                            </li>
+                        </ul>
+                    )}
 
-                    {/* Guest Navbar */}
-                    {
-                        (!account.account || ((account.account.accountType & AccountTypeFlag.None) !== 0)) && (
-                            <ul className="nav__list">
-                                <li>
-                                    <Link to="/Login">
-                                        <button>Login</button>
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link to="/Register">
-                                        <button>Register</button>
-                                    </Link>
-                                </li>
-                            </ul>
-                        )
-                    }
+                    {/** Driver navbar */}
+                    {(userType === 2) && (
+                        <ul className="nav__list">
+                            <li className="nav__item">
+                                <Link className="nav__link fromLeft" to="/">Home</Link>
+                            </li>
+                            <li className="nav__item">
+                                <Link className="nav__link fromLeft" to="/Profile">Profile</Link>
+                            </li>
+                            <li className="nav__item">
+                                <Link className="nav__link fromLeft" to="/FavoritesList">Pending Favorites</Link>
+                            </li>
+                            <li className="nav__item">
+                                <Link className="nav__link fromLeft" to="/BlockedList">Blocked</Link>
+                            </li>
+                            <li className="nav__item">
+                                <Link className="nav__link fromLeft" to="/RideHistory">Ride History</Link>
+                            </li>
+                            <li>
+                                <Link to="/ChooseRider">
+                                    <button>Pending Requests</button>
+                                </Link>
+                            </li>
+                        </ul>
+                    )}
+
+                    {/** Guest navbar */}
+                    {(!account.account || ((account.account.accountType & AccountTypeFlag.None) !== 0)) && (
+                        <ul className="nav__list">
+                            <li>
+                                <Link to="/Login">
+                                    <button>Login</button>
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/Register">
+                                    <button>Register</button>
+                                </Link>
+                            </li>
+                        </ul>
+                    )}
                 </div>
 
                 <div className="hamburger">

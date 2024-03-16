@@ -2,6 +2,7 @@ import "../styles/ChooseRider.css";
 import PageTitle from "../components/PageTitle/PageTitle";
 import { useAppSelector } from "../store/hooks";
 import { useCallback, useEffect, useState } from "react";
+import LiveTracking from "../components/GoogleMaps/LiveTracking";
 
 function ChooseRider() {
     const account = useAppSelector((state) => state.account);
@@ -27,7 +28,9 @@ function ChooseRider() {
         <PageTitle title="Choose Rider">
             <main id="choose-rider">
                 <aside className="chooserider-panel">
-                    <h1>Choose a Rider</h1>
+                    <header>
+                        <h1>Choose Rider</h1>
+                    </header>
                     <section id="pending-rider-requests-container">
                         <h2>Pending Rider Requests</h2>
                         {pendingRequestsList.length > 0 ? (
@@ -73,6 +76,7 @@ function ChooseRider() {
                         </button>
                     </section>
                 </aside>
+                <LiveTracking />
             </main>
         </PageTitle>
     );
