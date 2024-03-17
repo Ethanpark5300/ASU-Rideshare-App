@@ -22,7 +22,7 @@ const ChooseDriver: React.FC = () => {
         }
     }, [account?.account?.email]);
 
-    const requestDriver = async (driver: any) => {
+    const requestDriver = async (driver: { First_Name: string; Last_Name: string; }) => {
         try {
             await fetch(`/request-driver`, {
                 method: "POST",
@@ -40,7 +40,7 @@ const ChooseDriver: React.FC = () => {
         }
     };
 
-    const cancelRequestDriver = async (selectedDriver: any) => {
+    const cancelRequestDriver = async (selectedDriver: { First_Name: string; Last_Name: string; Email: string; }) => {
         try {
             await fetch(`/cancel-request-driver`, {
                 method: "POST",
@@ -62,9 +62,28 @@ const ChooseDriver: React.FC = () => {
         try {
             await fetch(`/cancel-request?riderid=${account?.account?.email}`);
         } catch (error) {
-            console.error("Error canceling ride request:", error);
+            console.error("Error cancelling ride request:", error);
         }
     }, [account?.account?.email]);
+
+    const checkRideStatus = async () => {
+        try {
+            await fetch(`/check-ride-status?riderid=${account?.account?.email}`);
+
+        } catch (error) {
+            console.error("Error checking ride request:", error);
+        }
+    };
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            checkRideStatus();
+        }, 1000);
+
+        return () => {
+            clearInterval(intervalId);
+        };
+    });
 
     useEffect(() => {
         refreshDriversList();

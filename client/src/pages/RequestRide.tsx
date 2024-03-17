@@ -263,7 +263,9 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
         <PageTitle title='Request Ride'>
             <main id='request-ride'>
                 <aside className="search-bar">
-                    <h1>Request Ride</h1>
+                    <header>
+                        <h1>Request Ride</h1>
+                    </header>
                     <LoadScript
                         googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY || ''}
                         libraries={libraries}

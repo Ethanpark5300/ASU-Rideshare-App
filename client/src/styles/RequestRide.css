@@ -1,11 +1,19 @@
 #request-ride {
     display: flex;
+    height: calc(100vh - 69px);
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+#request-ride header {
+    display: flex;
+    justify-content: center;
 }
 
 #request-ride .map-container {
     position: relative;
     z-index: 0;
-    height: calc(100vh - 69px);
     width: 100vw;
 }
 

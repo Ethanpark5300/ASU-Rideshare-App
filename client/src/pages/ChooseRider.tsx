@@ -19,6 +19,26 @@ function ChooseRider() {
         }
     }, [account?.account?.email]);
 
+    const acceptRequest = async (selectedRideRequest: { Rider_FirstName: string; Rider_LastName: string; Pickup_Location: any; Dropoff_Location: any; }) => {
+        try {
+            await fetch(`/accept-ride-request`, {
+                method: "POST",
+                headers: { "Content-type": "application/json" },
+                body: JSON.stringify({
+                    driverid: account?.account?.email,
+                    selectedRiderFirstName: selectedRideRequest?.Rider_FirstName,
+                    selectedRiderLastName: selectedRideRequest?.Rider_LastName,
+                }),
+            })
+                .then((res) => res.json())
+                .then((data) => {
+
+                });
+        } catch (error) {
+            console.log(`Error accepting ride request:`, error);
+        }
+    };
+
     useEffect(() => {
         refreshRideQueueList();
     }, [refreshRideQueueList]);
@@ -47,7 +67,7 @@ function ChooseRider() {
                                         <td>{ride.Rider_FirstName} {ride.Rider_LastName}</td>
                                         <td>{ride.Pickup_Location}</td>
                                         <td>{ride.Dropoff_Location}</td>
-                                        <td><button className="accept-request-btn">Accept Request</button></td>
+                                        <td><button className="accept-request-btn" onClick={() => acceptRequest(ride)}>Accept Request</button></td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -74,7 +94,7 @@ function ChooseRider() {
                                         <td>{ride.Rider_FirstName} {ride.Rider_LastName}</td>
                                         <td>{ride.Pickup_Location}</td>
                                         <td>{ride.Dropoff_Location}</td>
-                                        <td><button className="accept-request-btn">Accept Request</button></td>
+                                        <td><button className="accept-request-btn" onClick={() => acceptRequest(ride)}>Accept Request</button></td>
                                     </tr>
                                 ))}
                             </tbody>
