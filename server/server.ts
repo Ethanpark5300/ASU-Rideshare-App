@@ -653,7 +653,9 @@ app.post("/send-payment", async (req: Request, res: Response) => {
 	let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 
 	await db.run(`INSERT INTO PAYMENTS (Rider_ID, Driver_ID, Ride_Cost, Date, Time) VALUES (?,?,?,?,?)`, rider_ID, driverEmail, rideCost, currentDate, currentTime);
-	await db.run(`DELETE FROM PAYMENTS WHERE Payment_ID NOT IN (SELECT MIN(Payment_ID) FROM PAYMENTS GROUP BY Rider_ID, Driver_ID, Ride_Cost, Date, Time)`); /* Delete duplicate records from the table */
+
+	/* Delete duplicate records from the table */
+	await db.run(`DELETE FROM PAYMENTS WHERE Payment_ID NOT IN (SELECT MIN(Payment_ID) FROM PAYMENTS GROUP BY Rider_ID, Driver_ID, Ride_Cost, Date, Time)`);
 });
 
 /** Update account information */
@@ -715,6 +717,24 @@ app.post("/change-status", async (req: Request, res: Response) => {
 	setTokenCookie(res, account);
 });
 
+/** @returns ride/drive history */
+/** @TODO Insert values after a ride is over (Save for end) */
+// app.get("/ride-history", async (req: Request, res: Response) => {
+// 	let db = await dbPromise;
+// 	let accountEmail = req.query.accountEmail;
+
+
+// 	let getRiderHistoryResults = await db.all(`SELECT Driver_FirstName, Driver_LastName, Pickup_Time, Dropoff_Location, Ride_Date, Cost, Given_Rider_Rating FROM RIDE_HISTORY WHERE Rider_ID='${accountEmail}'`)
+// 	let getDriverHistoryResults = await db.all(`SELECT Rider_FirstName, Rider_LastName, Ride_Date, Pickup_Time, Dropoff_Location, Earned, Given_Driver_Rating FROM RIDE_HISTORY WHERE Driver_ID='${accountEmail}'`);
+
+// 	res.json({
+// 		ridersHistoryList: getRiderHistoryResults,
+// 		driversHistoryList: getDriverHistoryResults
+// 	});
+// });
+
+/** Rider actions */
+
 /** Sends ride information to ride queue table */
 app.post("/ride-queue", async (req: Request, res: Response) => {
 	let db = await dbPromise;
@@ -725,9 +745,9 @@ app.post("/ride-queue", async (req: Request, res: Response) => {
 
 	let riderFirstName = await db.get(`SELECT First_Name FROM USER_INFO WHERE Email='${rider_id}'`);
 	let riderLastName = await db.get(`SELECT Last_Name FROM USER_INFO WHERE Email='${rider_id}'`);
-	let rideCost = "$" + cost;
+	let rideCost = cost;
 
-	await db.run(`INSERT INTO RIDES (Rider_ID, Rider_FirstName, Rider_LastName, Pickup_Location, Dropoff_Location, Ride_Cost, Queue_Status) VALUES (?,?,?,?,?,?,?)`, rider_id, riderFirstName.First_Name, riderLastName.Last_Name, pickupLocation, dropoffLocation, rideCost, "TRUE")
+	await db.run(`INSERT INTO RIDES (Rider_ID, Rider_FirstName, Rider_LastName, Pickup_Location, Dropoff_Location, Ride_Cost, Queue_Status, Completed) VALUES (?,?,?,?,?,?,?,?)`, rider_id, riderFirstName.First_Name, riderLastName.Last_Name, pickupLocation, dropoffLocation, rideCost, "TRUE", "FALSE")
 });
 
 /** Riders cancelling */
@@ -735,7 +755,7 @@ app.get("/cancel-request", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let rider_id = req.query.riderid;
 
-	await db.run(`DELETE FROM RIDES WHERE Rider_ID = '${rider_id}' AND Queue_Status = "TRUE"`);
+	await db.run(`DELETE FROM RIDES WHERE Rider_ID = '${rider_id}' AND Queue_Status = "TRUE" AND Completed = "FALSE"`);
 	await db.run(`DELETE FROM PENDING_DRIVERS WHERE Rider_ID = '${rider_id}'`);
 });
 
@@ -808,13 +828,21 @@ app.post("/cancel-request-driver", async (req: Request, res: Response) => {
 	});
 });
 
+app.get("/check-ride-status", async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let riderid = req.query.riderid;
+
+});
+
+/** Driver actions */
+
 /** @returns available riders */
 app.get("/ride-queue", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let driverEmail = req.query.driveremail;
 
 	// Get all ride requests with status "TRUE"
-	let getRidersRequests = await db.all(`SELECT Ride_ID, Rider_ID, Rider_FirstName, Rider_LastName, Pickup_Location, Dropoff_Location FROM RIDES WHERE Queue_Status="TRUE"`);
+	let getRidersRequests = await db.all(`SELECT Ride_ID, Rider_ID, Rider_FirstName, Rider_LastName, Pickup_Location, Dropoff_Location FROM RIDES WHERE Queue_Status="TRUE" AND Completed="FALSE"`);
 
 	// Get all riders who blocked the driver
 	let getBlockedRiders = await db.all(`SELECT Blockee_ID FROM BLOCKED WHERE Blocker_ID = ?`, [driverEmail]);
@@ -837,21 +865,26 @@ app.get("/ride-queue", async (req: Request, res: Response) => {
 	});
 });
 
-/** @returns ride/drive history */
-/** @TODO Insert values after a ride is over (Save for end) */
-// app.get("/ride-history", async (req: Request, res: Response) => {
-// 	let db = await dbPromise;
-// 	let accountEmail = req.query.accountEmail;
+/** Driver accepting rider request */
+app.post("/accept-ride-request", async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let driver = req.body.driverid;
+	let riderFirstName = req.body.selectedRiderFirstName;
+	let riderLastName = req.body.selectedRiderLastName;
+	// console.log("Selected rider first name:", riderFirstName);
+	// console.log("Selected rider last name:", riderLastName);
 
+	let driverFirstName = await db.get(`SELECT first_name FROM user_info WHERE email='${driver}'`);
+	let driverLastName = await db.get(`SELECT last_name FROM user_info WHERE email='${driver}'`);
+	// console.log("Current driver first name:", driverFirstName.First_Name);
+	// console.log("Current driver last name:", driverLastName.Last_Name);
 
-// 	let getRiderHistoryResults = await db.all(`SELECT Driver_FirstName, Driver_LastName, Pickup_Time, Dropoff_Location, Ride_Date, Cost, Given_Rider_Rating FROM RIDE_HISTORY WHERE Rider_ID='${accountEmail}'`)
-// 	let getDriverHistoryResults = await db.all(`SELECT Rider_FirstName, Rider_LastName, Ride_Date, Pickup_Time, Dropoff_Location, Earned, Given_Driver_Rating FROM RIDE_HISTORY WHERE Driver_ID='${accountEmail}'`);
+	/** Update driver information to selected ride request */
+	await db.run(`UPDATE rides SET driver_id = ?, driver_firstname = ?, driver_lastname = ? WHERE rider_firstname = '${riderFirstName}' AND rider_lastname = '${riderLastName}' AND Queue_Status = "TRUE" AND Completed = "FALSE"`, [driver, driverFirstName.First_Name, driverLastName.Last_Name]);
 
-// 	res.json({
-// 		ridersHistoryList: getRiderHistoryResults,
-// 		driversHistoryList: getDriverHistoryResults
-// 	});
-// });
+	/** Set selected ride request status to false */
+	await db.run(`UPDATE rides SET queue_status = "FALSE" WHERE rider_firstname = '${riderFirstName}' AND rider_lastname = '${riderLastName}' AND completed = "FALSE"`);
+});
 
 app.listen(PORT, () => {
 	console.log(`Server is running on port ${PORT}.`);
