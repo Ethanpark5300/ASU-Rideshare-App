@@ -1,0 +1,41 @@
+#blocked-list {
+    height: calc(100vh - 68.5px);
+    background-color: #f1f1f1;
+}
+
+
+#blocked-list header {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
+#blocked-list h1 {
+    background-color: var(--brand-gold);
+    padding: .5rem;
+}
+
+
+#blocked-list .blocked-list-btns-container {
+    display: flex;
+    justify-content: center;
+}
+
+#blocked-list button {
+    border-radius: 1000px;
+    cursor: pointer;
+    padding: 8px 16px;
+    font-weight: 700;
+    line-height: 16px;
+    transition: scale .03s ease-in-out;
+}
+
+#blocked-list button:hover {
+    transform: scale(1.05);
+}
+
+#blocked-list .blocked-list-refresh-btn {
+    margin-top: 1rem;
+    background-color: var(--brand-maroon);
+    color: white;
+}

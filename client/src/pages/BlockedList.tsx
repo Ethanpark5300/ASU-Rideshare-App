@@ -45,7 +45,10 @@ function BlockedList() {
     return (
         <PageTitle title="Blocked List">
             <main id="blocked-list">
-                <h1>Blocked List</h1>
+                <header> 
+                    <h1>Blocked List</h1>
+                </header>
+                
                 {blockedList.length > 0 ? (
                     <div>
                         {blockedList.map((blockee) => (
@@ -57,7 +60,10 @@ function BlockedList() {
                 ) : (
                     <div>No blocked list available.</div>
                 )}
-                <button onClick={getBlockedList}>Refresh</button>
+                
+                <div className = "blocked-list-btns-container">
+                    <button className="blocked-list-refresh-btn" onClick={getBlockedList}>Refresh</button>
+                </div>
             </main>
         </PageTitle>
     );
