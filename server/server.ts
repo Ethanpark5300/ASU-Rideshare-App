@@ -244,6 +244,34 @@ app.post("/registration", async (req: Request, res: Response) => {
 		}
 	});
 });
+/**
+ * password 2 password verification
+ */
+app.post("/confirm_password", async (req: Request, res: Response) => {
+	let newPassword: string = createNewPassword(10);
+	let confirmPassword: string = newPassword;
+
+	if (newPassword !== confirmPassword) {
+		return res.status(400).send('Passwords do not match');
+	}
+	else {
+		database.run('UPDATE USER_INFO SET Password = ? WHERE Email = ?', [newPassword, req.body.newPassword], (err: Error, rows: Object) => {
+			if (err) {
+				hadError = true;
+				message = err.message;
+			} else {
+				hadError = false;
+				message = undefined;
+			}
+			setVerifyCookie(res, req.body.password);
+			sendPasswordVerifyEmail(req.body.password, newPassword);
+			res.json({
+				passwordSuccess: !hadError,
+				message: message,
+			});
+		});
+	}
+});
 
 /**
  * body contains the property email
