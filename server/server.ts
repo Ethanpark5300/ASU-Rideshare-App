@@ -125,7 +125,77 @@ const sendRegisterVerifyEmail = (email: string, verifyID: string): string|undefi
 	});
 	return message;
 }
+/**
+ * 
+ * @param email email to send to
+ * @param verifyID unique generated ID that is sent in the content of the email
+ * @param newPassword new randomly generated password given to the user
+ */
+const sendPasswordVerifyEmail = (email: string,  newPassword: string): string | undefined => {
+	const mailOptions = {
+		from: process.env.EMAIL_USERNAME,
+		to: email,
+		subject: "Password Change",
+		text: "This email recently asked to change password. Here is a new temporary password:\n" + newPassword + "\n\n If this wasn't you, ignore this email.",
+	}
+	message = undefined;
+	transporter.sendMail(mailOptions, (err: Error | null, info: SMTPTransport.SentMessageInfo) => {
+		if (err) {
+			console.error(err.message);
+			message = err.message;
+		} else {
+			console.log('Email sent: ' + info.response);
+		}
+	});
+	return message;
+}
+/**
+ * 
+ * @param length
+ * @returns new random password for user to use
+ */
+function createNewPassword(length: number): string {
+	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+	let password = '';
+	for (let i = 0; i < length; i++) {
+		password += characters.charAt(Math.floor(Math.random() * characters.length));
+	}
+	return password;
+}
 
+//Password request 
+app.post("/password_request", async (req: Request, res: Response) => {
+	const salt: string = await bcrypt.genSalt(saltRounds);
+	const hashedPassword: string = await bcrypt.hash(req.body.password, salt)
+	let newPassword: string = createNewPassword(10);
+	console.log("password: " + req.body.newPassword);
+
+	database.get("SELECT 1 FROM USER_INFO WHERE Email = ?", [req.body.email], (err: Error, userExist: any) => {
+		if (userExist) {
+			database.run('UPDATE USER_INFO SET Password = ? WHERE Email = ?', [newPassword, req.body.newPassword], (err: Error, rows: Object) => {
+				if (err) {
+					hadError = true;
+					message = err.message;
+				} else {
+					hadError = false;
+					message = undefined;
+				}
+				setVerifyCookie(res, req.body.password);
+				sendPasswordVerifyEmail(req.body.password, newPassword);
+				res.json({
+					passwordSuccess: !hadError,
+					message: message,
+				});
+			});
+		}
+		else {
+			res.json({
+				registrationSuccess: false,
+				message: "User does not exist!",
+			});
+		}
+	});
+});
 /**
  * body contains the properties email, firstName, lastName, password
  */
