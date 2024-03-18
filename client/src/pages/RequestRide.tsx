@@ -405,7 +405,7 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
                     </LoadScript>
                     {distance && duration && (
                         <div className='request-results-container'>
-                            <p>Ride Cost: ${distance}</p>
+                            <p>Ride Cost: ${!isNaN(parseFloat(distance)) ? parseFloat(distance).toFixed(2) : 'N/A'}</p>
                             <p>Distance: {distance}</p>
                             <p>Duration: {duration}</p>
                         </div>

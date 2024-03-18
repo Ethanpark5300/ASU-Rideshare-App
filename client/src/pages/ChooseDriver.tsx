@@ -3,13 +3,15 @@ import PageTitle from "../components/PageTitle/PageTitle";
 import { useState, useEffect, useCallback } from "react";
 import LiveTracking from "../components/GoogleMaps/LiveTracking";
 import { useAppSelector } from "../store/hooks";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const ChooseDriver: React.FC = () => {
     const account = useAppSelector((state) => state.account);
     const [driversAvailableList, setDriversAvailableList] = useState<any[]>([]);
     const [favoriteDriversAvailableList, setFavoriteDriversAvailableList] = useState<any[]>([]);
     const [requestedDrivers, setRequestedDrivers] = useState<any[]>([]);
+    const [driverAccepted, setDriverAccepted] = useState<boolean>(false);
+    const navigate = useNavigate();
 
     const refreshDriversList = useCallback(async () => {
         try {
@@ -68,22 +70,19 @@ const ChooseDriver: React.FC = () => {
 
     const checkRideStatus = async () => {
         try {
-            await fetch(`/check-ride-status?riderid=${account?.account?.email}`);
+            const response = await fetch(`/check-ride-status?riderid=${account?.account?.email}`);
+            const data = await response.json();
+            setDriverAccepted(data.recievedDriver);
+            // console.log(driverAccepted);
+            
+            if (!driverAccepted) return;
 
+            // Redirect rider to payment if driver accepted their request
+            navigate("/Payment");
         } catch (error) {
-            console.error("Error checking ride request:", error);
+            console.error("Error checking ride status:", error);
         }
     };
-
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-            checkRideStatus();
-        }, 1000);
-
-        return () => {
-            clearInterval(intervalId);
-        };
-    });
 
     useEffect(() => {
         refreshDriversList();
@@ -118,7 +117,7 @@ const ChooseDriver: React.FC = () => {
                                 ))}
                             </div>
                         ) : (
-                            <p>No favorite drivers are available.</p>
+                            <p className="none-error">No favorite drivers are available.</p>
                         )}
                     </section>
 
@@ -143,17 +142,15 @@ const ChooseDriver: React.FC = () => {
                                 ))}
                             </div>
                         ) : (
-                            <p>No drivers are available.</p>
+                            <p className="none-error">No drivers are available.</p>
                         )}
                     </section>
 
-                    <section className="choose-btns-container">
-                        {/* Refresh Button */}
-                        <button className="refresh-list-btn" onClick={refreshDriversList}>Refresh</button>
-
-                        {/* Cancel Button */}
-                        <Link to="/" className="center-horizontal">
-                            <button className="cancel-ride-btn" onClick={cancelRideRequest}>Cancel</button>
+                    <section className="choose-driver-btns-container">
+                        <button className="btn check-status-btn" onClick={checkRideStatus}>Check Status</button>
+                        <button className="btn refresh-list-btn" onClick={refreshDriversList}>Refresh</button>
+                        <Link to="/">
+                            <button className="btn cancel-ride-btn" onClick={cancelRideRequest}>Cancel</button>
                         </Link>
                     </section>
                 </aside>

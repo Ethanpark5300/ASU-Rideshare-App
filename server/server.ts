@@ -890,6 +890,7 @@ app.get("/available-drivers", async (req: Request, res: Response) => {
 	});
 });
 
+/** Request specific driver */
 app.post("/request-driver", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let rider_id = req.body.rider;
@@ -910,6 +911,7 @@ app.post("/request-driver", async (req: Request, res: Response) => {
 	});
 });
 
+/** Cancel request specific driver */
 app.post("/cancel-request-driver", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let rider_id = req.body.rider;
@@ -926,10 +928,21 @@ app.post("/cancel-request-driver", async (req: Request, res: Response) => {
 	});
 });
 
+/** Check if any driver accepted rider request */
 app.get("/check-ride-status", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let riderid = req.query.riderid;
 
+	/** Check if any driver accepted rider request */
+	let checkDriverStatus = await db.get(`SELECT driver_id FROM rides WHERE rider_id = '${riderid}' AND queue_status = "FALSE" AND completed = "FALSE"`);
+	// console.log(checkDriverStatus);
+
+	if(checkDriverStatus === undefined) return;
+	
+	// Driver accepted;
+	res.json({
+		recievedDriver: true,
+	});
 });
 
 /** Driver actions */
@@ -940,7 +953,7 @@ app.get("/ride-queue", async (req: Request, res: Response) => {
 	let driverEmail = req.query.driveremail;
 
 	// Get all ride requests with status "TRUE"
-	let getRidersRequests = await db.all(`SELECT Ride_ID, Rider_ID, Rider_FirstName, Rider_LastName, Pickup_Location, Dropoff_Location FROM RIDES WHERE Queue_Status="TRUE" AND Completed="FALSE"`);
+	let getRidersRequests = await db.all(`SELECT Ride_ID, Rider_ID, Rider_FirstName, Rider_LastName, Pickup_Location, Dropoff_Location FROM RIDES WHERE Queue_Status = "TRUE" AND Completed = "FALSE"`);
 
 	// Get all riders who blocked the driver
 	let getBlockedRiders = await db.all(`SELECT Blockee_ID FROM BLOCKED WHERE Blocker_ID = ?`, [driverEmail]);
@@ -955,7 +968,7 @@ app.get("/ride-queue", async (req: Request, res: Response) => {
 	let allRequestsList = getRidersRequests.filter((request: { Rider_ID: string; }) => !excludedRiderEmails.includes(request.Rider_ID));
 
 	// Get pending rider requests for the specific driver
-	let getPendingRiderRequests = await db.all(`SELECT RIDES.Ride_ID, RIDES.Rider_ID, RIDES.Rider_FirstName, RIDES.Rider_LastName, RIDES.Pickup_Location, RIDES.Dropoff_Location FROM PENDING_DRIVERS INNER JOIN RIDES ON PENDING_DRIVERS.Rider_ID = RIDES.Rider_ID WHERE PENDING_DRIVERS.Driver_ID = '${driverEmail}'`);
+	let getPendingRiderRequests = await db.all(`SELECT RIDES.Ride_ID, RIDES.Rider_ID, RIDES.Rider_FirstName, RIDES.Rider_LastName, RIDES.Pickup_Location, RIDES.Dropoff_Location FROM PENDING_DRIVERS INNER JOIN RIDES ON PENDING_DRIVERS.Rider_ID = RIDES.Rider_ID WHERE PENDING_DRIVERS.Driver_ID = '${driverEmail}' AND Rides.Queue_Status = "TRUE" AND Rides.Completed = "FALSE"`);
 	
 	res.json({
 		pendingRiderRequestsList: getPendingRiderRequests,

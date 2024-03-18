@@ -29,28 +29,31 @@
     z-index: 1;
 }
 
-.driver-item {
+#choose-driver .driver-item {
     display: flex;
     align-items: center;
 }
 
-#choose-driver .choose-btns-container {
-    display: flex;
-    flex-direction: column;
-    gap: .25rem;
-    margin-top: 1rem;
+#choose-driver .driver-item:first-child,
+#choose-driver .none-error {
+    margin-top: .5rem;
 }
 
-#choose-driver .refresh-list-btn,
-#choose-driver .cancel-ride-btn,
-#choose-driver .center-horizontal {
+#choose-driver .choose-driver-btns-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+    align-items: center;
+}
+
+#choose-driver .btn {
     border-radius: 1000px;
     cursor: pointer;
     padding: 12px 24px;
     font-weight: 700;
     transition: 0.03s ease-in-out;
     line-height: 16px;
-    margin-inline: auto;
 }
 
 #choose-driver .refresh-list-btn {
@@ -76,11 +79,14 @@
     margin-left: 1rem;
 }
 
-#choose-driver .request-driver-btn {
+#choose-driver .request-driver-btn,
+#choose-driver .check-status-btn {
     background-color: var(--brand-gold);
     color: black;
 }
 
-#choose-driver button:hover {
+#choose-driver .request-driver-btn:hover,
+#choose-driver .cancel-driver-request-btn:hover,
+#choose-driver .btn:hover {
     transform: scale(1.05);
 }

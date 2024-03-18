@@ -30,10 +30,6 @@ function ChooseRider() {
                     selectedRiderLastName: selectedRideRequest?.Rider_LastName,
                 }),
             })
-                .then((res) => res.json())
-                .then((data) => {
-
-                });
         } catch (error) {
             console.log(`Error accepting ride request:`, error);
         }
