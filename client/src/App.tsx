@@ -26,6 +26,7 @@ import Verify from './pages/Verify';
 import EditPayment from './pages/EditPayment';
 import PickupRider from './pages/PickupRider';
 import Waiting from './pages/Waiting';
+import ChangePassword from './pages/ChangePassword';
 
 function App() {
 	const dispatch = useAppDispatch();
@@ -82,6 +83,7 @@ function App() {
 				<Route path="/EditPayment" element={<EditPayment />} />
 				<Route path="/PickupRider" element={<PickupRider />} />
 				<Route path="/Waiting" element={<Waiting />} />
+				<Route path="/ChangePassword" element={<ChangePassword />} />
 			</Routes>
 		</>
 	);
