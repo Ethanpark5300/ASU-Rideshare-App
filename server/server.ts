@@ -136,7 +136,7 @@ const sendPasswordVerifyEmail = (email: string,  newPassword: string): string | 
 		from: process.env.EMAIL_USERNAME,
 		to: email,
 		subject: "Password Change",
-		text: "This email recently asked to change password. Here is a new temporary password:\n" + newPassword + "\n\n If this wasn't you, ignore this email.",
+		text: "This email recently asked to change password. Here is a new temporary password:\n" + newPassword 
 	}
 	message = undefined;
 	transporter.sendMail(mailOptions, (err: Error | null, info: SMTPTransport.SentMessageInfo) => {
