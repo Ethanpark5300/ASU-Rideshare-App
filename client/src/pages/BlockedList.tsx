@@ -58,7 +58,7 @@ function BlockedList() {
                         ))}
                     </div>
                 ) : (
-                    <div>No blocked list available.</div>
+                    <div className = "blocked-list-container">No blocked list available.</div>
                 )}
                 
                 <div className = "blocked-list-btns-container">

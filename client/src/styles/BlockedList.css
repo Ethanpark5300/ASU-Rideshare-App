@@ -15,6 +15,10 @@
     padding: .5rem;
 }
 
+#blocked-list .blocked-list-container {
+    display: flex;
+    justify-content: center;
+}
 
 #blocked-list .blocked-list-btns-container {
     display: flex;
