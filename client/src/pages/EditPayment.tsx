@@ -59,20 +59,23 @@ function EditPayment() {
         <PageTitle title="Edit Payment">
             <main id="edit-payment">
                 <h1>Edit Payment</h1>
-                <label htmlFor="payPalEmail">PayPal Email</label>
-                <input
-                    type="text"
-                    name="payPalEmail"
-                    id="payPalEmail"
-                    value={paypalEmail || ''}
-                    onChange={handlePaypalEmailChange}
-                />
-                <button onClick={handleSaveChanges}>Save Changes</button>
                 <Link to="/Profile">
                     <button>Back to Profile Page</button>
                 </Link>
+                <div className="infobox">
+                    <label htmlFor="payPalEmail">PayPal Email</label>
+                    <input
+                        type="text"
+                        name="payPalEmail"
+                        id="payPalEmail"
+                        value={paypalEmail || ''}
+                        onChange={handlePaypalEmailChange}
+                    />
+                    <button onClick={handleSaveChanges}>Save Changes</button>
+                </div>
+                
             </main>
-            {/* connects to payapl would only be changing email. */}
+            {/* connects to paypal would only be changing email. */}
         </PageTitle>
     );
 }
