@@ -62,8 +62,10 @@ function EditPayment() {
                 <Link to="/Profile">
                     <button>Back to Profile Page</button>
                 </Link>
+                <br/>
+                <br/>
                 <div className="infobox">
-                    <label htmlFor="payPalEmail">PayPal Email</label>
+                    <label htmlFor="payPalEmail">Change PayPal Email to:</label>
                     <input
                         type="text"
                         name="payPalEmail"
@@ -71,9 +73,12 @@ function EditPayment() {
                         value={paypalEmail || ''}
                         onChange={handlePaypalEmailChange}
                     />
+                </div>
+                <br/>
+                <br/>
+                <div className="editchangesbutton">
                     <button onClick={handleSaveChanges}>Save Changes</button>
                 </div>
-                
             </main>
             {/* connects to paypal would only be changing email. */}
         </PageTitle>
