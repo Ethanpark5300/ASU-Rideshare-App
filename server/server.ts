@@ -165,9 +165,9 @@ function createNewPassword(length: number): string {
 
 //Password request 
 app.post("/password_request", async (req: Request, res: Response) => {
+	let newPassword: string = createNewPassword(10);
 	const salt: string = await bcrypt.genSalt(saltRounds);
 	const hashedPassword: string = await bcrypt.hash(newPassword, salt)
-	let newPassword: string = createNewPassword(10);
 	/*console.log("password: " + req.body.newPassword);*/
 
 	database.get("SELECT 1 FROM USER_INFO WHERE Email = ?", [req.body.email], (err: Error, userExist: any) => {
