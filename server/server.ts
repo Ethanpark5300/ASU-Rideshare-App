@@ -17,9 +17,9 @@ import { randomInt, randomUUID } from 'crypto';
 //const sqlite3 = require("sqlite3");
 //const Database = sqlite3.Database;
 //const express = require("express");
-const cors = require("cors");
+import cors from "cors";
 const app = express();
-const cookieParser = require('cookie-parser');
+import cookieParser from 'cookie-parser';
 
 
 const PORT = process.env.PORT || 3001;
