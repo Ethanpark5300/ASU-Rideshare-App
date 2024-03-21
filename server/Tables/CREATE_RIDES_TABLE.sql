@@ -14,7 +14,6 @@ CREATE TABLE "RIDES" (
 	"Given_Rider_Rating"	TEXT,
 	"Given_Driver_Rating"	TEXT,
 	"Ride_Date"	TEXT,
-	"Queue_Status"	TEXT,
-	"Completed"	TEXT,
+	"Status"	TEXT,
 	PRIMARY KEY("Ride_ID" AUTOINCREMENT)
 )
