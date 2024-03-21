@@ -172,7 +172,7 @@ app.post("/password_request", async (req: Request, res: Response) => {
 
 	database.get("SELECT 1 FROM USER_INFO WHERE Email = ?", [req.body.email], (err: Error, userExist: any) => {
 		if (userExist) {
-			database.run('UPDATE USER_INFO SET Password = ? WHERE Email = ?', [newPassword, req.body.newPassword], (err: Error, rows: Object) => {
+			database.run('UPDATE USER_INFO SET Password = ? WHERE Email = ?', [hashedPassword, req.body.email], (err: Error, rows: Object) => {
 				if (err) {
 					hadError = true;
 					message = err.message;
@@ -180,8 +180,7 @@ app.post("/password_request", async (req: Request, res: Response) => {
 					hadError = false;
 					message = undefined;
 				}
-				setVerifyCookie(res, req.body.password);
-				sendPasswordVerifyEmail(req.body.password, newPassword);
+				message = sendPasswordVerifyEmail(req.body.email, hashedPassword);
 				res.json({
 					passwordSuccess: !hadError,
 					message: message,
@@ -190,7 +189,7 @@ app.post("/password_request", async (req: Request, res: Response) => {
 		}
 		else {
 			res.json({
-				registrationSuccess: false,
+				passwordSuccess: false,
 				message: "User does not exist!",
 			});
 		}
@@ -246,31 +245,65 @@ app.post("/registration", async (req: Request, res: Response) => {
 });
 /**
  * password 2 password verification
+ * contains givenPassword, newPassword, email
  */
-app.post("/confirm_password", async (req: Request, res: Response) => {
-	let newPassword: string = createNewPassword(10);
-	let confirmPassword: string = newPassword;
+app.post("/change_password", async (req: Request, res: Response) => {
+	const emailPassWrong: string = "Email or Password is incorrect";
+	database.run('SELECT Email, Password FROM USER_INFO WHERE Email = ? ', [req.body.email], (err: Error, rows: any) => {
+		if (rows === undefined) {
+			hadError = true; message = emailPassWrong;
+		} else if (err) {
+			hadError = true; message = err.message;
+		} else {
+			hadError = false;
+			message = undefined;
+		}
 
-	if (newPassword !== confirmPassword) {
-		return res.status(400).send('Passwords do not match');
-	}
-	else {
-		database.run('UPDATE USER_INFO SET Password = ? WHERE Email = ?', [newPassword, req.body.newPassword], (err: Error, rows: Object) => {
-			if (err) {
-				hadError = true;
-				message = err.message;
-			} else {
-				hadError = false;
-				message = undefined;
-			}
-			setVerifyCookie(res, req.body.password);
-			sendPasswordVerifyEmail(req.body.password, newPassword);
+
+		if (!hadError) {
+			//console.log("Comparing: " + req.body.password + " + " + rows.Password_User)
+			bcrypt
+				.compare(req.body.givenPassword, rows.Password_User)
+				.then(result => {
+					//console.log(result);
+					
+					if (result) {
+						database.run('UPDATE USER_INFO SET Password = ? WHERE Email = ?', [req.body.newPassword, req.body.email], (err: Error, rows: Object) => {
+							if (err) {
+								hadError = true;
+								message = err.message;
+							} else {
+								hadError = false;
+								message = undefined;
+							}
+							res.json({
+								passwordSuccess: !hadError,
+								message: message,
+							});
+						});
+					} else {
+						hadError = true;
+						message = emailPassWrong;
+					}
+					res.json({
+
+						passwordSuccess: !hadError,
+						message: message,
+						
+					});
+
+				})
+				.catch(err => { hadError = true; message = err.message; });
+		} else {
 			res.json({
+
 				passwordSuccess: !hadError,
 				message: message,
+				
 			});
-		});
-	}
+		}
+		
+	});
 });
 
 /**
