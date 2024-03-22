@@ -5,7 +5,7 @@ import PageTitle from '../components/PageTitle/PageTitle';
 import { Button } from "../components/Buttons/Button";
 import { useAppDispatch } from "../store/hooks";
 import { setAccountStore } from "../store/features/accountSlice";
-import { Account } from "../account/Account";
+// import { Account } from "../account/Account";
 import { Link, useNavigate } from 'react-router-dom';
 
 const Profile: React.FC = (props) => {
@@ -42,21 +42,21 @@ const Profile: React.FC = (props) => {
         getAccountInformation();
     }, [getAccountInformation]);
 
-    const readCookie = async () => {
-        fetch(`/read-cookie`, {
-            method: "GET",
-            headers: { "Content-type": "application/json" },
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                if (data !== null) {
-                    console.log(data.Email + " " + data.FirstName + " " + data.LastName + " " + data.PhoneNumber + " " + data.AccountType);
-                    dispatch(setAccountStore(new Account(data.Email, data.FirstName, data.LastName, data.PhoneNumber, data.AccountType, data.PayPalEmail, data.Status)));
-                } else {
-                    dispatch(setAccountStore(undefined));
-                }
-            });
-    };
+    // const readCookie = async () => {
+    //     fetch(`/read-cookie`, {
+    //         method: "GET",
+    //         headers: { "Content-type": "application/json" },
+    //     })
+    //         .then((res) => res.json())
+    //         .then((data) => {
+    //             if (data !== null) {
+    //                 console.log(data.Email + " " + data.FirstName + " " + data.LastName + " " + data.PhoneNumber + " " + data.AccountType);
+    //                 dispatch(setAccountStore(new Account(data.Email, data.FirstName, data.LastName, data.PhoneNumber, data.AccountType, data.PayPalEmail, data.Status)));
+    //             } else {
+    //                 dispatch(setAccountStore(undefined));
+    //             }
+    //         });
+    // };
 
     const eatCookie = async () => {
         await fetch(`/clear-cookie?userEmail=${account?.account?.email}`);

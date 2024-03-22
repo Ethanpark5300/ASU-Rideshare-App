@@ -18,7 +18,7 @@ function Verify() {
 		if (state === null) {
 			navigate("/Register");
 		}
-	}, [state]);	
+    }, [state, navigate]); /** @TODO Test if anything breaks */
 	//console.log(JSON.stringify(state));
 	const verifyEmail = state.email;
 	//console.log(verifyEmail);
@@ -71,7 +71,7 @@ function Verify() {
 				}
             });
         setIsSending(false);
-    }, [isSending]);
+    }, [isSending, dispatch, navigate]); /** @TODO Test if anything breaks */
 
 	const resendRequest = useCallback(async () => {
 		// don't send again while we are sending
@@ -90,7 +90,7 @@ function Verify() {
 			.then((data) => {
 			});
 		setIsSending(false);
-	}, [isSending]);
+    }, [isSending, verifyEmail]); /** @TODO Test if anything breaks */
     /**@todo highlight which inputs errored*/
     return (
         <PageTitle title="Verify">
