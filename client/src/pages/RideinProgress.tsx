@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { GoogleMap, useJsApiLoader, MarkerF } from '@react-google-maps/api';
 import PageTitle from '../components/PageTitle/PageTitle';
 import "../styles/RideinProgress.css";
-import { MdLocalPolice } from "react-icons/md";
 
 const RideinProgress: React.FC = () => {
     const [currentLocation, setCurrentLocation] = useState<{ lat: number, lng: number }>(null);
@@ -149,7 +148,7 @@ const RideinProgress: React.FC = () => {
                     <p><b>Distance Remaining:</b> {estimatedRemainingDistance} </p>
                     <div className="btns-container">
                         <button className='refresh-btn' onClick={calculateETA}>Refresh</button>
-                        <button className="emergency-btn"><MdLocalPolice/></button>
+                        <button className="emergency-btn">Emergency Services</button>
                     </div>
                 </aside>
             </main>

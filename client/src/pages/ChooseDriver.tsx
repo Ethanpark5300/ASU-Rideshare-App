@@ -1,6 +1,6 @@
 import "../styles/ChooseDriver.css";
 import PageTitle from "../components/PageTitle/PageTitle";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import LiveTracking from "../components/GoogleMaps/LiveTracking";
 import { useAppSelector } from "../store/hooks";
 import { Link, useNavigate } from "react-router-dom";
@@ -10,7 +10,7 @@ const ChooseDriver: React.FC = () => {
     const [driversAvailableList, setDriversAvailableList] = useState<any[]>([]);
     const [favoriteDriversAvailableList, setFavoriteDriversAvailableList] = useState<any[]>([]);
     const [requestedDrivers, setRequestedDrivers] = useState<any[]>([]);
-    const [driverAccepted, setDriverAccepted] = useState<boolean>(false);
+    let driverAccepted = useRef<boolean>(false);
     const navigate = useNavigate();
 
     const refreshDriversList = useCallback(async () => {
@@ -72,7 +72,7 @@ const ChooseDriver: React.FC = () => {
         try {
             const response = await fetch(`/check-ride-status?riderid=${account?.account?.email}`);
             const data = await response.json();
-            setDriverAccepted(data.recievedDriver);
+            driverAccepted = data.recievedDriver;
             // console.log(driverAccepted);
             
             if (!driverAccepted) return;

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { TextInput } from "../components/TextInput/TextInput";
-import "../styles/Register.css";
+import "../styles/Verify.css";
 import { Button } from "../components/Buttons/Button";
 import PageTitle from "../components/PageTitle/PageTitle";
 import { useLocation, useNavigate } from "react-router-dom";

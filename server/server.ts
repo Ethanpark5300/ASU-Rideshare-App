@@ -873,12 +873,13 @@ app.post("/ride-queue", async (req: Request, res: Response) => {
 	let pickupLocation = req.body.pickupLocation;
 	let dropoffLocation = req.body.dropoffLocation;
 	let cost = req.body.rideCost;
+	let currentDate = new Date().toLocaleDateString();
 
 	let riderFirstName = await db.get(`SELECT First_Name FROM USER_INFO WHERE Email='${rider_id}'`);
 	let riderLastName = await db.get(`SELECT Last_Name FROM USER_INFO WHERE Email='${rider_id}'`);
 	let rideCost = cost;
 
-	await db.run(`INSERT INTO RIDES (Rider_ID, Rider_FirstName, Rider_LastName, Pickup_Location, Dropoff_Location, Ride_Cost, Status) VALUES (?,?,?,?,?,?,?)`, rider_id, riderFirstName.First_Name, riderLastName.Last_Name, pickupLocation, dropoffLocation, rideCost, "QUEUED");
+	await db.run(`INSERT INTO RIDES (Rider_ID, Rider_FirstName, Rider_LastName, Pickup_Location, Dropoff_Location, Ride_Cost, Ride_Date, Status) VALUES (?,?,?,?,?,?,?,?)`, rider_id, riderFirstName.First_Name, riderLastName.Last_Name, pickupLocation, dropoffLocation, rideCost, currentDate, "QUEUED");
 });
 
 /** Riders cancelling */
@@ -976,6 +977,11 @@ app.get("/check-ride-status", async (req: Request, res: Response) => {
 	res.json({
 		recievedDriver: true,
 	});
+});
+
+app.get("/get-ride-cost-information", async (req: Request, res: Response) => {
+	let db = await dbPromise;
+
 });
 
 /** Driver actions */

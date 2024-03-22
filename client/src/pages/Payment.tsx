@@ -22,7 +22,13 @@ const Payment: React.FC = (props) => {
     const account = useAppSelector((state) => state.account);
     const [paypalLoaded, setPaypalLoaded] = useState(false);
     const [paymentStatus, setPaymentStatus] = useState('');
-    const [showErrorPopup, setShowErrorPopup] = useState(false); // State to track whether error popup is open
+    const [showErrorPopup, setShowErrorPopup] = useState(false);
+    const [driverFirstName, setDriverFirstName] = useState<string>();
+    const [driverLastName, setDriverLastName] = useState<string>();
+    const [driverPayPalEmail, setDriverPayPalEmail] = useState<string>();
+    const [ridePrice, setRidePrice] = useState<number>();
+
+    
 
     const createOrder = (data: any, actions: any) => {
         return actions.order.create({
@@ -45,10 +51,10 @@ const Payment: React.FC = (props) => {
         });
     };
 
-    const onError = (err: any) => {
-        // console.error('Error occurred:', err);
+    const onError = (error: any) => {
+        // console.error('Error occurred:', error);
         setPaymentStatus('error');
-        setShowErrorPopup(true); // Show error popup when payment fails
+        setShowErrorPopup(true);
     };
 
     // Set PayPal loaded state to true once component mounts
@@ -57,7 +63,7 @@ const Payment: React.FC = (props) => {
     }, []);
 
     const closeErrorPopup = () => {
-        setShowErrorPopup(false); // Close error popup when try again button is clicked
+        setShowErrorPopup(false);
     };
 
     const renderPopup = () => {

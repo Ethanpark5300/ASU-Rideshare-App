@@ -23,10 +23,10 @@ VALUES
 	(20,'meaningfully','off','meaningfullyoff','11131','meaningfullyoff@asu.edu',NULL,4.8);
 */	
 --assuming auto INCREMENT works then this should be code since we do not need to worry about User_id
-INSERT INTO USER_INFO(First_Name,Last_Name,Password_User,Email,Rating_Passenger,Rating_Driver,Phone_Number,Type_User)
+INSERT INTO USER_INFO(First_Name,Last_Name,Password_User,Email,Rating_Passenger,Rating_Driver,Phone_Number,Type_User,Pay_Pal)
 VALUES 
-	('zeal',				'smeal',		'$2a$10$U/4oET/nT6fzpOnB72oNCOXyEEQt2kwbK7/Drek3/4EpPIkSx6vHK','zealsmeal@asu.edu',4.5,4.0,'111-111-1111',3),	--pass: 11111
-	('accidentally',		'demolish',		'$2a$10$m1TLFSUBalwb7qXN4CJ7vee5a.rKvnXYjk6mJho1ZhpoUSI/QvNQS','accidentallydemolish@asu.edu',NULL,3.6,'111-111-1111',2),	--pass: 11112
+	('zeal',				'smeal',		'$2a$10$U/4oET/nT6fzpOnB72oNCOXyEEQt2kwbK7/Drek3/4EpPIkSx6vHK','zealsmeal@asu.edu',4.5,4.0,'111-111-1111',3,'sb-of5rp28693436@personal.example.com'),	--pass: 11111
+	('accidentally',		'demolish',		'$2a$10$m1TLFSUBalwb7qXN4CJ7vee5a.rKvnXYjk6mJho1ZhpoUSI/QvNQS','accidentallydemolish@asu.edu',NULL,3.6,'111-111-1111',2,'sb-4swkm28693439@business.example.com'),	--pass: 11112
 	('fictionalize',		'splatter',		'$2a$10$qCH0yEsvmMBYSddGxPh9k.Nr3L6MsRxxE2wXwSeuOrt0LxwCkcYl.','fictionalizesplatter@asu.edu',2.2,2.4,'111-111-1111',3),	--pass: 11113
 	('propagandize',		'famously',		'$2a$10$nWBf4CUB01c.6OZEV6hs4.wPrXwXDnzbNMttTbPU98lfgywTr/xby','propagandizefamously@asu.edu',1.0,0.8,'111-111-1111',3),	--pass: 11114
 	('collectivize',		'provided',		'$2a$10$knxMPd0T4LRQPvkh5SVEHO1N2oECo2V8.a1hYWKLYx9MBo2G.Iyb.','collectivizeprovided@asu.edu',3.8,3.5,'111-111-1111',3),	--pass: 11115
