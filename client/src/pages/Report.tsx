@@ -7,10 +7,10 @@ const Report: React.FC = (props) => {
     const account = useAppSelector((state) => state.account);
 
     //state to store selected reason
-    const [selectedReason, setSelectedReason] = useState("");
+    const [selectedReason, setSelectedReason] = useState<string>("");
 
     //state to store selected comment
-    const [comments, setComments] = useState("");
+    const [comments, setComments] = useState<string>("");
 
     /** @TODO Replace value with reportee name */
     const reportedUser = "FirstName LastName";

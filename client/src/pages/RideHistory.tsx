@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 function RideHistory() {
     const account = useAppSelector((state) => state.account);
-    const [userType, setUserType] = useState();
+    const [userType, setUserType] = useState<number>();
     const [ridersHistoryList, setRidersHistoryList] = useState<any[]>([]);
     const [driversHistoryList, setDriversHistoryList] = useState<any[]>([]);
 

@@ -7,8 +7,8 @@ import { Link } from 'react-router-dom';
 function EditPayment() {
     const account = useAppSelector((state) => state.account);
 
-    const [loading, setLoading] = useState(true);
-    const [paypalEmail, setPaypalEmail] = useState('');
+    const [loading, setLoading] = useState<boolean>(true);
+    const [paypalEmail, setPaypalEmail] = useState<string>('');
 
     useEffect(() => {
         if (account && account.account) {

@@ -35,8 +35,6 @@ function ChooseRider() {
         }
     };
 
-    
-
     useEffect(() => {
         refreshRideQueueList();
     }, [refreshRideQueueList]);

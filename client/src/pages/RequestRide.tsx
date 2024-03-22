@@ -15,10 +15,10 @@ interface RequestRideProps {
 const RequestRide: React.FC<RequestRideProps> = (props) => {
     const [currentPosition, setCurrentPosition] = useState({ lat: 0, lng: 0 });
     const [mapCenter, setMapCenter] = useState({ lat: 0, lng: 0 });
-    const [mapLoaded, setMapLoaded] = useState(false);
+    const [mapLoaded, setMapLoaded] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
-    const [origin, setOrigin] = useState('');
-    const [destination, setDestination] = useState('');
+    const [origin, setOrigin] = useState<string>('');
+    const [destination, setDestination] = useState<string>('');
     const [directions, setDirections] = useState<any>(null);
     const [distance, setDistance] = useState<string>('');
     const [duration, setDuration] = useState<string>('');
@@ -28,8 +28,8 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
     const destinationAutocomplete = useRef<google.maps.places.Autocomplete>(null);
     const [selectedOriginBuilding, setSelectedOriginBuilding] = useState<BuildingOption | null>(null);
     const [selectedDestinationBuilding, setSelectedDestinationBuilding] = useState<BuildingOption | null>(null);
-    let [pickupLocation, setPickupLocation] = useState<any>(null);
-    let [dropoffLocation, setDropoffLocation] = useState<any>(null);
+    let [pickupLocation, setPickupLocation] = useState<string>(null);
+    let [dropoffLocation, setDropoffLocation] = useState<string>(null);
     const navigate = useNavigate();
 
     interface Building {

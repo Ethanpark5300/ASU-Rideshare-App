@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 function FavoritesList() {
     const account = useAppSelector((state) => state.account);
-    const [userType, setUserType] = useState();
+    const [userType, setUserType] = useState<number>();
     const [ridersFavoritesList, setRidersFavoritesList] = useState<any[]>([]);
     const [driversPendingFavoritesList, setDriversPendingFavoritesList] = useState<any[]>([]);
 

@@ -882,7 +882,7 @@ app.post("/ride-queue", async (req: Request, res: Response) => {
 	await db.run(`INSERT INTO RIDES (Rider_ID, Rider_FirstName, Rider_LastName, Pickup_Location, Dropoff_Location, Ride_Cost, Ride_Date, Status) VALUES (?,?,?,?,?,?,?,?)`, rider_id, riderFirstName.First_Name, riderLastName.Last_Name, pickupLocation, dropoffLocation, rideCost, currentDate, "QUEUED");
 });
 
-/** Riders cancelling */
+/** Riders cancelling from choose drivers page */
 app.get("/cancel-request", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let rider_id = req.query.riderid;
@@ -963,7 +963,7 @@ app.post("/cancel-request-driver", async (req: Request, res: Response) => {
 });
 
 /** Check if any driver accepted rider request */
-app.get("/check-ride-status", async (req: Request, res: Response) => {
+app.get("/check-driver-accepted-status", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let riderid = req.query.riderid;
 
@@ -1055,6 +1055,11 @@ app.post("/accept-ride-request", async (req: Request, res: Response) => {
 
 	/** Set selected ride request status to payment */
 	await db.run(`UPDATE rides SET status = "PAYMENT" WHERE rider_firstname = '${riderFirstName}' AND rider_lastname = '${riderLastName}' AND status = "QUEUED"`);
+});
+
+/** Check if rider payed driver */
+app.get("/check-ride-payment-status", async (req: Request, res: Response) => {
+	
 });
 
 app.listen(PORT, () => {

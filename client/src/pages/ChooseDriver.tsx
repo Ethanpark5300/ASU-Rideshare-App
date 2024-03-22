@@ -70,7 +70,7 @@ const ChooseDriver: React.FC = () => {
 
     const checkRideStatus = async () => {
         try {
-            const response = await fetch(`/check-ride-status?riderid=${account?.account?.email}`);
+            const response = await fetch(`/check-driver-accepted-status?riderid=${account?.account?.email}`);
             const data = await response.json();
             driverAccepted = data.recievedDriver;
             // console.log(driverAccepted);

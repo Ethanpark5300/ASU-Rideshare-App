@@ -13,12 +13,12 @@ const Profile: React.FC = (props) => {
     const account = useAppSelector((state) => state.account);
     const navigate = useNavigate();
 
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [userType, setUserType] = useState(1);
-    const [paypalEmail, setPaypalEmail] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState('');
-    const [status, setStatus] = useState('');
+    const [firstName, setFirstName] = useState<string>('');
+    const [lastName, setLastName] = useState<string>('');
+    const [userType, setUserType] = useState<number>(1);
+    const [paypalEmail, setPaypalEmail] = useState<string>('');
+    const [phoneNumber, setPhoneNumber] = useState<string>('');
+    const [status, setStatus] = useState<string>('');
 
     const getAccountInformation = useCallback(async () => {
         try {

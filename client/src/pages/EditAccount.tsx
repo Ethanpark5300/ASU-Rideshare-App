@@ -7,12 +7,12 @@ import { useState, useEffect, SetStateAction, useCallback } from 'react';
 function EditAccount() {
     const account = useAppSelector((state) => state.account);
 
-    const [loading, setLoading] = useState(true);
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [userType, setUserType] = useState(0);
-    // const [paypalEmail, setPaypalEmail] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState('');
+    const [loading, setLoading] = useState<boolean>(true);
+    const [firstName, setFirstName] = useState<string>('');
+    const [lastName, setLastName] = useState<string>('');
+    const [userType, setUserType] = useState(1);
+    // const [paypalEmail, setPaypalEmail] = useState<string>('');
+    const [phoneNumber, setPhoneNumber] = useState<string>('');
 
     useEffect(() => {
         if (account && account.account) {
