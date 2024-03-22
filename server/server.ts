@@ -777,13 +777,13 @@ app.post("/send-report", async (req: Request, res: Response) => {
 app.post("/send-payment", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let rider_ID = req.body.Rider_ID;
-	let driverPayPalEmail = req.body.driverPayPalEmail;
-	let driverEmail = "Test" /** @TODO Replace value with actual driver email ID */
+	let driver_id = req.body.Driver_ID;
 	let rideCost = req.body.rideCost;
 	let currentDate = new Date().toLocaleDateString();
-	let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+	let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-	await db.run(`INSERT INTO PAYMENTS (Rider_ID, Driver_ID, Ride_Cost, Date, Time) VALUES (?,?,?,?,?)`, rider_ID, driverEmail, rideCost, currentDate, currentTime);
+	await db.run(`UPDATE rides SET status = "WAITING" WHERE rider_id = '${rider_ID}' AND status = "PAYMENT"`)
+	await db.run(`INSERT INTO PAYMENTS (Rider_ID, Driver_ID, Ride_Cost, Date, Time) VALUES (?,?,?,?,?)`, rider_ID, driver_id, rideCost, currentDate, currentTime);
 
 	/* Delete duplicate records from the table */
 	await db.run(`DELETE FROM PAYMENTS WHERE Payment_ID NOT IN (SELECT MIN(Payment_ID) FROM PAYMENTS GROUP BY Rider_ID, Driver_ID, Ride_Cost, Date, Time)`);
@@ -981,7 +981,28 @@ app.get("/check-ride-status", async (req: Request, res: Response) => {
 
 app.get("/get-ride-payment-information", async (req: Request, res: Response) => {
 	let db = await dbPromise;
+	let riderid = req.query.riderid;
+	
+	let driverFirstName = await db.get(`SELECT driver_firstname FROM rides WHERE rider_id = '${riderid}' AND status = "PAYMENT"`);
+	let driverLastName = await db.get(`SELECT driver_lastname FROM rides WHERE rider_id = '${riderid}' AND status = "PAYMENT"`);
+	let driverEmail = await db.get(`SELECT email FROM user_info WHERE first_name = '${driverFirstName.Driver_FirstName}' AND last_name = '${driverLastName.Driver_LastName}'`);
+	let driverPayPalEmail = await db.get(`SELECT pay_pal FROM user_info WHERE email = '${driverEmail.Email}'`);
+	let rideCost = await db.get(`SELECT ride_cost FROM rides WHERE rider_id = '${riderid}' AND status = "PAYMENT"`);
 
+	res.json({
+		driverFirstName: driverFirstName.Driver_FirstName,
+		driverLastName: driverLastName.Driver_LastName,
+		driverEmail: driverEmail.Email,
+		driverPayPalEmail: driverPayPalEmail.Pay_Pal,
+		rideCost: rideCost.Ride_Cost
+	});
+});
+
+app.post("/cancel-ride-from-payment", async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let rider = req.body.riderid;
+
+	await db.run(`UPDATE rides SET status = "CANCELLED" WHERE rider_id = '${rider}' AND status = "PAYMENT"`);
 });
 
 /** Driver actions */

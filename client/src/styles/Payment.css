@@ -1,13 +1,15 @@
 #payment {
-    height: var(--modified-height);
+    height: calc(100vh - 68.6px);
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: #f1f1f1;
 }
 
 #payment h1 {
     background-color: var(--brand-gold);
     padding: .5rem;
+    margin-bottom: 0;
 }
 
 .payment-container {
@@ -17,7 +19,7 @@
     gap: .75rem;
     width: 500px;
     border-radius: 4px;
-    background-color: #e8e8e8;
+    background-color: #fff;
 }
 
 .payment-information-container {
@@ -26,6 +28,11 @@
 
 .paypal-btns-container {
     width: 75%;
+}
+
+#payment h2 {
+    margin-bottom: 1rem;
+    text-align: center;
 }
 
 #payment h3 {
@@ -44,28 +51,74 @@
     gap: 1.5rem;
     background-color: white;
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    background-color: lightgrey;
 }
 
 #payment button {
-    padding: 8px 16px;
+    padding: 14px 28px;
     border-radius: 1000px;
     font-size: 16px;
     font-weight: 700;
-    cursor: pointer;
     transition: .03s ease-in-out;
     line-height: 16px;
+    cursor: pointer;
 }
 
-.payment-success-popup button {
+.payment-success-popup button,
+.center-container .cancel-ride-btn {
     color: white;
     background-color: var(--brand-maroon);
 }
 
-.payment-error-popup button {
+.payment-error-popup button,
+.decline-cancel-btn {
     color: white;
     background-color: black;
 }
 
 #payment button:hover {
     transform: scale(1.05);
+}
+
+#payment .start-payment-btns-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem
+}
+
+.start-payment-btns-container .btn:last-child {
+    margin-bottom: 1rem;
+    background-color: #000;
+    color: white;
+}
+
+.start-payment-btn,
+.confirm-cancel-btn {
+    background-color: var(--brand-maroon);
+    color: white;
+}
+
+.center-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+    gap: 1rem;
+}
+
+#payment .cancel-popup {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: lightgrey;
+    z-index: 999;
+    flex-direction: column;
+    padding: 2rem;
+    gap: .5rem;
+    font-weight: 700;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+}
+
+#payment .cancel-btns-container button:first-child {
+    margin-right: 1rem;
 }

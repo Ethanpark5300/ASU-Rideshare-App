@@ -1,17 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import "../styles/Payment.css"
 import PageTitle from '../components/PageTitle/PageTitle';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../store/hooks';
-
-/** @TODO Replace with driver's sandbox paypal email */
-/** Use sandbox business accounts for testing */
-const driverPayPalEmail = 'sb-4swkm28693439@business.example.com';
-const amount = 50;
-
-/** @TODO Replace with actual driver's name */
-const driverName = "FirstName LastName";
 
 const paypalOptions = {
     clientId: process.env.REACT_APP_PAYPAL_CLIENT_ID || '',
@@ -23,19 +15,35 @@ const Payment: React.FC = (props) => {
     const [paypalLoaded, setPaypalLoaded] = useState(false);
     const [paymentStatus, setPaymentStatus] = useState('');
     const [showErrorPopup, setShowErrorPopup] = useState(false);
+    const [driverEmail, setDriverEmail] = useState<string>();
     const [driverFirstName, setDriverFirstName] = useState<string>();
     const [driverLastName, setDriverLastName] = useState<string>();
     const [driverPayPalEmail, setDriverPayPalEmail] = useState<string>();
-    const [ridePrice, setRidePrice] = useState<number>();
+    const [rideCost, setRideCost] = useState<number>();
+    const [startButtonVisible, setStartButtonVisible] = useState<boolean>(true);
+    const [cancelConfirmPromptVisible, setCancelConfirmPromptVisible] = useState<boolean>(false);
+    const navigate = useNavigate();
 
-    
+    async function getRidePaymentInformation() {
+        try {
+            const response = await fetch(`/get-ride-payment-information?riderid=${account?.account?.email}`);
+            const data = await response.json();
+            setDriverEmail(data.driverEmail);
+            setDriverFirstName(data.driverFirstName);
+            setDriverLastName(data.driverLastName);
+            setDriverPayPalEmail(data.driverPayPalEmail);
+            setRideCost(data.rideCost);
+        } catch (error) {
+            console.error("Error getting ride payment information:", error);
+        }
+    };
 
     const createOrder = (data: any, actions: any) => {
         return actions.order.create({
             purchase_units: [
                 {
                     amount: {
-                        value: amount,
+                        value: rideCost,
                     },
                     driver: {
                         email_address: driverPayPalEmail,
@@ -52,15 +60,9 @@ const Payment: React.FC = (props) => {
     };
 
     const onError = (error: any) => {
-        // console.error('Error occurred:', error);
         setPaymentStatus('error');
         setShowErrorPopup(true);
     };
-
-    // Set PayPal loaded state to true once component mounts
-    useEffect(() => {
-        setPaypalLoaded(true);
-    }, []);
 
     const closeErrorPopup = () => {
         setShowErrorPopup(false);
@@ -74,20 +76,20 @@ const Payment: React.FC = (props) => {
                     headers: { "Content-type": "application/json" },
                     body: JSON.stringify({
                         Rider_ID: account?.account?.email,
-                        driverPayPalEmail: driverPayPalEmail,
-                        rideCost: amount,
+                        Driver_ID: driverEmail,
+                        rideCost: rideCost,
                     }),
                 })
             }
-            catch (e: any) {
-                console.log(e);
+            catch (error: any) {
+                console.error("Payment error:", error);
             }
 
             return (
                 <div className="payment-success-popup">
-                    <p>Payment successful!</p>
-                    <Link to="/">
-                        <button>Back to Home</button>
+                    <p>Payment has been successful!</p>
+                    <Link to="/Waiting">
+                        <button>Next</button>
                     </Link>
                 </div>
             );
@@ -102,6 +104,34 @@ const Payment: React.FC = (props) => {
         return null;
     };
 
+    const handleStartButtonClick = () => {
+        getRidePaymentInformation()
+        setPaypalLoaded(true);
+        setStartButtonVisible(false);
+        setCancelConfirmPromptVisible(false)
+    };
+
+    const handleCancelRideRequest = () => {
+        setCancelConfirmPromptVisible(true);
+    }
+
+    const handleConfirmCancel = () => {
+        try {
+            fetch(`/cancel-ride-from-payment`, {
+                method: "POST",
+                headers: { "Content-type": "application/json" },
+                body: JSON.stringify({
+                    riderid: account?.account?.email,
+                }),
+            })
+            setCancelConfirmPromptVisible(false);
+            navigate("/Home");
+        }
+        catch (error: any) {
+            console.error("Error cancelling ride:", error);
+        }
+    }
+
     //https://developer.paypal.com/docs/multiparty/checkout/standard/customize/buttons-style-guide/
     const buttonStyles = {
         color: 'gold' as const,
@@ -115,25 +145,47 @@ const Payment: React.FC = (props) => {
                 <div className="payment-wrapper">
                     <div className="payment-container">
                         <h1>Payment</h1>
-                        <h2>Pay {driverName}</h2>
-                        <h2>Ride Cost: ${amount}</h2>
                         <div className="paypal-btns-container">
-                            <PayPalScriptProvider options={paypalOptions}>
-                                {paypalLoaded ? (
-                                    <PayPalButtons
-                                        createOrder={createOrder}
-                                        onApprove={onApprove}
-                                        onError={onError}
-                                        style={buttonStyles}
-                                    />
-                                ) : (
-                                    <div>Loading PayPal buttons...</div>
-                                )}
-                            </PayPalScriptProvider>
+                            {startButtonVisible && (
+                                <section className="start-payment-btns-container">
+                                    <button className='btn start-payment-btn' onClick={handleStartButtonClick}>Start Payment</button>
+                                    <button className='btn cancel-ride-btn' onClick={handleCancelRideRequest}>Cancel Ride</button>
+                                </section>
+                            )}
+                            {!startButtonVisible && (
+                                <div className="payment-btns-container">
+                                    <h2>Driver: {driverFirstName} {driverLastName}</h2>
+                                    <h2>Ride Cost: ${rideCost}</h2>
+                                    <PayPalScriptProvider options={paypalOptions}>
+                                        {paypalLoaded ? (
+                                            <PayPalButtons
+                                                createOrder={createOrder}
+                                                onApprove={onApprove}
+                                                onError={onError}
+                                                style={buttonStyles}
+                                            />
+                                        ) : (
+                                            <div>Loading PayPal buttons...</div>
+                                        )}
+                                    </PayPalScriptProvider>
+                                    <div className="center-container">
+                                        <button className='btn cancel-ride-btn' onClick={handleCancelRideRequest}>Cancel Ride</button>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
                 {renderPopup()}
+                {cancelConfirmPromptVisible && (
+                    <div className='cancel-popup'>
+                        <p>Are you sure you want to cancel the ride?</p>
+                        <div className="cancel-btns-container">
+                            <button className='confirm-cancel-btn' onClick={handleConfirmCancel}>Yes</button>
+                            <button className='decline-cancel-btn' onClick={() => setCancelConfirmPromptVisible(false)}>No</button>
+                        </div>
+                    </div>
+                )}
             </main>
         </PageTitle>
     );

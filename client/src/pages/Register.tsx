@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { TextInput } from "../components/TextInput/TextInput";
 import "../styles/Register.css";
 import { Button } from "../components/Buttons/Button";
@@ -80,7 +80,7 @@ function Register() {
 				
             });
         setIsSending(false);
-    }, [isSending]);
+    }, [isSending, navigate]); /** @TODO Test if anything breaks */
 
     /**@todo highlight which inputs errored*/
     return (

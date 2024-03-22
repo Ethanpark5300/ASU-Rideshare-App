@@ -104,7 +104,6 @@ function EditAccount() {
                 >
                     <option value="1">Rider</option>
                     <option value="2">Driver</option>
-                    <option value="3">Both</option>
                 </select>
                 <label htmlFor="phoneNumber">Phone Number</label>
                 <input
