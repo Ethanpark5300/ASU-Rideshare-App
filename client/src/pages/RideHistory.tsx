@@ -44,7 +44,7 @@ function RideHistory() {
                 <h1>Ride History</h1>
 
                 {/** @returns Rider history */}
-                {(userType === 1 || userType === 3) && (
+                {(userType === 1) && (
                     <div>
                         <h2>Ride History</h2>
                         {ridersHistoryList.length > 0 ? (

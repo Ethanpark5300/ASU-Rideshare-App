@@ -642,21 +642,8 @@ app.post("/send-ratings", async (req: Request, res: Response) => {
 	/** Insert ratings to ratings table */
 	await db.run('INSERT INTO RATINGS (Rater_ID, Ratee_ID, Star_Rating, Comments, Date, Time) VALUES (?,?,?,?,?,?)', rater_ID, ratee_ID, star_rating, comments, currentDate, currentTime);
 
-	/** Calculate and update driver's average rating */
-	if (rateeUserType.Type_User === 2 || rateeUserType.Type_User === 3) {
-		let defaultRating = await db.get(`SELECT Rating_Driver FROM USER_INFO WHERE Email = '${ratee_ID}'`);
-		let ratings = await db.all(`SELECT Star_Rating FROM RATINGS WHERE Ratee_ID = '${ratee_ID}'`);
-		let totalRating = 0;
-		
-		for (let i = 0; i < ratings.length; i++) {
-			totalRating += ratings[i].Star_Rating;
-		}
-		
-		let updatedAvgRating = (defaultRating.Rating_Driver * ratings.length + star_rating) / (ratings.length + 1);
-		await db.run(`UPDATE USER_INFO SET Rating_Driver = ? WHERE Email = ?`, updatedAvgRating, ratee_ID);
-		// console.log(`${ratee_ID}'s average rating updated`);
-	} 
-	else { // Calculate and update rider's average rating
+	/** Calculate and update rider's average rating  */
+	if (rateeUserType.Type_User === 1) {
 		let defaultRating = await db.get(`SELECT Rating_Passenger FROM USER_INFO WHERE Email = '${ratee_ID}'`);
 		let ratings = await db.all(`SELECT Star_Rating FROM RATINGS WHERE Ratee_ID = '${ratee_ID}'`);
 		let totalRating = 0;
@@ -668,10 +655,23 @@ app.post("/send-ratings", async (req: Request, res: Response) => {
 		let updatedAvgRating = (defaultRating.Rating_Passenger * ratings.length + star_rating) / (ratings.length + 1);
 		await db.run(`UPDATE USER_INFO SET Rating_Passenger = ? WHERE Email = ?`, updatedAvgRating, ratee_ID);
 		// console.log(`${ratee_ID}'s average rating updated`);
-	}
+	} 
+	else { /** Calculate and update driver's average rating */
+		let defaultRating = await db.get(`SELECT Rating_Driver FROM USER_INFO WHERE Email = '${ratee_ID}'`);
+		let ratings = await db.all(`SELECT Star_Rating FROM RATINGS WHERE Ratee_ID = '${ratee_ID}'`);
+		let totalRating = 0;
 
-	/** Send favorite request to specific driver if favoriteDriverRequest returns true */
-	if (favoriteDriverRequest) await db.run(`INSERT INTO favorites (rider_id, driver_id, date, status) VALUES (?,?,?,?)`, rater_ID, ratee_ID, currentDate, "Pending");
+		for (let i = 0; i < ratings.length; i++) {
+			totalRating += ratings[i].Star_Rating;
+		}
+
+		let updatedAvgRating = (defaultRating.Rating_Driver * ratings.length + star_rating) / (ratings.length + 1);
+		await db.run(`UPDATE USER_INFO SET Rating_Driver = ? WHERE Email = ?`, updatedAvgRating, ratee_ID);
+		// console.log(`${ratee_ID}'s average rating updated`);
+
+		/** Send favorite request to specific driver if favoriteDriverRequest returns true */
+		if (favoriteDriverRequest) await db.run(`INSERT INTO favorites (rider_id, driver_id, date, status) VALUES (?,?,?,?)`, rater_ID, ratee_ID, currentDate, "Pending");
+	}
 });
 
 /**

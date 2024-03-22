@@ -107,7 +107,7 @@ function FavoritesList() {
             <main id="favorites-list">
 
                 {/** @returns rider's favorite and pending favorite list */}
-                {(userType === 1 || userType === 3) && (
+                {(userType === 1) && (
                     <>
                         <header>
                             <h1>Favorites List</h1>

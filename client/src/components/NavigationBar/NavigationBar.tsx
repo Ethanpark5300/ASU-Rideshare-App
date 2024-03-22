@@ -65,7 +65,7 @@ function Navbar() {
                 <div className="navbar-links">
 
                     {/** Rider navbar */}
-                    {(userType === 1 || userType === 3) && (
+                    {(userType === 1) && (
                         <ul className="nav__list">
                             <li className="nav__item">
                                 <Link className="nav__link fromLeft" to="/">Home</Link>
