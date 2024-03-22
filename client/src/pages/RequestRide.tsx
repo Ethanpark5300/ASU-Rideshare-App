@@ -283,7 +283,7 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
                                             type="text"
                                             name='origin'
                                             id='origin'
-                                            placeholder="Origin"
+                                            placeholder="Pick-up Location..."
                                             value={origin}
                                             onChange={(e) => setOrigin(e.target.value)}
                                         />
@@ -349,7 +349,7 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
                                             type="text"
                                             name='destination'
                                             id='destination'
-                                            placeholder="Destination"
+                                            placeholder="Drop-off Location..."
                                             value={destination}
                                             onChange={(e) => setDestination(e.target.value)}
                                         />
@@ -398,9 +398,9 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
                         </div>
 
                         <div className="request-btns-container">
-                            <button className='preview-btn' onClick={handlePreview}>Preview</button>
-                            <button className='clear-btn' onClick={handleClear}>Clear</button>
                             <button className='request-btn' onClick={handleSubmit}>Submit</button>
+                            <button className='clear-btn' onClick={handleClear}>Clear</button>
+                            <button className='preview-btn' onClick={handlePreview}>Preview</button>
                         </div>
                     </LoadScript>
                     {distance && duration && (

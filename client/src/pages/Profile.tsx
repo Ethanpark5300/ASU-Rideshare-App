@@ -110,14 +110,16 @@ const Profile: React.FC = (props) => {
                 </div>
 
                 <div className="profileInfo">
-                    <h2>Account Info</h2>
+                    <header>
+                        <h2>Account Info</h2>
+                    </header>
                     <br />
                     <p><strong>Name: </strong> {firstName} {lastName} </p>
 
                     {(userType === 1) && (
                         <>
                             <p><strong>Type: </strong> Rider</p>
-                            <p><strong>Status: Online</strong></p>
+                            {/* <p><strong>Status: Online</strong></p> */}
                             {/* <p><strong>ASU ID: </strong> {}</p> */}
                             <p><strong>E-Mail: </strong> {account?.account?.email}</p>
                             <p><strong>Phone Number: </strong> {phoneNumber}</p>

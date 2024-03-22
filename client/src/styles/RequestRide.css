@@ -62,15 +62,18 @@
     line-height: 16px;
 }
 
-#request-ride .preview-btn,
-#request-ride .clear-btn {
+#request-ride .preview-btn {
     background-color: var(--brand-maroon);
     color: white;
 }
 
+#request-ride .clear-btn {
+    background-color: #000;
+    color: #fff;
+}
+
 #request-ride .request-btn {
     background-color: var(--brand-gold);
-    width: 100%;
 }
 
 #request-ride .preview-btn:hover,
@@ -203,12 +206,28 @@
     margin-top: 1rem;
 }
 
-/* @TODO Style radio buttons */
-
 #request-ride input[type="radio"]:hover {
     cursor: pointer;
 }
 
 #request-ride .request-error {
     margin: auto;
+}
+
+.pac-item {
+    font-size: .875rem;
+    padding: 10px;
+}
+
+.pac-item:hover {
+    cursor: pointer;
+}
+
+.pac-icon {
+    display: none;
+}
+
+.pac-item-query {
+    font-size: .875rem;
+    padding-right: 12px;
 }

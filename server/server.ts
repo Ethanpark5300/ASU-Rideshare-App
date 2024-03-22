@@ -979,7 +979,7 @@ app.get("/check-ride-status", async (req: Request, res: Response) => {
 	});
 });
 
-app.get("/get-ride-cost-information", async (req: Request, res: Response) => {
+app.get("/get-ride-payment-information", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 
 });
