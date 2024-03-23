@@ -1058,8 +1058,30 @@ app.post("/accept-ride-request", async (req: Request, res: Response) => {
 });
 
 /** Check if rider payed driver */
-app.get("/check-ride-payment-status", async (req: Request, res: Response) => {
-	
+app.get("/get-rider-payment-status", async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let driverid = req.query.driverid;
+
+	let ridePaymentStatus = await db.all(`SELECT status FROM rides WHERE driver_id = '${driverid}'`);
+	// console.log(ridePaymentStatus[ridePaymentStatus.length-1].Status);
+
+	res.json({
+		
+	});
+});
+
+app.get("/get-ride-information", async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let userid = req.query.userid;
+
+	let getRiderRideInfo = await db.get(`SELECT driver_firstname,driver_lastname,pickup_location,dropoff_location FROM rides WHERE rider_id = '${userid}' AND status = "WAITING"`);
+	let getDriverRideInfo = await db.get(`SELECT rider_firstname,rider_lastname,pickup_location,dropoff_location FROM rides WHERE driver_id = '${userid}' AND status = "WAITING"`);
+	// console.log(getRiderRideInfo);
+
+	res.json({
+		riderRideInfo: getRiderRideInfo,
+		driveRideInfo: getDriverRideInfo
+	});
 });
 
 app.listen(PORT, () => {

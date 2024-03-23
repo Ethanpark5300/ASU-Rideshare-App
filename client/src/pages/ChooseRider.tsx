@@ -2,11 +2,13 @@ import "../styles/ChooseRider.css";
 import PageTitle from "../components/PageTitle/PageTitle";
 import { useAppSelector } from "../store/hooks";
 import { useCallback, useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 function ChooseRider() {
     const account = useAppSelector((state) => state.account);
     const [pendingRequestsList, setPendingRequestsList] = useState<any[]>([]);
     const [allRequestsList, setAllRequestsList] = useState<any[]>([]);
+    const navigate = useNavigate();
 
     const refreshRideQueueList = useCallback(async () => {
         try {
@@ -19,8 +21,9 @@ function ChooseRider() {
         }
     }, [account?.account?.email]);
 
-    const acceptRequest = async (selectedRideRequest: { Rider_FirstName: string; Rider_LastName: string; Pickup_Location: any; Dropoff_Location: any; }) => {
+    const acceptRequest = async (selectedRideRequest: { Rider_FirstName: string; Rider_LastName: string; Pickup_Location: string; Dropoff_Location: string; }) => {
         try {
+            navigate("/Waiting");
             await fetch(`/accept-ride-request`, {
                 method: "POST",
                 headers: { "Content-type": "application/json" },
@@ -29,9 +32,9 @@ function ChooseRider() {
                     selectedRiderFirstName: selectedRideRequest?.Rider_FirstName,
                     selectedRiderLastName: selectedRideRequest?.Rider_LastName,
                 }),
-            })
+            });
         } catch (error) {
-            console.log(`Error accepting ride request:`, error);
+            console.error("Error accepting ride request:", error);
         }
     };
 
@@ -96,7 +99,7 @@ function ChooseRider() {
                             </tbody>
                         </table>
                     ) : (
-                        <div className="none-error">No pending ride requests available.</div>
+                        <div className="none-error">No ride requests available.</div>
                     )}
                 </section>
                 <section className="btns-container">

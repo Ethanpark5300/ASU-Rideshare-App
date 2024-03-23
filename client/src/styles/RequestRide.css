@@ -215,8 +215,8 @@
 }
 
 .pac-item {
-    font-size: .875rem;
-    padding: 10px;
+    font-size: 1rem;
+    padding: 8px;
 }
 
 .pac-item:hover {
@@ -228,6 +228,6 @@
 }
 
 .pac-item-query {
-    font-size: .875rem;
+    font-size: 1rem;
     padding-right: 12px;
 }

@@ -101,7 +101,7 @@ const Payment: React.FC = (props) => {
     }
 
     useEffect(() => {
-        const delay = 125;
+        const delay : number = 125;
         const timerId = setTimeout(() => {
             async function getRidePaymentInformation() {
                 try {

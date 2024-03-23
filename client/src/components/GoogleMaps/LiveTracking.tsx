@@ -52,7 +52,7 @@ const LiveTracking: React.FC = () => {
                     <GoogleMap
                         mapContainerStyle={{ width: '100%', height: '100%' }}
                         center={currentLocation || { lat: 0, lng: 0 }}
-                        zoom={15}
+                        zoom={18}
                         onLoad={handleMapLoad}
                     >
                         {currentLocation && <MarkerF position={currentLocation} />}

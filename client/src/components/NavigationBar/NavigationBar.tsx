@@ -41,10 +41,7 @@ function Navbar() {
         try {
             const response = await fetch(`/view-account-info?accountEmail=${account?.account?.email}`);
             const data = await response.json();
-
-            if (data.account) {
-                setUserType(data.account.Type_User);
-            }
+            if (data.account) setUserType(data.account.Type_User);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
