@@ -25,7 +25,8 @@ import EditAccount from './pages/EditAccount';
 import Verify from './pages/Verify';
 import EditPayment from './pages/EditPayment';
 import PickupRider from './pages/PickupRider';
-import Waiting from './pages/Waiting';
+import WaitingDriver from './pages/WaitingDriver';
+import WaitingRider from './pages/WaitingRider';
 import ChangePassword from './pages/ChangePassword';
 
 function App() {
@@ -82,7 +83,8 @@ function App() {
 				<Route path="/EditAccount" element={<EditAccount />} />
 				<Route path="/EditPayment" element={<EditPayment />} />
 				<Route path="/PickupRider" element={<PickupRider />} />
-				<Route path="/Waiting" element={<Waiting />} />
+				<Route path="/WaitingDriver" element={<WaitingDriver />} />
+				<Route path="/WaitingRider" element={<WaitingRider />} />
 				<Route path="/ChangePassword" element={<ChangePassword />} />
 			</Routes>
 		</>

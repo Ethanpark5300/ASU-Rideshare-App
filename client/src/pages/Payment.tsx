@@ -74,7 +74,7 @@ const Payment: React.FC = (props) => {
             return (
                 <div className="payment-success-popup">
                     <p>Payment has been successful!</p>
-                    <Link to="/Waiting">
+                    <Link to="/WaitingDriver">
                         <button>Next</button>
                     </Link>
                 </div>

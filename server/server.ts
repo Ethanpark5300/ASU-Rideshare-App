@@ -782,7 +782,7 @@ app.post("/send-payment", async (req: Request, res: Response) => {
 	let currentDate = new Date().toLocaleDateString();
 	let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-	await db.run(`UPDATE rides SET status = "WAITING" WHERE rider_id = '${rider_ID}' AND status = "PAYMENT"`)
+	await db.run(`UPDATE rides SET status = "PAID" WHERE rider_id = '${rider_ID}' AND status = "PAYMENT"`)
 	await db.run(`INSERT INTO PAYMENTS (Rider_ID, Driver_ID, Ride_Cost, Date, Time) VALUES (?,?,?,?,?)`, rider_ID, driver_id, rideCost, currentDate, currentTime);
 
 	/* Delete duplicate records from the table */
@@ -1057,30 +1057,31 @@ app.post("/accept-ride-request", async (req: Request, res: Response) => {
 	await db.run(`UPDATE rides SET status = "PAYMENT" WHERE rider_firstname = '${riderFirstName}' AND rider_lastname = '${riderLastName}' AND status = "QUEUED"`);
 });
 
+app.get("/get-ride-information", async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let userid = req.query.userid;
+
+	let getRiderRideInfo = await db.get(`SELECT driver_firstname,driver_lastname,pickup_location,dropoff_location FROM rides WHERE rider_id = '${userid}' AND status = "PAID"`);
+	let getDriverRideInfo = await db.get(`SELECT rider_firstname,rider_lastname,pickup_location,dropoff_location FROM rides WHERE driver_id = '${userid}' AND status = "PAYMENT"`);
+	// console.log(getRiderRideInfo);
+
+	res.json({
+		riderRideInfo: getRiderRideInfo,
+		driverRideInfo: getDriverRideInfo
+	});
+});
+
 /** Check if rider payed driver */
 app.get("/get-rider-payment-status", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let driverid = req.query.driverid;
 
 	let ridePaymentStatus = await db.all(`SELECT status FROM rides WHERE driver_id = '${driverid}'`);
-	// console.log(ridePaymentStatus[ridePaymentStatus.length-1].Status);
+	if(ridePaymentStatus.length	<= 0) return
 
+	let currentRideStatus = ridePaymentStatus[ridePaymentStatus.length - 1].Status;
 	res.json({
-		
-	});
-});
-
-app.get("/get-ride-information", async (req: Request, res: Response) => {
-	let db = await dbPromise;
-	let userid = req.query.userid;
-
-	let getRiderRideInfo = await db.get(`SELECT driver_firstname,driver_lastname,pickup_location,dropoff_location FROM rides WHERE rider_id = '${userid}' AND status = "WAITING"`);
-	let getDriverRideInfo = await db.get(`SELECT rider_firstname,rider_lastname,pickup_location,dropoff_location FROM rides WHERE driver_id = '${userid}' AND status = "WAITING"`);
-	// console.log(getRiderRideInfo);
-
-	res.json({
-		riderRideInfo: getRiderRideInfo,
-		driveRideInfo: getDriverRideInfo
+		rideStatus: currentRideStatus,
 	});
 });
 

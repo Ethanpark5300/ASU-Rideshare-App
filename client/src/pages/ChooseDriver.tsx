@@ -68,13 +68,14 @@ const ChooseDriver: React.FC = () => {
         }
     }, [account?.account?.email]);
 
-    const checkRideStatus = async () => {
+    const checkRideStatus = useCallback(async () => {
         try {
             const response = await fetch(`/check-driver-accepted-status?riderid=${account?.account?.email}`);
             const data = await response.json();
+            // eslint-disable-next-line
             driverAccepted = data.recievedDriver;
             // console.log(driverAccepted);
-            
+
             if (!driverAccepted) return;
 
             // Redirect rider to payment if driver accepted their request
@@ -82,7 +83,14 @@ const ChooseDriver: React.FC = () => {
         } catch (error) {
             console.error("Error checking ride status:", error);
         }
-    };
+    }, [account?.account?.email, navigate]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            checkRideStatus();
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [checkRideStatus]);
 
     useEffect(() => {
         refreshDriversList();

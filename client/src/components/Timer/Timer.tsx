@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 interface TimerProps {
     initialMinutes: number;
@@ -30,8 +30,8 @@ const Timer: React.FC<TimerProps> = ({ initialMinutes, initialSeconds, onTimerEn
                 }
             }, 1000);
         }
-
         return () => clearInterval(interval);
+        // eslint-disable-next-line
     }, [isActive, minutes, seconds]);
 
     // Render null if the timer is not visible
@@ -39,10 +39,12 @@ const Timer: React.FC<TimerProps> = ({ initialMinutes, initialSeconds, onTimerEn
         return null;
     }
 
+    // eslint-disable-next-line
     const toggleTimer = () => {
         setIsActive(!isActive);
     };
 
+    // eslint-disable-next-line
     const resetTimer = () => {
         setIsActive(false);
         setIsVisible(true);

@@ -23,7 +23,7 @@ function ChooseRider() {
 
     const acceptRequest = async (selectedRideRequest: { Rider_FirstName: string; Rider_LastName: string; Pickup_Location: string; Dropoff_Location: string; }) => {
         try {
-            navigate("/Waiting");
+            navigate("/WaitingRider");
             await fetch(`/accept-ride-request`, {
                 method: "POST",
                 headers: { "Content-type": "application/json" },
