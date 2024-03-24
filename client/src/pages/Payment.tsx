@@ -139,7 +139,7 @@ const Payment: React.FC = (props) => {
                 }),
             })
             setCancelConfirmPromptVisible(false);
-            navigate("/Home");
+            navigate("/");
         }
         catch (error: any) {
             console.error("Error cancelling ride:", error);

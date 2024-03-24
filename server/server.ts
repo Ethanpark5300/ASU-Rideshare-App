@@ -1099,14 +1099,14 @@ app.post("/cancel-ride", async (req: Request, res: Response) => {
 
 	/** Rider cancelling before deadline */
 	if (userType.Type_User === 1 && passedCancellation === false) {
-		console.log("Rider cancelling before deadline");
+		// console.log("Rider cancelling before deadline");
 		await db.run(`UPDATE rides SET status = "CANCELLED(RIDER)" WHERE rider_id = '${userid}' AND status = "PAID"`);
 	}
 	
 	/** Rider cancelling after deadline */
 	else if (userType.Type_User === 1 && passedCancellation === true) {
-		console.log("Rider cancelling after deadline");
-		await db.run(`UPDATE rides SET status = "CANCELLED(RIDER)" WHERE rider_id = '${userid}' AND status = "PAID"`);
+		// console.log("Rider cancelling after deadline");
+		await db.run(`UPDATE rides SET status = "CANCELLED(RIDER)" WHERE rider_id = '${userid}' AND status = "PAID" || status = "PAYMENT"`);
 
 		let currentWarnings = await db.get(`SELECT warnings FROM user_info WHERE email = '${userid}'`);
 		// console.log("Current warnings:", currentWarnings);
@@ -1119,15 +1119,15 @@ app.post("/cancel-ride", async (req: Request, res: Response) => {
 
 	/** Driver cancelling before deadline */
 	else if (userType.Type_User === 2 && passedCancellation === false) {
-		console.log("Driver cancelling before deadline");
-		await db.run(`UPDATE rides SET status = "CANCELLED(DRIVER)" WHERE driver_id = '${userid}' AND status = "PAID"`);
+		// console.log("Driver cancelling before deadline");
+		await db.run(`UPDATE rides SET status = "CANCELLED(DRIVER)" WHERE driver_id = '${userid}' AND status = "PAID" OR status = "PAYMENT"`);
 	}
 	
 	/** Driver cancelling after deadline */
 	else if (userType.Type_User === 2 && passedCancellation === true) {
 		console.log("Driver cancelling after deadline");
-		await db.run(`UPDATE rides SET status = "CANCELLED(DRIVER)" WHERE driver_id = '${userid}' AND status = "PAID"`);
-		
+		await db.run(`UPDATE rides SET status = "CANCELLED(DRIVER)" WHERE driver_id = '${userid}' AND status = "PAID" OR status = "PAYMENT"`);
+
 		let currentWarnings = await db.get(`SELECT warnings FROM user_info WHERE email = '${userid}'`);
 		// console.log("Current warnings:", currentWarnings);
 
