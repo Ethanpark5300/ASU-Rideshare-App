@@ -23,6 +23,13 @@ const Payment: React.FC = (props) => {
     const [startButtonVisible, setStartButtonVisible] = useState<boolean>(true);
     const [cancelConfirmPromptVisible, setCancelConfirmPromptVisible] = useState<boolean>(false);
     const navigate = useNavigate();
+
+    //https://developer.paypal.com/docs/multiparty/checkout/standard/customize/buttons-style-guide/
+    const buttonStyles = {
+        color: 'gold' as const,
+        shape: 'pill' as const,
+        label: 'pay' as const,
+    };
   
     const createOrder = (data: any, actions: any) => {
         return actions.order.create({
@@ -138,13 +145,6 @@ const Payment: React.FC = (props) => {
             console.error("Error cancelling ride:", error);
         }
     }
-
-    //https://developer.paypal.com/docs/multiparty/checkout/standard/customize/buttons-style-guide/
-    const buttonStyles = {
-        color: 'gold' as const,
-        shape: 'pill' as const,
-        label: 'pay' as const,
-    };
 
     return (
         <PageTitle title='Payment'>

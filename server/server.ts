@@ -979,6 +979,7 @@ app.get("/check-driver-accepted-status", async (req: Request, res: Response) => 
 	});
 });
 
+/** @returns ride payment information to payment page */
 app.get("/get-ride-payment-information", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let riderid = req.query.riderid;
@@ -998,11 +999,12 @@ app.get("/get-ride-payment-information", async (req: Request, res: Response) => 
 	});
 });
 
+/** Riders cancelling their ride on the payment page */
 app.post("/cancel-ride-from-payment", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let rider = req.body.riderid;
 
-	await db.run(`UPDATE rides SET status = "CANCELLED" WHERE rider_id = '${rider}' AND status = "PAYMENT"`);
+	await db.run(`UPDATE rides SET status = "CANCELLED(RIDER)" WHERE rider_id = '${rider}' AND status = "PAYMENT"`);
 });
 
 /** Driver actions */
@@ -1083,6 +1085,61 @@ app.get("/get-rider-payment-status", async (req: Request, res: Response) => {
 	res.json({
 		rideStatus: currentRideStatus,
 	});
+});
+
+/** Cancelling ride */
+app.post("/cancel-ride", async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let userid = req.body.userid;
+	let passedCancellation: boolean = req.body.passedCancellation;
+	// console.log(passedCancellation);
+
+	let userType = await db.get(`SELECT type_user FROM user_info WHERE email = '${userid}'`);
+	// console.log(userType.Type_User);
+
+	/** Rider cancelling before deadline */
+	if (userType.Type_User === 1 && passedCancellation === false) {
+		console.log("Rider cancelling before deadline");
+		await db.run(`UPDATE rides SET status = "CANCELLED(RIDER)" WHERE rider_id = '${userid}' AND status = "PAID"`);
+	}
+	
+	/** Rider cancelling after deadline */
+	else if (userType.Type_User === 1 && passedCancellation === true) {
+		console.log("Rider cancelling after deadline");
+		await db.run(`UPDATE rides SET status = "CANCELLED(RIDER)" WHERE rider_id = '${userid}' AND status = "PAID"`);
+
+		let currentWarnings = await db.get(`SELECT warnings FROM user_info WHERE email = '${userid}'`);
+		// console.log("Current warnings:", currentWarnings);
+
+		let newWarningsCount = currentWarnings.Warnings + 1;
+		// console.log("New warnings:", newWarningsCount);
+
+		await db.get(`UPDATE user_info SET warnings = '${newWarningsCount}' WHERE email = '${userid}'`);
+	}
+
+	/** Driver cancelling before deadline */
+	else if (userType.Type_User === 2 && passedCancellation === false) {
+		console.log("Driver cancelling before deadline");
+		await db.run(`UPDATE rides SET status = "CANCELLED(DRIVER)" WHERE driver_id = '${userid}' AND status = "PAID"`);
+	}
+	
+	/** Driver cancelling after deadline */
+	else if (userType.Type_User === 2 && passedCancellation === true) {
+		console.log("Driver cancelling after deadline");
+		await db.run(`UPDATE rides SET status = "CANCELLED(DRIVER)" WHERE driver_id = '${userid}' AND status = "PAID"`);
+		
+		let currentWarnings = await db.get(`SELECT warnings FROM user_info WHERE email = '${userid}'`);
+		// console.log("Current warnings:", currentWarnings);
+
+		let newWarningsCount = currentWarnings.Warnings + 1;
+		// console.log("New warnings:", newWarningsCount);
+
+		await db.get(`UPDATE user_info SET warnings = '${newWarningsCount}' WHERE email = '${userid}'`);
+	}
+
+	else {
+		console.log("Error cancelling ride");
+	}
 });
 
 app.listen(PORT, () => {

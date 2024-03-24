@@ -40,7 +40,7 @@
 #waiting .btn {
     border-radius: 1000px;
     cursor: pointer;
-    padding: 16px 16px;
+    padding: 12px 16px;
     font-weight: 700;
     line-height: 16px;
     font-size: 1rem;
@@ -64,4 +64,56 @@
 #waiting .cancel-btn {
     background-color: #000;
     color: #fff;
+}
+
+.waiting-before-cancel-popup {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    background-color: lightgrey;
+    z-index: 999;
+    padding: 1rem 2rem 1rem;
+    gap: .5rem;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    max-width: 300px;
+    max-height: 233px;
+}
+
+.waiting-after-cancel-popup {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    background-color: lightgrey;
+    z-index: 999;
+    padding: 1rem 2rem 1rem;
+    gap: .5rem;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    max-width: 300px;
+    max-height: 300px;
+}
+
+.waiting-before-cancel-popup h2,
+.waiting-after-cancel-popup h2 {
+    font-weight: 700;
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    background-color: var(--brand-gold);
+    padding: .875rem;
+}
+
+#waiting .cancel-btns-container {
+    display: flex;
+    justify-content: space-around;
+    gap: 1rem;
+}
+
+#waiting .cancel-btns-container .btn {
+    width: 100%;
 }
