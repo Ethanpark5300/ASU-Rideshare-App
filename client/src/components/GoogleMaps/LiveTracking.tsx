@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { LoadScript, GoogleMap, MarkerF } from '@react-google-maps/api';
+import { useJsApiLoader, GoogleMap, Marker } from '@react-google-maps/api';
 
 const LiveTracking: React.FC = () => {
     const [currentLocation, setCurrentLocation] = useState({ lat: 0, lng: 0 });
     const [errorMessage, setErrorMessage] = useState<string>('');
-    const [mapLoaded, setMapLoaded] = useState<boolean>(false);
+    const { isLoaded: mapsLoaded, loadError } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -13,10 +13,8 @@ const LiveTracking: React.FC = () => {
                     const { latitude, longitude } = position.coords;
                     setCurrentLocation({ lat: latitude, lng: longitude });
                     setErrorMessage('');
-                    setMapLoaded(true);
                 },
                 (error) => {
-                    // console.error('Error getting user location:', error);
                     if (error.code === error.PERMISSION_DENIED) {
                         setErrorMessage('User denied the request for Geolocation.');
                     } else {
@@ -28,10 +26,6 @@ const LiveTracking: React.FC = () => {
             setErrorMessage('Geolocation is not supported by this browser.');
         }
     }, []);
-
-    const handleMapLoad = () => {
-        setMapLoaded(true);
-    };
 
     return (
         <div style={{ width: '100%', height: '100%', position: 'relative' }}>
@@ -47,18 +41,16 @@ const LiveTracking: React.FC = () => {
                     {errorMessage}
                 </div>
             )}
-            {mapLoaded && (
-                <LoadScript googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY || ''}>
-                    <GoogleMap
-                        mapContainerStyle={{ width: '100%', height: '100%' }}
-                        center={currentLocation || { lat: 0, lng: 0 }}
-                        zoom={18}
-                        onLoad={handleMapLoad}
-                    >
-                        {currentLocation && <MarkerF position={currentLocation} />}
-                    </GoogleMap>
-                </LoadScript>
+            {mapsLoaded && (
+                <GoogleMap
+                    mapContainerStyle={{ width: '100%', height: '100%' }}
+                    center={currentLocation}
+                    zoom={18}
+                >
+                    {currentLocation && <Marker position={currentLocation} />}
+                </GoogleMap>
             )}
+            {loadError && <div>Error loading map: {loadError.message}</div>}
         </div>
     );
 };

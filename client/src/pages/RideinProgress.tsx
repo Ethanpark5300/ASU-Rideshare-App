@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { GoogleMap, useJsApiLoader, MarkerF } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, DirectionsRenderer, MarkerF } from '@react-google-maps/api';
 import PageTitle from '../components/PageTitle/PageTitle';
 import "../styles/RideinProgress.css";
 
@@ -13,7 +13,7 @@ const RideinProgress: React.FC = () => {
     const [estimatedTimeArrival, setEstimatedTimeArrival] = useState<string>('');
     const [estimatedRemainingDistance, setEstimatedRemainingDistance] = useState<string>('');
     const [arrivalTime, setArrivalTime] = useState<string>('');
-    // const [currentTime, setCurrentTime] = useState<string>('');
+    const [directionsResponse, setDirectionsResponse] = useState<any>(null);
 
     let dropoffAddress = "301 E Orange St., Tempe, AZ 85281";
 
@@ -54,23 +54,6 @@ const RideinProgress: React.FC = () => {
         });
     }, [mapsLoaded, destinationAddress]);
 
-    // useEffect(() => {
-    //     if (currentLocation && destinationLocation) {
-    //         calculateETA();
-    //         updateCurrentTime();
-    //         const intervalId = setInterval(() => {
-    //             calculateETA();
-    //             updateCurrentTime();
-    //         }, 1);
-    //         calculateETA();
-    //         return () => clearInterval(intervalId);
-    //     }
-    //     const intervalId = setInterval(() => {
-    //         updateCurrentTime();
-    //     }, 1);
-    //     return () => clearInterval(intervalId);
-    // }, [currentLocation, destinationLocation]);
-
     const calculateETA = () => {
         const directionsService = new window.google.maps.DirectionsService();
         directionsService.route(
@@ -93,18 +76,17 @@ const RideinProgress: React.FC = () => {
                     const estimatedDurationInSeconds = leg.duration.value;
                     const arrivalTimeInMilliseconds = Date.now() + (estimatedDurationInSeconds * 1000);
                     setArrivalTime(new Date(arrivalTimeInMilliseconds).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+
+                    setDirectionsResponse(response); // Update directions response state
                 } else {
                     setEstimatedTimeArrival('N/A');
                     setArrivalTime('N/A');
                     setEstimatedRemainingDistance('N/A');
+                    setDirectionsResponse(null); // Clear directions response if no route found
                 }
             }
         );
     };
-
-    // const updateCurrentTime = () => {
-    //     setCurrentTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-    // };
 
     const handleMapLoad = () => {
         setMapLoaded(true);
@@ -116,14 +98,7 @@ const RideinProgress: React.FC = () => {
                 <div className="map-container">
                     <div style={{ width: '100vw', height: '90.3vh', position: 'absolute' }}>
                         {errorMessage && (
-                            <div
-                                style={{
-                                    position: 'absolute',
-                                    top: '50%',
-                                    left: '50%',
-                                    zIndex: 0,
-                                }}
-                            >
+                            <div className='error-message'>
                                 {errorMessage}
                             </div>
                         )}
@@ -136,6 +111,20 @@ const RideinProgress: React.FC = () => {
                             >
                                 {currentLocation && <MarkerF position={currentLocation} />}
                                 {destinationLocation && <MarkerF position={destinationLocation} />}
+                                {directionsResponse && (
+                                    <DirectionsRenderer
+                                        directions={directionsResponse} // Pass directionsResponse to directions prop
+                                        options={{
+                                            polylineOptions: {
+                                                strokeColor: "#007bff", // Blue color
+                                                strokeOpacity: 0.7,
+                                                strokeWeight: 5
+                                            },
+                                            suppressMarkers: true
+                                        }}
+                                    />
+                                )}
+
                             </GoogleMap>
                         )}
                         {loadError && <div>Error loading Google Maps: {loadError.message}</div>}

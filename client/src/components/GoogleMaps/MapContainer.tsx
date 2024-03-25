@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { GoogleMap, LoadScript, MarkerF } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import { useJsApiLoader } from '@react-google-maps/api';
 
 const MapContainer: React.FC = () => {
     const [currentPosition, setCurrentPosition] = useState({ lat: 0, lng: 0 });
     const [mapCenter, setMapCenter] = useState({ lat: 0, lng: 0 });
-    const [mapLoaded, setMapLoaded] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const { isLoaded: mapsLoaded, loadError } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -31,10 +32,6 @@ const MapContainer: React.FC = () => {
         width: '100%',
     };
 
-    const handleMapLoad = () => {
-        setMapLoaded(true);
-    };
-
     return (
         <div>
             {error ? (
@@ -42,13 +39,14 @@ const MapContainer: React.FC = () => {
             ) : (
                 <LoadScript
                     googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY || ''}
-                    onLoad={handleMapLoad}
+                    onLoad={() => { }}
                 >
-                    {mapLoaded && (
+                    {mapsLoaded && (
                         <GoogleMap mapContainerStyle={mapStyles} zoom={13} center={mapCenter}>
-                            <MarkerF position={currentPosition} />
+                            <Marker position={currentPosition} />
                         </GoogleMap>
                     )}
+                    {loadError && <div>Error loading map: {loadError.message}</div>}
                 </LoadScript>
             )}
         </div>

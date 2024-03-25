@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { GoogleMap, LoadScript, MarkerF, DirectionsRenderer, Autocomplete } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, Marker, DirectionsRenderer, Autocomplete, MarkerF } from '@react-google-maps/api';
 import '../styles/RequestRide.css';
 import PageTitle from '../components/PageTitle/PageTitle';
 import { FaMapMarkerAlt } from "react-icons/fa";
 import Select from 'react-select';
 import buildingsData from '../components/BuildingSearch/Buildings.json';
 import { useNavigate } from 'react-router-dom';
+import { useJsApiLoader } from '@react-google-maps/api';
+
 const libraries = ['places'] as any;
 
 interface RequestRideProps {
@@ -30,6 +32,7 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
     const [selectedDestinationBuilding, setSelectedDestinationBuilding] = useState<BuildingOption | null>(null);
     let [pickupLocation, setPickupLocation] = useState<string>(null);
     let [dropoffLocation, setDropoffLocation] = useState<string>(null);
+    const { isLoaded: mapsLoaded, loadError } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
     const navigate = useNavigate();
 
     interface Building {
@@ -65,6 +68,12 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
             navigator.geolocation.clearWatch(geoWatchId);
         };
     }, []);
+
+    useEffect(() => {
+        if (mapsLoaded) {
+            setMapLoaded(true);
+        }
+    }, [mapsLoaded]);
 
     const handleMapLoad = () => {
         setMapLoaded(true);
@@ -420,10 +429,10 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
                                 <div className="map-container">
                                     <GoogleMap
                                         mapContainerStyle={{ height: '100%', width: '100%' }}
-                                        zoom={20}
+                                        zoom={18}
                                         center={mapCenter}
                                     >
-                                        <MarkerF position={currentPosition} />
+                                        <Marker position={currentPosition} />
                                         {directions && <DirectionsRenderer directions={directions} />}
                                     </GoogleMap>
                                 </div>

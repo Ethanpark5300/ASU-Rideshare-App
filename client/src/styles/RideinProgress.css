@@ -28,12 +28,12 @@
     border-radius: 1000px;
     line-height: 1rem;
     transition: .03s ease-in-out;
+    font-weight: 700;
 }
 
 #ride-in-progress .refresh-btn {
     background-color: black;
     color: white;
-    font-weight: 700;
 }
 
 #ride-in-progress .emergency-btn {
@@ -43,4 +43,11 @@
 
 #ride-in-progress button:hover {
     transform: scale(1.05);
+}
+
+#ride-in-progress .error-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 0;
 }

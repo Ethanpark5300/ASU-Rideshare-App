@@ -81,7 +81,7 @@ const ChooseDriver: React.FC = () => {
             // Redirect rider to payment if driver accepted their request
             navigate("/Payment");
         } catch (error) {
-            console.error("Error checking ride status:", error);
+            // console.error("Error checking ride status:", error);
         }
     }, [account?.account?.email, navigate]);
 
