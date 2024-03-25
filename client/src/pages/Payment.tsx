@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import "../styles/Payment.css"
 import PageTitle from '../components/PageTitle/PageTitle';
@@ -22,6 +22,8 @@ const Payment: React.FC = (props) => {
     const [rideCost, setRideCost] = useState<number>();
     const [startButtonVisible, setStartButtonVisible] = useState<boolean>(true);
     const [cancelConfirmPromptVisible, setCancelConfirmPromptVisible] = useState<boolean>(false);
+    const [cancellationDriverStatus, setCheckDriverCancellationStatus] = useState<string>();
+    const [cancelledDriverPopup, setCancelledDriverPopup] = useState<boolean>(false);
     const navigate = useNavigate();
 
     //https://developer.paypal.com/docs/multiparty/checkout/standard/customize/buttons-style-guide/
@@ -106,6 +108,10 @@ const Payment: React.FC = (props) => {
     const handleCancelRideRequest = () => {
         setCancelConfirmPromptVisible(true);
     }
+    
+    const handleDeclineCancel = () => {
+        setCancelConfirmPromptVisible(false);
+    }
 
     useEffect(() => {
         const delay : number = 125;
@@ -146,6 +152,25 @@ const Payment: React.FC = (props) => {
         }
     }
 
+    const checkDriverCancellationStatus = useCallback(async () => {
+        try {
+            const response = await fetch(`/check-driver-cancellation-status?riderid=${account?.account?.email}`);
+            const data = await response.json();
+            setCheckDriverCancellationStatus(data.getCancellationStatus);
+        } catch (error) {
+            console.log("Error checking driver cancellation status:", error);
+        }
+    }, [account?.account?.email]);
+    
+    useEffect(() => {
+        const interval = setInterval(() => {
+            checkDriverCancellationStatus();
+            if (cancellationDriverStatus !== "CANCELLED(DRIVER)") return;
+            setCancelledDriverPopup(true);
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [cancellationDriverStatus, checkDriverCancellationStatus]);
+
     return (
         <PageTitle title='Payment'>
             <main id="payment">
@@ -185,14 +210,28 @@ const Payment: React.FC = (props) => {
                         </div>
                     </div>
                 </div>
+
+                {/** @return successful/error popup depending on payment status */}
                 {renderPopup()}
+
+                {/** @return cancel warning popup */}
                 {cancelConfirmPromptVisible && (
                     <div className='cancel-popup'>
                         <p>Are you sure you want to cancel the ride?</p>
                         <div className="cancel-btns-container">
                             <button className='confirm-cancel-btn' onClick={handleConfirmCancel}>Yes</button>
-                            <button className='decline-cancel-btn' onClick={() => setCancelConfirmPromptVisible(false)}>No</button>
+                            <button className='decline-cancel-btn' onClick={handleDeclineCancel}>No</button>
                         </div>
+                    </div>
+                )}
+                
+                {/** @return driver cancelling popup */}
+                {cancelledDriverPopup && (
+                    <div className='cancel-popup'>
+                        <p>Sorry, driver has cancelled your ride.</p>
+                        <Link to="/">
+                            <button className='back-to-home-btn'>Back to Home</button>
+                        </Link>
                     </div>
                 )}
             </main>

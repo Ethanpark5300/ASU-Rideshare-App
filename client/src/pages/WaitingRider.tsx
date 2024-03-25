@@ -4,16 +4,18 @@ import { useCallback, useEffect, useState } from 'react';
 import { useAppSelector } from '../store/hooks';
 import LiveTracking from '../components/GoogleMaps/LiveTracking';
 import CancellationTimer from '../components/Timer/Timer';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function WaitingRider() {
     const account = useAppSelector((state) => state.account);
+    const navigate = useNavigate();
     const [driverRideInfo, setDriverRideInfo] = useState<any>();
     const [paymentStatus, setPaymentStatus] = useState<string>();
     const [passedCancellation, setPassedCancellation] = useState<boolean>(false);
     const [beforeCancellationPopup, setBeforeCancellationPopup] = useState<boolean>(false);
     const [passedCancellationPopup, setPassedCancellationPopup] = useState<boolean>(false);
-    const navigate = useNavigate();
+    const [cancellationRiderStatus, setCheckRiderCancellationStatus] = useState<string>();
+    const [cancelledRiderPopup, setCancelledRiderPopup] = useState<boolean>(false);
 
     useEffect(() => {
         const delay: number = 125;
@@ -46,7 +48,7 @@ function WaitingRider() {
     useEffect(() => {
         const interval = setInterval(() => {
             checkPaymentStatus();
-            if(paymentStatus !== "PAID") return;
+            if (paymentStatus !== "PAID") return;
             navigate("/PickupRider");
         }, 1000);
         return () => clearInterval(interval);
@@ -62,7 +64,7 @@ function WaitingRider() {
         if (!passedCancellation) return setBeforeCancellationPopup(true)
         else setPassedCancellationPopup(true)
     }
-    
+
     const confirmCancel = async () => {
         try {
             fetch(`/cancel-ride`, {
@@ -90,6 +92,25 @@ function WaitingRider() {
         setPassedCancellationPopup(false);
     }
 
+    const checkRiderCancellationStatus = useCallback(async () => {
+        try {
+            const response = await fetch(`/check-rider-cancellation-status?driverid=${account?.account?.email}`);
+            const data = await response.json();
+            setCheckRiderCancellationStatus(data.getCancellationStatus);
+        } catch (error) {
+            console.log("Error checking driver cancellation status:", error);
+        }
+    }, [account?.account?.email]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            checkRiderCancellationStatus();
+            if (cancellationRiderStatus !== "CANCELLED(RIDER)") return;
+            setCancelledRiderPopup(true);
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [cancellationRiderStatus, checkRiderCancellationStatus]);
+
     return (
         <PageTitle title="Waiting">
             <main id="waiting">
@@ -109,7 +130,7 @@ function WaitingRider() {
                         </>
                     )}
                 </div>
-                
+
                 {/** @returns before cancellation popup warning */}
                 {beforeCancellationPopup && (
                     <div className="waiting-before-cancel-popup">
@@ -132,6 +153,16 @@ function WaitingRider() {
                             <button className='btn confirm-cancel-btn' onClick={handleConfirmCancel}>Yes</button>
                             <button className='btn decline-cancel-btn' onClick={handleDeclineCancel}>No</button>
                         </div>
+                    </div>
+                )}
+
+                {/** @returns rider cancelled popup */}
+                {cancelledRiderPopup && (
+                    <div className="rider-cancelled-popup">
+                        <p>Sorry, rider cancelled the ride</p>
+                        <Link to="/">
+                            <button className='btn back-to-home-btn'>Back to Home</button>
+                        </Link>
                     </div>
                 )}
 

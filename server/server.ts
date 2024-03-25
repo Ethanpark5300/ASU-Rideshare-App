@@ -990,6 +990,8 @@ app.get("/get-ride-payment-information", async (req: Request, res: Response) => 
 	let driverPayPalEmail = await db.get(`SELECT pay_pal FROM user_info WHERE email = '${driverEmail.Email}'`);
 	let rideCost = await db.get(`SELECT ride_cost FROM rides WHERE rider_id = '${riderid}' AND status = "PAYMENT"`);
 
+	if(!driverFirstName || !driverLastName || !driverEmail || !driverPayPalEmail || !rideCost) return;
+
 	res.json({
 		driverFirstName: driverFirstName.Driver_FirstName,
 		driverLastName: driverLastName.Driver_LastName,
@@ -1125,7 +1127,7 @@ app.post("/cancel-ride", async (req: Request, res: Response) => {
 	
 	/** Driver cancelling after deadline */
 	else if (userType.Type_User === 2 && passedCancellation === true) {
-		console.log("Driver cancelling after deadline");
+		// console.log("Driver cancelling after deadline");
 		await db.run(`UPDATE rides SET status = "CANCELLED(DRIVER)" WHERE driver_id = '${userid}' AND status = "PAID" OR status = "PAYMENT"`);
 
 		let currentWarnings = await db.get(`SELECT warnings FROM user_info WHERE email = '${userid}'`);
@@ -1140,6 +1142,37 @@ app.post("/cancel-ride", async (req: Request, res: Response) => {
 	else {
 		console.log("Error cancelling ride");
 	}
+});
+
+/** Check if driver cancelled ride */
+app.get("/check-driver-cancellation-status", async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let riderid = req.query.riderid;
+
+	let cancellationStatus = await db.all(`SELECT status FROM rides WHERE rider_id='${riderid}'`);
+	if (cancellationStatus.length <= 0) return;
+
+	let setCheckCancellationStatus = cancellationStatus[cancellationStatus.length - 1].Status;
+
+	res.json({
+		getCancellationStatus : setCheckCancellationStatus
+	});
+
+});
+
+/** Check if rider cancelled ride */
+app.get("/check-rider-cancellation-status", async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let driverid = req.query.driverid;
+
+	let cancellationStatus = await db.all(`SELECT status FROM rides WHERE driver_id='${driverid}'`);
+	if (cancellationStatus.length <= 0) return;
+
+	let setCheckCancellationStatus = cancellationStatus[cancellationStatus.length - 1].Status;
+
+	res.json({
+		getCancellationStatus : setCheckCancellationStatus
+	});
 });
 
 app.listen(PORT, () => {

@@ -81,8 +81,6 @@ const Rating: React.FC = (props) => {
                     blockee: rateeUser,
                 }),
             })
-
-            /** @TODO Add custom popup */
             alert('User blocked!');
         }
         catch (e: any) {

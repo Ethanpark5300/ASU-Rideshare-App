@@ -74,7 +74,8 @@
 }
 
 .payment-error-popup button,
-.decline-cancel-btn {
+.decline-cancel-btn,
+.back-to-home-btn {
     color: white;
     background-color: black;
 }
