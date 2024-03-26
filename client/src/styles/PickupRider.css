@@ -1,0 +1,55 @@
+.pickup-rider-info-container {
+    position: absolute;
+    /* bottom: 0; */
+    right: 0;
+    background-color: #fff;
+    padding: 1rem 2rem;
+    box-shadow: 0 .125rem .3125rem 0 rgba(0, 0, 0, 0.16), 0 .125rem .625rem 0 rgba(0, 0, 0, 0.12);
+    max-width: 400px;
+}
+
+.pickup-rider-info-container h1 {
+    background-color: var(--brand-gold);
+    padding: 1rem;
+    text-align: center;
+}
+
+.pickup-rider-info-container p {
+    line-height: 1.5;
+    margin-bottom: .5rem;
+}
+
+.pickup-rider-btns-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+#pickup-rider .btn {
+    border-radius: 1000px;
+    cursor: pointer;
+    padding: 12px 16px;
+    font-weight: 700;
+    line-height: 16px;
+    font-size: 1rem;
+    transition: scale .03s ease-in-out;
+}
+
+#pickup-rider .btn:hover {
+    transform: scale(1.05);
+}
+
+.start-ride-btn {
+    background-color: var(--brand-maroon);
+    color: white;
+}
+
+.refresh-btn {
+    background-color: black;
+    color: white;
+}
+
+.emergency-btn {
+    background-color: var(--brand-gold);
+    color: black;
+}

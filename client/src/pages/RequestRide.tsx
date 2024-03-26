@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { GoogleMap, LoadScript, Marker, DirectionsRenderer, Autocomplete, MarkerF } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, DirectionsRenderer, Autocomplete, MarkerF } from '@react-google-maps/api';
 import '../styles/RequestRide.css';
 import PageTitle from '../components/PageTitle/PageTitle';
 import { FaMapMarkerAlt } from "react-icons/fa";
@@ -7,7 +7,6 @@ import Select from 'react-select';
 import buildingsData from '../components/BuildingSearch/Buildings.json';
 import { useNavigate } from 'react-router-dom';
 import { useJsApiLoader } from '@react-google-maps/api';
-
 const libraries = ['places'] as any;
 
 interface RequestRideProps {
@@ -268,6 +267,12 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
         setSelectedDestinationBuilding(null);
     };
 
+    useEffect(() => {
+        if (loadError) {
+            setError("Error loading Google Maps API. Please try again later.");
+        }
+    }, [loadError]);
+
     return (
         <PageTitle title='Request Ride'>
             <main id='request-ride'>
@@ -432,7 +437,7 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
                                         zoom={18}
                                         center={mapCenter}
                                     >
-                                        <Marker position={currentPosition} />
+                                        <MarkerF position={currentPosition} />
                                         {directions && <DirectionsRenderer directions={directions} />}
                                     </GoogleMap>
                                 </div>
@@ -440,6 +445,7 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
                         </div>
                     )
                 )}
+                {loadError && <p className="request-error">{loadError.toString()}</p>}
             </main>
         </PageTitle>
     );

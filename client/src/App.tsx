@@ -82,7 +82,7 @@ function App() {
 				<Route path="/BlockedList" element={<BlockedList />} />
 				<Route path="/EditAccount" element={<EditAccount />} />
 				<Route path="/EditPayment" element={<EditPayment />} />
-				<Route path="/PickupRider" element={<PickupRider />} />
+				<Route path="/PickupRider" element={<PickupRider driverEmail={account?.account?.email} />} />
 				<Route path="/WaitingDriver" element={<WaitingDriver />} />
 				<Route path="/WaitingRider" element={<WaitingRider />} />
 				<Route path="/ChangePassword" element={<ChangePassword />} />

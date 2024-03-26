@@ -77,12 +77,12 @@ const RideinProgress: React.FC = () => {
                     const arrivalTimeInMilliseconds = Date.now() + (estimatedDurationInSeconds * 1000);
                     setArrivalTime(new Date(arrivalTimeInMilliseconds).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
 
-                    setDirectionsResponse(response); // Update directions response state
+                    setDirectionsResponse(response);
                 } else {
                     setEstimatedTimeArrival('N/A');
                     setArrivalTime('N/A');
                     setEstimatedRemainingDistance('N/A');
-                    setDirectionsResponse(null); // Clear directions response if no route found
+                    setDirectionsResponse(null);
                 }
             }
         );
@@ -113,10 +113,10 @@ const RideinProgress: React.FC = () => {
                                 {destinationLocation && <MarkerF position={destinationLocation} />}
                                 {directionsResponse && (
                                     <DirectionsRenderer
-                                        directions={directionsResponse} // Pass directionsResponse to directions prop
+                                        directions={directionsResponse}
                                         options={{
                                             polylineOptions: {
-                                                strokeColor: "#007bff", // Blue color
+                                                strokeColor: "#007bff",
                                                 strokeOpacity: 0.7,
                                                 strokeWeight: 5
                                             },
@@ -133,8 +133,8 @@ const RideinProgress: React.FC = () => {
                 <aside className="ride-info-container">
                     <h1>Ride in Progress</h1>
                     <p><b>Destination:</b> {dropoffAddress} </p>
-                    <p><b>Estimated Arrival Time:</b> {arrivalTime} ({estimatedTimeArrival}) </p>
-                    <p><b>Distance Remaining:</b> {estimatedRemainingDistance} </p>
+                    <p><b>Estimated Arrival Time:</b> {arrivalTime} ({estimatedTimeArrival})</p>
+                    <p><b>Distance Remaining:</b> {estimatedRemainingDistance}</p>
                     <div className="btns-container">
                         <button className='refresh-btn' onClick={calculateETA}>Refresh</button>
                         <button className="emergency-btn">Emergency Services</button>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, MarkerF } from '@react-google-maps/api';
 import { useJsApiLoader } from '@react-google-maps/api';
 
 const MapContainer: React.FC = () => {
@@ -43,7 +43,7 @@ const MapContainer: React.FC = () => {
                 >
                     {mapsLoaded && (
                         <GoogleMap mapContainerStyle={mapStyles} zoom={13} center={mapCenter}>
-                            <Marker position={currentPosition} />
+                            <MarkerF position={currentPosition} />
                         </GoogleMap>
                     )}
                     {loadError && <div>Error loading map: {loadError.message}</div>}

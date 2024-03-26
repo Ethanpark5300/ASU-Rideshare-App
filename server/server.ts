@@ -675,8 +675,8 @@ app.post("/send-ratings", async (req: Request, res: Response) => {
 });
 
 /**
- * @returns rider's favorite and pending favorite list
- * @returns driver's pending favorite list
+ * @returns rider's favorites and pending favorites list
+ * @returns driver's pending favorites list
  */
 app.get("/get-favorites-list", async (req: Request, res: Response) => {
 	let db = await dbPromise;
@@ -1061,17 +1061,17 @@ app.post("/accept-ride-request", async (req: Request, res: Response) => {
 	await db.run(`UPDATE rides SET status = "PAYMENT" WHERE rider_firstname = '${riderFirstName}' AND rider_lastname = '${riderLastName}' AND status = "QUEUED"`);
 });
 
+/** @returns ride information */
 app.get("/get-ride-information", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let userid = req.query.userid;
 
 	let getRiderRideInfo = await db.get(`SELECT driver_firstname,driver_lastname,pickup_location,dropoff_location FROM rides WHERE rider_id = '${userid}' AND status = "PAID"`);
-	let getDriverRideInfo = await db.get(`SELECT rider_firstname,rider_lastname,pickup_location,dropoff_location FROM rides WHERE driver_id = '${userid}' AND status = "PAYMENT"`);
-	// console.log(getRiderRideInfo);
+	let getDriverRideInfo = await db.get(`SELECT rider_firstname,rider_lastname,pickup_location,dropoff_location FROM rides WHERE driver_id = '${userid}' AND status = "PAYMENT" OR status = "PAID"`);
 
 	res.json({
 		riderRideInfo: getRiderRideInfo,
-		driverRideInfo: getDriverRideInfo
+		driverRideInfo: getDriverRideInfo,
 	});
 });
 
@@ -1157,7 +1157,6 @@ app.get("/check-driver-cancellation-status", async (req: Request, res: Response)
 	res.json({
 		getCancellationStatus : setCheckCancellationStatus
 	});
-
 });
 
 /** Check if rider cancelled ride */

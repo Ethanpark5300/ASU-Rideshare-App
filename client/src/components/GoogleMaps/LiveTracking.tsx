@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useJsApiLoader, GoogleMap, Marker } from '@react-google-maps/api';
+import { useJsApiLoader, GoogleMap, MarkerF } from '@react-google-maps/api';
 
 const LiveTracking: React.FC = () => {
     const [currentLocation, setCurrentLocation] = useState({ lat: 0, lng: 0 });
@@ -47,7 +47,7 @@ const LiveTracking: React.FC = () => {
                     center={currentLocation}
                     zoom={18}
                 >
-                    {currentLocation && <Marker position={currentLocation} />}
+                    {currentLocation && <MarkerF position={currentLocation} />}
                 </GoogleMap>
             )}
             {loadError && <div>Error loading map: {loadError.message}</div>}
