@@ -2,19 +2,67 @@ import '../styles/Waiting.css'
 import PageTitle from '../components/PageTitle/PageTitle';
 import { useCallback, useEffect, useState } from 'react';
 import { useAppSelector } from '../store/hooks';
-import LiveTracking from '../components/GoogleMaps/LiveTracking';
 import CancellationTimer from '../components/Timer/Timer';
 import { Link, useNavigate } from 'react-router-dom';
+import { GoogleMap, MarkerF, useJsApiLoader } from '@react-google-maps/api';
 
 function WaitingDriver() {
     const account = useAppSelector((state) => state.account);
     const navigate = useNavigate();
+    const [mapLoaded, setMapLoaded] = useState<boolean>(false);
+    const { isLoaded: mapsLoaded, loadError } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
+    const [currentLocation, setCurrentLocation] = useState<{ lat: number, lng: number }>(null);
+    const [pickupAddress, setPickupAddress] = useState<string>('');
+    const [pickupLocation, setPickupLocation] = useState<{ lat: number, lng: number }>(null);
+    const [errorMessage, setErrorMessage] = useState<string>('');
     const [riderRideInfo, setRiderRideInfo] = useState<any>();
     const [passedCancellation, setPassedCancellation] = useState<boolean>(false);
     const [beforeCancellationPopup, setBeforeCancellationPopup] = useState<boolean>(false);
     const [passedCancellationPopup, setPassedCancellationPopup] = useState<boolean>(false);
     const [cancellationDriverStatus, setCheckDriverCancellationStatus] = useState<string>();
     const [cancelledDriverPopup, setCancelledDriverPopup] = useState<boolean>(false);
+    const [driverArrivedStatus, setDriverArrivedStatus] = useState<string>();
+    const [driverArrivedPopup, setDriverArrivedPopup] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (navigator.geolocation) {
+            navigator.geolocation.watchPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    setCurrentLocation({ lat: latitude, lng: longitude });
+                    setErrorMessage('');
+                    setMapLoaded(true);
+                },
+                (error) => {
+                    if (error.code === error.PERMISSION_DENIED) {
+                        setErrorMessage('User denied the request for Geolocation.');
+                    } else {
+                        setErrorMessage('An error occurred while retrieving location.');
+                    }
+                }
+            );
+        } else {
+            setErrorMessage('Geolocation is not supported by this browser.');
+        }
+    }, []);
+
+    useEffect(() => {
+        if (!mapsLoaded || !pickupAddress) return;
+
+        const geocoder = new window.google.maps.Geocoder();
+        geocoder.geocode({ address: pickupAddress }, (results, status) => {
+            if (status === window.google.maps.GeocoderStatus.OK && results.length > 0) {
+                const location = results[0].geometry.location;
+                setPickupLocation({ lat: location.lat(), lng: location.lng() });
+            } else {
+                setErrorMessage('Geocode was not successful for the following reason: ' + status);
+            }
+        });
+    }, [mapsLoaded, pickupAddress]);
+
+    const handleMapLoad = () => {
+        setMapLoaded(true);
+    };
 
     useEffect(() => {
         const delay: number = 125;
@@ -24,6 +72,7 @@ function WaitingDriver() {
                     const response = await fetch(`/get-ride-information?userid=${account?.account?.email}`);
                     const data = await response.json();
                     setRiderRideInfo(data.riderRideInfo);
+                    setPickupAddress(riderRideInfo.Pickup_Location);
                 } catch (error) {
                     console.error("Error fetching data:", error);
                 }
@@ -70,13 +119,14 @@ function WaitingDriver() {
         setPassedCancellationPopup(false);
     }
 
+    /** Check if driver cancelled the ride */
     const checkDriverCancellationStatus = useCallback(async () => {
         try {
             const response = await fetch(`/check-driver-cancellation-status?riderid=${account?.account?.email}`);
             const data = await response.json();
             setCheckDriverCancellationStatus(data.getCancellationStatus);
         } catch (error) {
-            console.log("Error checking driver cancellation status:", error);
+            // console.log("Error checking driver cancellation status:", error);
         }
     }, [account?.account?.email]);
 
@@ -89,9 +139,49 @@ function WaitingDriver() {
         return () => clearInterval(interval);
     }, [cancellationDriverStatus, checkDriverCancellationStatus]);
 
+    /** Check if driver arrived at the pick-up location */
+    useEffect(() => {
+        const interval = setInterval(() => {
+            async function checkDriverArrivedStatus() {
+                try {
+                    const response = await fetch(`/check-if-driver-arrived?riderid=${account?.account?.email}`);
+                    const data = await response.json();
+                    setDriverArrivedStatus(data.getDriverArrivedStatus);
+                } catch (error) {
+                    console.log("Error if driver arrived status:", error);
+                }
+            }
+            checkDriverArrivedStatus();
+            if (driverArrivedStatus !== "WAITING(DRIVER)") return;
+            setDriverArrivedPopup(true);
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [driverArrivedStatus, account?.account?.email]);
+
     return (
         <PageTitle title="Waiting">
             <main id="waiting">
+                <div className="map-container">
+                    <div style={{ width: '100%', height: '100vh', position: 'absolute' }}>
+                        {errorMessage && (
+                            <div className='error-message'>
+                                {errorMessage}
+                            </div>
+                        )}
+                        {mapLoaded && mapsLoaded && (
+                            <GoogleMap
+                                mapContainerStyle={{ width: '100%', height: '100%' }}
+                                center={currentLocation}
+                                zoom={19}
+                                onLoad={handleMapLoad}
+                            >
+                                {currentLocation && <MarkerF position={currentLocation} />}
+                                {pickupLocation && <MarkerF position={pickupLocation} />}
+                            </GoogleMap>
+                        )}
+                        {loadError && <div>Error loading Google Maps: {loadError.message}</div>}
+                    </div>
+                </div>
                 <div className="waiting-container">
                     {(riderRideInfo) && (
                         <>
@@ -136,14 +226,20 @@ function WaitingDriver() {
 
                 {/** @returns driver cancelled popup  */}
                 {cancelledDriverPopup && (
-                    <div className='cancel-popup'>
+                    <div className='waiting-before-cancel-popup'>
                         <p>Sorry, driver has cancelled your ride.</p>
                         <Link to="/">
                             <button className='back-to-home-btn'>Back to Home</button>
                         </Link>
                     </div>
                 )}
-                <LiveTracking />
+
+                {/** @returns driver arrived popup  */}
+                {driverArrivedPopup && (
+                    <div className='driver-arrived-popup'>
+                        <p>Your driver has arrived to your selected pick-up location.</p>
+                    </div>
+                )}
             </main>
         </PageTitle>
     );

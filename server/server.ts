@@ -1009,6 +1009,22 @@ app.post("/cancel-ride-from-payment", async (req: Request, res: Response) => {
 	await db.run(`UPDATE rides SET status = "CANCELLED(RIDER)" WHERE rider_id = '${rider}' AND status = "PAYMENT"`);
 });
 
+/** Check if driver has arrived */
+app.get("/check-if-driver-arrived", async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let riderid = req.query.riderid;
+
+	let driverArrivedStatus = await db.all(`SELECT status FROM rides WHERE rider_id='${riderid}'`);
+	if (driverArrivedStatus.length <= 0) return;
+
+	let setDriverArrivedStatus = driverArrivedStatus[driverArrivedStatus.length - 1].Status;
+
+
+	res.json({
+		getDriverArrivedStatus: setDriverArrivedStatus
+	});
+});
+
 /** Driver actions */
 
 /** @returns available riders */
@@ -1066,8 +1082,8 @@ app.get("/get-ride-information", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let userid = req.query.userid;
 
-	let getRiderRideInfo = await db.get(`SELECT driver_firstname,driver_lastname,pickup_location,dropoff_location FROM rides WHERE rider_id = '${userid}' AND status = "PAID"`);
-	let getDriverRideInfo = await db.get(`SELECT rider_firstname,rider_lastname,pickup_location,dropoff_location FROM rides WHERE driver_id = '${userid}' AND status = "PAYMENT" OR status = "PAID"`);
+	let getRiderRideInfo = await db.get(`SELECT driver_firstname,driver_lastname,pickup_location,dropoff_location FROM rides WHERE rider_id = '${userid}' AND status = "PAID" OR status = "WAITING(DRIVER)"`);
+	let getDriverRideInfo = await db.get(`SELECT rider_firstname,rider_lastname,pickup_location,dropoff_location FROM rides WHERE driver_id = '${userid}' AND status = "PAYMENT" OR status = "PAID" OR status = "WAITING(DRIVER)"`);
 
 	res.json({
 		riderRideInfo: getRiderRideInfo,
@@ -1172,6 +1188,22 @@ app.get("/check-rider-cancellation-status", async (req: Request, res: Response) 
 	res.json({
 		getCancellationStatus : setCheckCancellationStatus
 	});
+});
+
+/** Change status to waiting(driver) to show driver arrived */
+app.post("/driver-arrived-pickup", async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let driverid = req.body.driverid;
+
+	await db.run(`UPDATE rides SET status = "WAITING(DRIVER)" WHERE driver_id = '${driverid}' AND status = "PAID"`);
+})
+
+/** Starting the ride */
+app.post("/start-ride", async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let driverid = req.body.driverid;
+
+	// await db.run(`UPDATE rides SET status = "WAITING" WHERE driver_id = '${driverid}' AND status = "PAID"`);
 });
 
 app.listen(PORT, () => {

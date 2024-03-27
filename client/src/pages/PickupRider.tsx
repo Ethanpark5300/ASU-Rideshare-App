@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { GoogleMap, useJsApiLoader, DirectionsRenderer, MarkerF } from '@react-google-maps/api';
 import PageTitle from '../components/PageTitle/PageTitle';
 import "../styles/PickupRider.css";
+import { Link, useNavigate } from 'react-router-dom';
 
 interface PickupRiderProps {
     driverEmail: string;
@@ -9,17 +10,20 @@ interface PickupRiderProps {
 
 const PickupRider: React.FC<PickupRiderProps> = (props) => {
     const [currentLocation, setCurrentLocation] = useState<{ lat: number, lng: number }>(null);
-    const [destinationAddress, setDestinationAddress] = useState<string>('');
-    const [destinationLocation, setDestinationLocation] = useState<{ lat: number, lng: number }>(null);
+    const [pickupAddress, setPickupAddress] = useState<string>('');
+    const [pickupLocation, setPickupLocation] = useState<{ lat: number, lng: number }>(null);
     const [errorMessage, setErrorMessage] = useState<string>('');
     const [mapLoaded, setMapLoaded] = useState<boolean>(false);
     const { isLoaded: mapsLoaded, loadError } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
     const [estimatedTimeArrival, setEstimatedTimeArrival] = useState<string>('');
-    const [estimatedRemainingDistance, setEstimatedRemainingDistance] = useState<string>('');
+    const [estimatedRemainingDistance, setEstimatedRemainingDistance] = useState<number>();
     const [arrivalTime, setArrivalTime] = useState<string>('');
     const [directionsResponse, setDirectionsResponse] = useState<any>(null);
     const [rideInfo, setRideInfo] = useState<any>();
     const [showDirections, setShowDirections] = useState<boolean>(false);
+    const [cancellationRiderStatus, setCheckRiderCancellationStatus] = useState<string>();
+    const [cancelledRiderPopup, setCancelledRiderPopup] = useState<boolean>(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const delay: number = 125;
@@ -29,7 +33,7 @@ const PickupRider: React.FC<PickupRiderProps> = (props) => {
                     const response = await fetch(`/get-ride-information?userid=${props.driverEmail}`);
                     const data = await response.json();
                     setRideInfo(data.driverRideInfo);
-                    setDestinationAddress(data.driverRideInfo.Pickup_Location);
+                    setPickupAddress(data.driverRideInfo.Pickup_Location);
                 } catch (error) {
                     console.error("Error fetching data:", error);
                 }
@@ -63,18 +67,18 @@ const PickupRider: React.FC<PickupRiderProps> = (props) => {
     }, []);
 
     useEffect(() => {
-        if (!mapsLoaded || !destinationAddress) return;
+        if (!mapsLoaded || !pickupAddress) return;
 
         const geocoder = new window.google.maps.Geocoder();
-        geocoder.geocode({ address: destinationAddress }, (results, status) => {
+        geocoder.geocode({ address: pickupAddress }, (results, status) => {
             if (status === window.google.maps.GeocoderStatus.OK && results.length > 0) {
                 const location = results[0].geometry.location;
-                setDestinationLocation({ lat: location.lat(), lng: location.lng() });
+                setPickupLocation({ lat: location.lat(), lng: location.lng() });
             } else {
                 setErrorMessage('Geocode was not successful for the following reason: ' + status);
             }
         });
-    }, [mapsLoaded, destinationAddress]);
+    }, [mapsLoaded, pickupAddress]);
 
     const calculateETA = () => {
         setShowDirections(false);
@@ -83,7 +87,7 @@ const PickupRider: React.FC<PickupRiderProps> = (props) => {
         directionsService.route(
             {
                 origin: currentLocation,
-                destination: destinationLocation,
+                destination: pickupLocation,
                 travelMode: window.google.maps.TravelMode.DRIVING
             },
             (response, status) => {
@@ -97,7 +101,7 @@ const PickupRider: React.FC<PickupRiderProps> = (props) => {
                     const remainingDistanceInMiles = remainingDistanceInMeters * 0.000621371; // Convert meters to miles
 
                     setEstimatedTimeArrival(leg.duration.text);
-                    setEstimatedRemainingDistance(remainingDistanceInMiles.toFixed(2) + ' miles');
+                    setEstimatedRemainingDistance(Math.round(remainingDistanceInMiles));
 
                     const estimatedDurationInSeconds = leg.duration.value;
                     const arrivalTimeInMilliseconds = Date.now() + (estimatedDurationInSeconds * 1000);
@@ -107,7 +111,7 @@ const PickupRider: React.FC<PickupRiderProps> = (props) => {
                 } else {
                     setEstimatedTimeArrival('N/A');
                     setArrivalTime('N/A');
-                    setEstimatedRemainingDistance('N/A');
+                    setEstimatedRemainingDistance(0);
                     setDirectionsResponse(null);
                 }
             }
@@ -118,9 +122,68 @@ const PickupRider: React.FC<PickupRiderProps> = (props) => {
         setMapLoaded(true);
     };
 
-    // Rider cancellation
+    /** Checking if the rider cancelled the ride */
+    const checkRiderCancellationStatus = useCallback(async () => {
+        try {
+            const response = await fetch(`/check-rider-cancellation-status?driverid=${props.driverEmail}`);
+            const data = await response.json();
+            setCheckRiderCancellationStatus(data.getCancellationStatus);
+        } catch (error) {
+            console.log("Error checking driver cancellation status:", error);
+        }
+    }, [props.driverEmail]);
 
-    
+    useEffect(() => {
+        const interval = setInterval(() => {
+            checkRiderCancellationStatus();
+            if (cancellationRiderStatus !== "CANCELLED(RIDER)") return;
+            setCancelledRiderPopup(true);
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [cancellationRiderStatus, checkRiderCancellationStatus]);
+
+    /** Handling when driver arrives to pick-up point */
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (estimatedRemainingDistance !== 0) return;
+            async function updateDriverArrivedStatus() {
+                try {
+                    fetch(`/driver-arrived-pickup`, {
+                        method: "POST",
+                        headers: { "Content-type": "application/json" },
+                        body: JSON.stringify({
+                            driverid: props.driverEmail,
+                        }),
+                    })
+                } catch (error) {
+                    console.log("Error updating arrived ride status:", error);
+                }
+            }
+            updateDriverArrivedStatus();
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [estimatedRemainingDistance, props.driverEmail]);
+  
+    /** Handling when the ride starts */
+    async function startRide() {
+        try {
+            fetch(`/start-ride`, {
+                method: "POST",
+                headers: { "Content-type": "application/json" },
+                body: JSON.stringify({
+                    driverid: props.driverEmail,
+                }),
+            })
+        } catch (error) {
+            console.log("Error starting ride:", error);
+        }
+    }
+
+    const handleStartRide = () => {
+        startRide();
+        navigate("/RideInProgress");
+    }
+
     return (
         <PageTitle title='Pickup Rider'>
             <main id='pickup-rider'>
@@ -135,11 +198,11 @@ const PickupRider: React.FC<PickupRiderProps> = (props) => {
                             <GoogleMap
                                 mapContainerStyle={{ width: '100%', height: '100%' }}
                                 center={currentLocation || { lat: 0, lng: 0 }}
-                                zoom={18}
+                                zoom={19}
                                 onLoad={handleMapLoad}
                             >
                                 {currentLocation && <MarkerF position={currentLocation} />}
-                                {destinationLocation && <MarkerF position={destinationLocation} />}
+                                {pickupLocation && <MarkerF position={pickupLocation} />}
                                 {showDirections && directionsResponse && (
                                     <DirectionsRenderer
                                         key={directionsResponse.uniqueKey}
@@ -159,15 +222,36 @@ const PickupRider: React.FC<PickupRiderProps> = (props) => {
                             <p><b>Rider Name:</b> {rideInfo.Rider_FirstName} {rideInfo.Rider_LastName}</p>
                             <p><b>Pickup Location:</b> {rideInfo.Pickup_Location}</p>
                             <p><b>Estimated Arrival Time:</b> {arrivalTime} ({estimatedTimeArrival})</p>
-                            <p><b>Distance Remaining:</b> {estimatedRemainingDistance}</p>
+                            <p><b>Distance Remaining:</b> {estimatedRemainingDistance} miles</p>
                             <div className="pickup-rider-btns-container">
-                                <button className='btn start-ride-btn'>Start Ride</button>
-                                <button className="btn refresh-btn" onClick={calculateETA}>Refresh</button>
-                                <button className='btn emergency-btn'>Emergency Services</button>
+                                {(estimatedRemainingDistance === 0) && (
+                                    <>
+                                        <button className='btn start-ride-btn' onClick={handleStartRide}>Start Ride</button>
+                                        <button className='btn refresh-btn'>Contact Rider</button>
+                                        <button className='btn emergency-btn'>Emergency Services</button>
+                                    </>
+                                )}
+                                {(estimatedRemainingDistance !== 0) && (
+                                    <>
+                                        <button className='btn start-ride-btn'>Contact Rider</button>
+                                        <button className="btn refresh-btn" onClick={calculateETA}>Refresh</button>
+                                        <button className='btn emergency-btn'>Emergency Services</button>
+                                    </>
+                                )}
                             </div>
                         </>
                     )}
                 </aside>
+
+                {/** @returns rider cancelled popup */}
+                {cancelledRiderPopup && (
+                    <div className="rider-cancelled-popup">
+                        <p>Sorry, rider cancelled the ride</p>
+                        <Link to="/">
+                            <button className='btn back-to-home-btn'>Back to Home</button>
+                        </Link>
+                    </div>
+                )}
             </main>
         </PageTitle>
     );
