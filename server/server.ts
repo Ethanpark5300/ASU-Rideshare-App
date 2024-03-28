@@ -566,7 +566,12 @@ function setVerifyCookie(res: Response, email: string) {
 }
 
 function generateRegisterID(): string {
-	return ('0000' + randomInt(99999)).slice(-5);
+	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+	let ID = '';
+	for (let i = 0; i < length; i++) {
+		ID += characters.charAt(Math.floor(Math.random() * characters.length));
+	}
+	return ID;
 }
 
 /**
