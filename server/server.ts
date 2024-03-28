@@ -1098,9 +1098,22 @@ app.get("/check-if-driver-arrived", async (req: Request, res: Response) => {
 
 	let setDriverArrivedStatus = driverArrivedStatus[driverArrivedStatus.length - 1].Status;
 
-
 	res.json({
 		getDriverArrivedStatus: setDriverArrivedStatus
+	});
+});
+
+app.get("/check-if-driver-started-ride", async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let riderid = req.query.riderid;
+
+	let driverStartedStatus = await db.all(`SELECT status FROM rides WHERE rider_id = '${riderid}'`);
+	if (driverStartedStatus.length <= 0) return;
+
+	let setDriverStartedStatus = driverStartedStatus[driverStartedStatus.length - 1].Status;
+
+	res.json({
+		getDriverStartedStatus : setDriverStartedStatus
 	});
 });
 
@@ -1170,8 +1183,8 @@ app.get("/get-ride-information", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let userid = req.query.userid;
 
-	let getRiderRideInfo = await db.get(`SELECT driver_firstname,driver_lastname,pickup_location,dropoff_location FROM rides WHERE rider_id = '${userid}' AND status = "PAID" OR status = "WAITING(DRIVER)"`);
-	let getDriverRideInfo = await db.get(`SELECT rider_firstname,rider_lastname,pickup_location,dropoff_location FROM rides WHERE driver_id = '${userid}' AND status = "PAYMENT" OR status = "PAID" OR status = "WAITING(DRIVER)"`);
+	let getRiderRideInfo = await db.get(`SELECT driver_firstname,driver_lastname,pickup_location,dropoff_location FROM rides WHERE rider_id = '${userid}' AND status = "PAID" OR status = "WAITING(DRIVER)" OR status = "ONGOING"`);
+	let getDriverRideInfo = await db.get(`SELECT rider_firstname,rider_lastname,pickup_location,dropoff_location FROM rides WHERE driver_id = '${userid}' AND status = "PAYMENT" OR status = "PAID" OR status = "WAITING(DRIVER)" OR status = "ONGOING"`);
 
 	res.json({
 		riderRideInfo: getRiderRideInfo,
@@ -1294,17 +1307,33 @@ app.post("/driver-arrived-pickup", async (req: Request, res: Response) => {
 	let driverid = req.body.driverid;
 
 	await db.run(`UPDATE rides SET status = "WAITING(DRIVER)" WHERE driver_id = '${driverid}' AND status = "PAID"`);
-})
+});
 
 /** 
  * Starting the ride 
  * @param req.body.driverid driver email
+ * @param currentTime current time
  */
 app.post("/start-ride", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let driverid = req.body.driverid;
+	let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-	// await db.run(`UPDATE rides SET status = "WAITING" WHERE driver_id = '${driverid}' AND status = "PAID"`);
+	await db.run(`UPDATE rides SET pickup_time = ?, status = ? WHERE driver_id = ? AND status = ?`, [currentTime, "ONGOING", driverid, "WAITING(DRIVER)"]);
+});
+
+/**
+ * Ending the ride
+ * @param req.body.driverid driver email
+ * @param currentTime current time
+ */
+app.post("/end-ride", async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let driverid = req.body.driverid;
+	let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+	
+	// await db.run(`UPDATE rides SET dropoff_time = ?, status = ? WHERE driver_id = ? AND status = ?`, [currentTime, "COMPLETED", driverid, "ONGOING"]);
+	await db.run(`UPDATE rides SET dropoff_time = '${currentTime}', status = "COMPLETED" WHERE driver_id = '${driverid}' AND status = "ONGOING"`);
 });
 
 app.listen(PORT, () => {

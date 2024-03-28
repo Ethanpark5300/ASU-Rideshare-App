@@ -71,9 +71,18 @@ function App() {
 				<Route path="/Profile" element={<Profile />} />
 				<Route path="/Register" element={<Register />} />
 				<Route path="/Verify" element={<Verify />} />
-				<Route path="/RequestRide" element={<RequestRide riderEmail={account?.account?.email} />} />
+				<Route
+					path="/RequestRide"
+					element={<RequestRide
+						riderEmail={account?.account?.email} />}
+				/>
 				<Route path="/RideHistory" element={<RideHistory />} />
-				<Route path="/RideinProgress" element={<RideinProgress />} />
+				<Route
+					path="/RideinProgress"
+					element={<RideinProgress
+						userEmail={account?.account?.email}
+						userType={account?.account?.accountType} />}
+				/>
 				<Route path="/ChooseDriver" element={<ChooseDriver />} />
 				<Route path="/ChooseRider" element={<ChooseRider />} />
 				<Route path="/Rating" element={<Rating />} />
@@ -82,7 +91,11 @@ function App() {
 				<Route path="/BlockedList" element={<BlockedList />} />
 				<Route path="/EditAccount" element={<EditAccount />} />
 				<Route path="/EditPayment" element={<EditPayment />} />
-				<Route path="/PickupRider" element={<PickupRider driverEmail={account?.account?.email} />} />
+				<Route
+					path="/PickupRider"
+					element={<PickupRider
+						driverEmail={account?.account?.email} />} 
+				/>
 				<Route path="/WaitingDriver" element={<WaitingDriver />} />
 				<Route path="/WaitingRider" element={<WaitingRider />} />
 				<Route path="/ChangePassword" element={<ChangePassword />} />

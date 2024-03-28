@@ -10,14 +10,14 @@ interface PickupRiderProps {
 
 const PickupRider: React.FC<PickupRiderProps> = (props) => {
     const [currentLocation, setCurrentLocation] = useState<{ lat: number, lng: number }>(null);
-    const [pickupAddress, setPickupAddress] = useState<string>('');
+    const [pickupAddress, setPickupAddress] = useState<string>();
     const [pickupLocation, setPickupLocation] = useState<{ lat: number, lng: number }>(null);
-    const [errorMessage, setErrorMessage] = useState<string>('');
+    const [errorMessage, setErrorMessage] = useState<string>();
     const [mapLoaded, setMapLoaded] = useState<boolean>(false);
     const { isLoaded: mapsLoaded, loadError } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
-    const [estimatedTimeArrival, setEstimatedTimeArrival] = useState<string>('');
+    const [estimatedTimeArrival, setEstimatedTimeArrival] = useState<string>();
     const [estimatedRemainingDistance, setEstimatedRemainingDistance] = useState<number>();
-    const [arrivalTime, setArrivalTime] = useState<string>('');
+    const [arrivalTime, setArrivalTime] = useState<string>();
     const [directionsResponse, setDirectionsResponse] = useState<any>(null);
     const [rideInfo, setRideInfo] = useState<any>();
     const [showDirections, setShowDirections] = useState<boolean>(false);
@@ -101,7 +101,7 @@ const PickupRider: React.FC<PickupRiderProps> = (props) => {
                     const remainingDistanceInMiles = remainingDistanceInMeters * 0.000621371; // Convert meters to miles
 
                     setEstimatedTimeArrival(leg.duration.text);
-                    setEstimatedRemainingDistance(Math.round(remainingDistanceInMiles));
+                    setEstimatedRemainingDistance(Math.round(remainingDistanceInMiles * 10)/10);
 
                     const estimatedDurationInSeconds = leg.duration.value;
                     const arrivalTimeInMilliseconds = Date.now() + (estimatedDurationInSeconds * 1000);
@@ -145,7 +145,7 @@ const PickupRider: React.FC<PickupRiderProps> = (props) => {
     /** Handling when driver arrives to pick-up point */
     useEffect(() => {
         const interval = setInterval(() => {
-            if (estimatedRemainingDistance !== 0) return;
+            if (estimatedRemainingDistance !== 0.0) return;
             async function updateDriverArrivedStatus() {
                 try {
                     fetch(`/driver-arrived-pickup`, {
@@ -221,21 +221,23 @@ const PickupRider: React.FC<PickupRiderProps> = (props) => {
                             <h1>Pickup Rider</h1>
                             <p><b>Rider Name:</b> {rideInfo.Rider_FirstName} {rideInfo.Rider_LastName}</p>
                             <p><b>Pickup Location:</b> {rideInfo.Pickup_Location}</p>
-                            <p><b>Estimated Arrival Time:</b> {arrivalTime} ({estimatedTimeArrival})</p>
-                            <p><b>Distance Remaining:</b> {estimatedRemainingDistance} miles</p>
+                            {(!arrivalTime) && (<p><b>Estimated Arrival Time:</b></p>)}
+                            {(arrivalTime) && (<p><b>Estimated Arrival Time:</b> {arrivalTime} ({estimatedTimeArrival})</p>)}
+                            {(estimatedRemainingDistance === 0.0) && (<p><b>Distance Remaining:</b></p>)}
+                            {(estimatedRemainingDistance !== 0.0) && (<p><b>Distance Remaining:</b> {estimatedRemainingDistance} miles</p>)}
                             <div className="pickup-rider-btns-container">
-                                {(estimatedRemainingDistance === 0) && (
+                                {(estimatedRemainingDistance === 0.0) && (
                                     <>
                                         <button className='btn start-ride-btn' onClick={handleStartRide}>Start Ride</button>
                                         <button className='btn refresh-btn'>Contact Rider</button>
                                         <button className='btn emergency-btn'>Emergency Services</button>
                                     </>
                                 )}
-                                {(estimatedRemainingDistance !== 0) && (
+                                {(estimatedRemainingDistance !== 0.0) && (
                                     <>
                                         <button className='btn start-ride-btn'>Contact Rider</button>
-                                        <button className="btn refresh-btn" onClick={calculateETA}>Refresh</button>
                                         <button className='btn emergency-btn'>Emergency Services</button>
+                                        <button className="btn refresh-btn" onClick={calculateETA}>Refresh</button>
                                     </>
                                 )}
                             </div>

@@ -23,6 +23,7 @@ function WaitingDriver() {
     const [cancelledDriverPopup, setCancelledDriverPopup] = useState<boolean>(false);
     const [driverArrivedStatus, setDriverArrivedStatus] = useState<string>();
     const [driverArrivedPopup, setDriverArrivedPopup] = useState<boolean>(false);
+    const [driverStarted, setDriverStarted] = useState<string>();
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -74,7 +75,7 @@ function WaitingDriver() {
                     setRiderRideInfo(data.riderRideInfo);
                     setPickupAddress(riderRideInfo.Pickup_Location);
                 } catch (error) {
-                    console.error("Error fetching data:", error);
+                    // console.error("Error fetching data:", error);
                 }
             };
             getRideInformation();
@@ -126,7 +127,7 @@ function WaitingDriver() {
             const data = await response.json();
             setCheckDriverCancellationStatus(data.getCancellationStatus);
         } catch (error) {
-            // console.log("Error checking driver cancellation status:", error);
+            console.log("Error checking driver cancellation status:", error);
         }
     }, [account?.account?.email]);
 
@@ -148,7 +149,7 @@ function WaitingDriver() {
                     const data = await response.json();
                     setDriverArrivedStatus(data.getDriverArrivedStatus);
                 } catch (error) {
-                    console.log("Error if driver arrived status:", error);
+                    console.log("Error checking if driver arrived:", error);
                 }
             }
             checkDriverArrivedStatus();
@@ -157,6 +158,25 @@ function WaitingDriver() {
         }, 1000);
         return () => clearInterval(interval);
     }, [driverArrivedStatus, account?.account?.email]);
+
+    /** Start ride when driver presses start ride */
+    useEffect(() => {
+        const interval = setInterval(() => {
+            async function checkDriverStarted() {
+                try {
+                    const response = await fetch(`/check-if-driver-started-ride?riderid=${account?.account?.email}`);
+                    const data = await response.json();
+                    setDriverStarted(data.getDriverStartedStatus);
+                } catch (error) {
+                    console.log("Error checking if driver started:", error);
+                }
+            }
+            checkDriverStarted();
+            if(driverStarted !== "ONGOING") return;
+            navigate("/RideInProgress")
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [account?.account?.email, driverStarted, navigate]);
 
     return (
         <PageTitle title="Waiting">
@@ -224,7 +244,7 @@ function WaitingDriver() {
                     </div>
                 )}
 
-                {/** @returns driver cancelled popup  */}
+                {/** @returns driver cancelled popup */}
                 {cancelledDriverPopup && (
                     <div className='waiting-before-cancel-popup'>
                         <p>Sorry, driver has cancelled your ride.</p>
@@ -234,7 +254,7 @@ function WaitingDriver() {
                     </div>
                 )}
 
-                {/** @returns driver arrived popup  */}
+                {/** @returns driver arrived popup */}
                 {driverArrivedPopup && (
                     <div className='driver-arrived-popup'>
                         <p>Your driver has arrived to your selected pick-up location.</p>

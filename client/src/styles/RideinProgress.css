@@ -1,53 +1,56 @@
-#ride-in-progress .ride-info-container {
-    background-color: white;
-    padding: 1rem;
+.ride-in-progress-container {
     position: absolute;
+    z-index: 1;
     bottom: 0;
     right: 0;
-    line-height: 2;
-    box-shadow: 0 .125rem .3125rem 0 rgba(0, 0, 0, 0.16), 0 .125rem .625rem 0 rgba(0, 0, 0, 0.12);
+    background-color: #fff;
+    padding: 1rem 2rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
 }
 
-#ride-in-progress .ride-info-container h1 {
+#ride-in-progress h1 {
     background-color: var(--brand-gold);
-    font-size: 2.5rem;
+    text-align: center;
+    font-size: 2.25rem;
+    padding: 1rem;
     text-align: center;
     margin-top: 0;
-    margin-bottom: .5rem;
+    margin-bottom: 1rem;
 }
 
-#ride-in-progress .btns-container {
-    margin-top: .5rem;
+.ride-in-progress-container p {
+    line-height: 1.5;
+}
+
+.ride-in-progress-btns-container {
     display: flex;
-    gap: 1rem;
+    flex-direction: column;
+    gap: .5rem;
+    margin-top: .5rem;
 }
 
-#ride-in-progress button {
-    cursor: pointer;
-    padding: .5rem 1.5rem;
+#ride-in-progress .btn {
     border-radius: 1000px;
-    line-height: 1rem;
-    transition: .03s ease-in-out;
+    cursor: pointer;
+    padding: 12px 16px;
     font-weight: 700;
+    line-height: 16px;
+    font-size: 1rem;
+    transition: scale .03s ease-in-out;
 }
 
-#ride-in-progress .refresh-btn {
-    background-color: black;
-    color: white;
+#ride-in-progress .btn:hover {
+    transform: scale(1.05);
 }
 
 #ride-in-progress .emergency-btn {
     background-color: var(--brand-maroon);
-    color: #fff;
+    color: white;
 }
 
-#ride-in-progress button:hover {
-    transform: scale(1.05);
-}
-
-#ride-in-progress .error-message {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    z-index: 0;
+#ride-in-progress .refresh-btn,
+#ride-in-progress .end-ride-btn {
+    background-color: var(--brand-gold);
+    color: black;
 }
