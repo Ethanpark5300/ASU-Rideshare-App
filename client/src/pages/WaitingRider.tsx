@@ -60,7 +60,6 @@ function WaitingRider() {
     };
 
     const handleCancelRequest = () => {
-        // console.log("Passed cancellation?", passedCancellation);
         if (!passedCancellation) return setBeforeCancellationPopup(true)
         else setPassedCancellationPopup(true)
     }
