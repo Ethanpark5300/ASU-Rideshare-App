@@ -18,11 +18,8 @@ function Verify() {
         if (state === null) {
             navigate("/Register");
         }
-    }, [state, navigate]); /** @TODO Test if anything breaks */
-    //console.log(JSON.stringify(state));
+    }, [state, navigate]);
     const verifyEmail = state.email;
-    //console.log(verifyEmail);
-
 
     const verifyRef = useRef<string>("");
 
@@ -35,7 +32,6 @@ function Verify() {
 
 
     const registerRequest = useCallback(async () => {
-        //console.log("register request");
         setErrorMsg(undefined);
         setRegisterFailed(false);
         setRegisterMessage(undefined);
@@ -50,8 +46,6 @@ function Verify() {
         if (isSending) return;
         // update state
         setIsSending(true);
-
-        //console.log("fetched");
 
         fetch(`/registration_verification`, {
             method: "POST",
@@ -71,14 +65,14 @@ function Verify() {
                 }
             });
         setIsSending(false);
-    }, [isSending, dispatch, navigate]); /** @TODO Test if anything breaks */
+    }, [isSending, dispatch, navigate]);
 
     const resendRequest = useCallback(async () => {
         // don't send again while we are sending
         if (isSending) return;
         // update state
         setIsSending(true);
-        //console.log(verifyEmail);
+
         fetch(`/resend_verification`, {
             method: "POST",
             headers: { "Content-type": "application/json" },
@@ -90,8 +84,8 @@ function Verify() {
             .then((data) => {
             });
         setIsSending(false);
-    }, [isSending, verifyEmail]); /** @TODO Test if anything breaks */
-    /**@todo highlight which inputs errored*/
+    }, [isSending, verifyEmail]);
+
     return (
         <PageTitle title="Verify">
             <main id="verify">
