@@ -39,16 +39,12 @@ const Rating: React.FC = (props) => {
 
     const handleFavoriteChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = event.target.value === 'yes';
-        // console.log("New value:", newValue);
         setFormChanges({ ...formChanges, favorite: newValue });
     };
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
         setFormData({ ...formChanges });
-        // console.log('Rating:', formChanges.rating);
-        // console.log('Comment:', formChanges.comment);
-        // console.log('Favorite:', formChanges.favorite);
 
         try {
             fetch(`/send-ratings`, {
@@ -87,10 +83,6 @@ const Rating: React.FC = (props) => {
             console.log(e);
         }
     };
-
-    // useEffect(() => {
-    //     console.log("Form data:", formData);
-    // }, [formData]);
 
     return (
         <PageTitle title="Rating">
