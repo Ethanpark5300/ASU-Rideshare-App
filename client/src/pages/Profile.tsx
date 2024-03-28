@@ -42,22 +42,6 @@ const Profile: React.FC = (props) => {
         getAccountInformation();
     }, [getAccountInformation]);
 
-    // const readCookie = async () => {
-    //     fetch(`/read-cookie`, {
-    //         method: "GET",
-    //         headers: { "Content-type": "application/json" },
-    //     })
-    //         .then((res) => res.json())
-    //         .then((data) => {
-    //             if (data !== null) {
-    //                 console.log(data.Email + " " + data.FirstName + " " + data.LastName + " " + data.PhoneNumber + " " + data.AccountType);
-    //                 dispatch(setAccountStore(new Account(data.Email, data.FirstName, data.LastName, data.PhoneNumber, data.AccountType, data.PayPalEmail, data.Status)));
-    //             } else {
-    //                 dispatch(setAccountStore(undefined));
-    //             }
-    //         });
-    // };
-
     const eatCookie = async () => {
         await fetch(`/clear-cookie?userEmail=${account?.account?.email}`);
         dispatch(setAccountStore(undefined));
@@ -119,14 +103,11 @@ const Profile: React.FC = (props) => {
                     {(userType === 1) && (
                         <>
                             <p><strong>Type: </strong> Rider</p>
-                            {/* <p><strong>Status: Online</strong></p> */}
-                            {/* <p><strong>ASU ID: </strong> {}</p> */}
                             <p><strong>E-Mail: </strong> {account?.account?.email}</p>
                             <p><strong>Phone Number: </strong> {phoneNumber}</p>
                             <p><strong>PayPal Account: </strong> {paypalEmail}</p>
-                            {/* <Button label="Check Cookie" onClickFn={readCookie} /> */}
 
-                            <Button label="Nom Cookie(logout)" onClickFn={eatCookie} />
+                            <Button label="Logout" onClickFn={eatCookie} />
                             <Link to="/EditAccount">
                                 <button>Edit Account</button>
                             </Link>
@@ -136,14 +117,12 @@ const Profile: React.FC = (props) => {
                         <>
                             <p><strong>Type: </strong> Driver</p>
                             <p><strong>Status: </strong> {status}</p>
-                            {/* <p><strong>ASU ID: </strong> {}</p> */}
                             <p><strong>E-Mail: </strong> {account?.account?.email}</p>
                             <p><strong>Phone Number: </strong> {phoneNumber}</p>
                             <p><strong>PayPal Account: </strong> {paypalEmail}</p>
-                            {/* <Button label="Check Cookie" onClickFn={readCookie} /> */}
                             <button onClick={changeStatus}>Change Status</button>
 
-                            <Button label="Nom Cookie(logout)" onClickFn={eatCookie} />
+                            <Button label="Logout" onClickFn={eatCookie} />
                             <Link to="/EditAccount">
                                 <button>Edit Account</button>
                             </Link>
