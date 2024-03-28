@@ -22,7 +22,6 @@ function Register() {
 	const navigate = useNavigate();
 
     const registerRequest = useCallback(async () => {
-        //console.log("register request");
         setErrorMsg(undefined);
         setRegisterFailed(false);
         setRegisterMessage(undefined);
@@ -56,8 +55,6 @@ function Register() {
         // update state
         setIsSending(true);
 
-        //console.log("fetched");
-
         fetch(`/registration`, {
             method: "POST",
             headers: { "Content-type": "application/json" },
@@ -80,9 +77,7 @@ function Register() {
 				
             });
         setIsSending(false);
-    }, [isSending, navigate]); /** @TODO Test if anything breaks */
-
-    /**@todo highlight which inputs errored*/
+    }, [isSending, navigate]);
     return (
         <PageTitle title="Register">
             <main id="register">
