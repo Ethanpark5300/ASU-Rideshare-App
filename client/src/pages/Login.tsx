@@ -4,15 +4,11 @@ import "../styles/Login.css";
 import { useAppDispatch } from "../store/hooks";
 import { setAccountStore } from "../store/features/accountSlice";
 import { TextInput } from "../components/TextInput/TextInput";
-// import { DatabaseAccessor } from "../databases/DatabaseAccessor";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../components/Buttons/Button";
 import PageTitle from "../components/PageTitle/PageTitle";
 
-//maybe do axios stuff here
-
 function Login() {
-    // let databaseAccessor: DatabaseAccessor = DatabaseAccessor.getInstance();
     const dispatch = useAppDispatch();
 	const navigate = useNavigate();
 
@@ -76,10 +72,6 @@ function Login() {
                             inputType="password"
                         />
                     </div>
-
-                    {/*loginFailed && (
-                        <p className="LoginError">email or password is incorrect</p>
-                    )*/}
                     <Button label="Login" onClickFn={loginRequest} />
                     {loginMessage && <p className="RegisterError">{loginMessage}</p>}
                     {loginFailed && <p className="RegisterError">Login failed!</p>}
