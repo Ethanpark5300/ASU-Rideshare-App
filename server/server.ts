@@ -2,21 +2,14 @@ import 'dotenv/config'; //THIS GOES FIRST
 import nodemailer from 'nodemailer';
 import fs from 'fs';
 import { Database } from 'sqlite3';
-import express, { NextFunction } from 'express';
+import express from 'express';
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken';
 
 import sqlite3 from 'sqlite3';
-import sqlite, { open } from 'sqlite';
+import { open } from 'sqlite';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
-import { table } from 'console';
-import { randomInt, randomUUID } from 'crypto';
-//const fs = require("fs");
-//const sqlite = require("sqlite")
-//const sqlite3 = require("sqlite3");
-//const Database = sqlite3.Database;
-//const express = require("express");
 import cors from "cors";
 const app = express();
 import cookieParser from 'cookie-parser';
@@ -87,13 +80,9 @@ makeTableExist("PENDING_DRIVERS", fs.readFileSync(__dirname + '/Tables/CREATE_PE
 makeTableExist("RIDES", fs.readFileSync(__dirname + '/Tables/CREATE_RIDES_TABLE.sql').toString());
 makeTableExist("REGISTER", fs.readFileSync(__dirname + '/Tables/CREATE_REGISTER_TABLE.sql').toString());
 
-//app.get("/message", (req: Request, res: Response) => {
-//	res.json({
-//		message: "Hello from server!",
-//		haha: req.request
-//	});
-//});
-
+/**
+ * the email details to be used for sending emails
+ */
 const transporter = nodemailer.createTransport({
 	service: 'gmail',
 	auth: {
@@ -106,6 +95,7 @@ const transporter = nodemailer.createTransport({
  * 
  * @param email email to send to
  * @param verifyID unique generated ID that is sent in the content of the email
+ * @returns string error message, if one occurred, and undefined otherwise
  */
 const sendRegisterVerifyEmail = (email: string, verifyID: string): string|undefined => {
 	const mailOptions = {
@@ -130,6 +120,7 @@ const sendRegisterVerifyEmail = (email: string, verifyID: string): string|undefi
  * @param email email to send to
  * @param verifyID unique generated ID that is sent in the content of the email
  * @param newPassword new randomly generated password given to the user
+ * @returns string error message, if one occurred, and undefined otherwise
  */
 const sendPasswordVerifyEmail = (email: string,  newPassword: string): string | undefined => {
 	const mailOptions = {
@@ -151,7 +142,7 @@ const sendPasswordVerifyEmail = (email: string,  newPassword: string): string | 
 }
 /**
  * 
- * @param length
+ * @param length length of the generated password
  * @returns new random password for user to use
  */
 function createNewPassword(length: number): string {
@@ -163,12 +154,15 @@ function createNewPassword(length: number): string {
 	return password;
 }
 
-//Password request 
+/**
+ * this generates a new password and emails the account with it
+ * @param req.body.email account email
+ * @returns passwordSuccess: bool if the operation succeeded, message:string|undefined error message if one occurred
+ */
 app.post("/password_request", async (req: Request, res: Response) => {
 	let newPassword: string = createNewPassword(10);
 	const salt: string = await bcrypt.genSalt(saltRounds);
 	const hashedPassword: string = await bcrypt.hash(newPassword, salt)
-	/*console.log("password: " + req.body.newPassword);*/
 
 	database.get("SELECT 1 FROM USER_INFO WHERE Email = ?", [req.body.email], (err: Error, userExist: any) => {
 		if (userExist) {
@@ -196,16 +190,17 @@ app.post("/password_request", async (req: Request, res: Response) => {
 	});
 });
 /**
+ * this adds prospective user to register table and sends prospective user a verification string by email
  * body contains the properties email, firstName, lastName, password
+ * @param req.body.email prospective user email
+ * @param req.body.firstName first name given
+ * @param req.body.lastName last name given
+ * @param req.body.password prospective user password
+ * @returns registrationSuccess: bool if the operation succeeded, message: string|undefined error message if one occurred
  */
 app.post("/registration", async (req: Request, res: Response) => {
-	//console.log(req.body.firstName);
 	const salt: string = await bcrypt.genSalt(saltRounds);
 	const hashedPassword: string = await bcrypt.hash(req.body.password, salt)
-	//console.log("Hash: " + hashedPassword);
-	//database.all("SELECT * FROM REGISTER", (err: Error, rows: Object) => {
-	//	console.log(rows);
-	//});
 
 	database.get("SELECT 1 FROM USER_INFO WHERE Email = ?", [req.body.email], (err:Error, userExist:any) => {
 		if (userExist) {
@@ -215,7 +210,7 @@ app.post("/registration", async (req: Request, res: Response) => {
 			})
 		} else {
 			let UUID: string = generateRegisterID();
-			//console.log("UUID: " + UUID);
+
 			database.run('INSERT OR REPLACE INTO REGISTER (First_Name, Last_Name, Password_User, Email, Register_ID) VALUES(?,?,?,?,?)', [req.body.firstName, req.body.lastName, hashedPassword, req.body.email, UUID], (err: Error, rows: Object) => {
 				if (err) {
 					hadError = true;
@@ -230,11 +225,7 @@ app.post("/registration", async (req: Request, res: Response) => {
 						hadError = true;
 					}
 				}
-				//database.all("SELECT * FROM REGISTER", (err: Error, rows: Object) => {
-				//	console.log(rows);
-				//});
-				//console.log(message + " | " + req.body.email);
-				
+
 				res.json({
 					registrationSuccess: !hadError,
 					message: message,
@@ -244,8 +235,11 @@ app.post("/registration", async (req: Request, res: Response) => {
 	});
 });
 /**
- * password 2 password verification
- * contains givenPassword, newPassword, email
+ * changes a user's password
+ * @param req.body.givenPassword the current password
+ * @param req.body.newPassword the new password to change to
+ * @param req.body.email the email of the account
+ * @returns passwordSuccess: bool if the operation succeeded, message: string|undefined error message if one occurred
  */
 app.post("/change_password", async (req: Request, res: Response) => {
 	const emailPassWrong: string = "Email or Password is incorrect";
@@ -261,12 +255,10 @@ app.post("/change_password", async (req: Request, res: Response) => {
 
 
 		if (!hadError) {
-			//console.log("Comparing: " + req.body.password + " + " + rows.Password_User)
+
 			bcrypt
 				.compare(req.body.givenPassword, rows.Password_User)
-				.then(result => {
-					//console.log(result);
-					
+				.then(result => {					
 					if (result) {
 						database.run('UPDATE USER_INFO SET Password = ? WHERE Email = ?', [req.body.newPassword, req.body.email], (err: Error, rows: Object) => {
 							if (err) {
@@ -307,11 +299,13 @@ app.post("/change_password", async (req: Request, res: Response) => {
 });
 
 /**
- * body contains the property email
+ * this sends a new email with a new verify string
+ * @param req.body.email email to resend verify string to
+ * @returns registrationSuccess: bool if the operation succeeded, message: string|undefined error message if one occurred
  */
 app.post("/resend_verification", async (req: Request, res: Response) => {
 	let UUID: string = generateRegisterID();
-	console.log("email: " + req.body.email);
+
 	database.run('UPDATE REGISTER SET Register_ID = ? WHERE Email = ?', [UUID, req.body.email], (err: Error, rows: Object) => {
 		if (err) {
 			hadError = true;
@@ -320,10 +314,7 @@ app.post("/resend_verification", async (req: Request, res: Response) => {
 			hadError = false;
 			message = undefined;
 		}
-		//database.all("SELECT * FROM REGISTER", (err: Error, rows: Object) => {
-		//	console.log(rows);
-		//});
-		//console.log(message + " | " + req.body.email);
+
 		setVerifyCookie(res, req.body.email);
 		sendRegisterVerifyEmail(req.body.email, UUID);
 		res.json({
@@ -334,11 +325,10 @@ app.post("/resend_verification", async (req: Request, res: Response) => {
 });
 
 /**
- * body contains the property register_ID
+ * @param req.bbody.register_ID verify string inputted by user
+ * @returns registrationSuccess:bool if the operation succeeded, message:string|undefined error message if one occurred
  */
 app.post("/registration_verification", (req: Request, res: Response) => {
-
-	//console.log(req.signedCookies.registerCookie);
 	if (req.signedCookies.registerCookie === undefined) {
 		res.json({
 			registrationSuccess: false,
@@ -356,7 +346,6 @@ app.post("/registration_verification", (req: Request, res: Response) => {
 			hadError = false;
 			message = undefined;
 		}
-		//console.log(row);
 		if (hadError) {
 			res.json({
 				registrationSuccess: false,
@@ -364,8 +353,6 @@ app.post("/registration_verification", (req: Request, res: Response) => {
 			});
 			return;
 		}
-		
-		//console.log("Compare " + row.Register_ID + " = " + req.body.register_ID);
 
 		if (row.Register_ID === req.body.register_ID) {
 			//do registration
@@ -380,9 +367,6 @@ app.post("/registration_verification", (req: Request, res: Response) => {
 					message = undefined;
 					setTokenCookie(res, accObj);
 				}
-				//database.all("SELECT * FROM USER_INFO", (err: Error, rows: Object) => {
-				//	console.log(rows);
-				//});
 				
 				res.json({
 					registrationSuccess: !hadError,
@@ -395,9 +379,6 @@ app.post("/registration_verification", (req: Request, res: Response) => {
 				if (err) {
 					console.error(err.message);
 				}
-				//database.all("SELECT * FROM REGISTER", (err: Error, rows: Object) => {
-				//	console.log(rows);
-				//});
 			});
 		} else {
 			res.json({
@@ -409,13 +390,11 @@ app.post("/registration_verification", (req: Request, res: Response) => {
 });
 
 /**
- * body contains the properties email, password
+ * logs in a user and makes a session token
+ * @param req.body.email user email
+ * @param req.body.password user password
  */
 app.post("/login", (req: Request, res: Response) => {
-	//console.log(req.body.email);
-	//console.log(req.body.password);
-
-
 	const emailPassWrong: string = "Email or Password is incorrect";
 
 	database.get(fs.readFileSync(__dirname + '/Tables/login.sql').toString(), [req.body.email], (err: Error, rows: any) => {
@@ -430,11 +409,9 @@ app.post("/login", (req: Request, res: Response) => {
 
 
 		if (!hadError) {
-			//console.log("Comparing: " + req.body.password + " + " + rows.Password_User)
 			bcrypt
 				.compare(req.body.password, rows.Password_User)
 				.then(result => {
-					//console.log(result);
 					let accObj = accountObject(rows);
 					if (result) {
 						setTokenCookie(res, accObj);
@@ -461,32 +438,21 @@ app.post("/login", (req: Request, res: Response) => {
 		}
 
 	});
-	//sends the user to the next screen after login(home screen)
-	//if (!hadError) {
-	//	res.cookie('name', 'user type here', options);
-	//}
-
-
 });
 /**
- * @todo return user info for account storing(email, first, last)
+ * reads cookie from signedCookies and if it is valid returns the associated account information
+ * used for maintaining login session
  * @returns user info
  */
 app.get('/read-cookie', (req: Request, res: Response) => {
-	//console.log(req.signedCookies);
-	//console.log("----");
-	//console.log(req.signedCookies.sessionToken);
-	//console.log("----");
-
 	//cookie should store something and we can get the user info afterwards
 
 	const verifyAcc: Object | undefined = verifyToken(req.signedCookies.sessionToken);
-	//console.log(verifyAcc);
 	//return null for json to not throw out errors on the client side
 	res.json(verifyAcc ?? null);
 });
 /**
- * logout
+ * logout and clear session token
  */
 app.get('/clear-cookie', async (req: Request, res: Response) => {
 	let db = await dbPromise;
@@ -498,22 +464,10 @@ app.get('/clear-cookie', async (req: Request, res: Response) => {
 	res.clearCookie('sessionToken').end();
 });
 
-function cb(err: Error | null) {
-	if (err) {
-		hadError = true;
-		message = err.message;
-	} else {
-		hadError = false;
-		message = undefined;
-	}
-}
-
 /**
  * returns an object to be put in account: object returned
- * @todo I don't know what rows type actually is, unfortunately, so fix that if able
- * 
  * @param rows returned rows from some sql statement
- * @returns
+ * @returns account object
  */
 function accountObject(rows: any) {
 	return {
@@ -529,7 +483,8 @@ function accountObject(rows: any) {
 
 /**
  * res should be passed by reference, and modified here to give a cookie to it
- * @param res
+ * @param res response to have session token cookie added to
+ * @param accObj account to be associated with session token
  */
 function setTokenCookie(res: Response, accObj: any) {
 	const options = {
@@ -554,6 +509,11 @@ function setTokenCookie(res: Response, accObj: any) {
 	res.cookie('sessionToken', sessionToken, options);
 }
 
+/**
+ * res should be passed by reference, and modified here to give a cookie to it
+ * @param res response to have verify cookie added to
+ * @param email email assosiated with verify cookie
+ */
 function setVerifyCookie(res: Response, email: string) {
 	const options = {
 		httpOnly: true,
@@ -565,6 +525,10 @@ function setVerifyCookie(res: Response, email: string) {
 	res.cookie('registerCookie', email, options);
 }
 
+/**
+ * generates a verify string using capital letters and numbers
+ * @returns verify string
+ */
 function generateRegisterID(): string {
 	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 	let ID = '';
@@ -576,7 +540,7 @@ function generateRegisterID(): string {
 
 /**
  * Verifies the session token is proper. Returned value can be used as true on success, false on error
- * @param token
+ * @param token session token
  * @returns object with account details if validated, and undefined if error
  */
 const verifyToken = function (token: string): Object | undefined {
@@ -588,7 +552,11 @@ const verifyToken = function (token: string): Object | undefined {
 
 }
 
-/** Send block info to the blocked database */
+/**
+ *  Send block info to the blocked database
+ * @param req.body.blocker the user email blocking
+ * @param req.body.blockee the user email getting blocked
+ */
 app.post("/send-blocked", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let blocker_ID = req.body.blocker;
@@ -599,7 +567,10 @@ app.post("/send-blocked", async (req: Request, res: Response) => {
 	await db.run('INSERT INTO BLOCKED (Blocker_ID, Blockee_ID, Date, Time) VALUES (?,?,?,?)', blocker_ID, blockee_ID, currentDate, currentTime);
 });
 
-/** @returns blocked list for specific user */
+/**
+ * @param req.query.userid user email 
+ * @returns blocked list for specific user 
+ */
 app.get("/get-blocked-list", async (req:  Request, res: Response) => {
 	let db = await dbPromise;
 	let user = req.query.userid;
@@ -612,7 +583,14 @@ app.get("/get-blocked-list", async (req:  Request, res: Response) => {
 	});
 });
 
-/** Unblocking users for specific user */
+/** 
+ * @todo fix me; edge cases exist for people with same first/last
+ * Unblocking users for specific user 
+ * @param req.body.userid email
+ * @param req.body.selectedFirstName first name of blockee
+ * @param req.body.selectedLastName last name of blockee
+ * @returns blocked list for user
+ */
 app.post("/unblock-user", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let user = req.body.userid;
@@ -632,7 +610,15 @@ app.post("/unblock-user", async (req: Request, res: Response) => {
 	});
 });
 
-/** Insert ratings to ratings table and calculate/update average ratings */
+/** 
+ * @todo check to see if send-ratings client side actually has a ratee, and fix me
+ * Insert ratings to ratings table and calculate/update average ratings 
+ * @param req.body.rater user email for rater
+ * @param req.body.ratee @todo should exist, user email for ratee
+ * @param req.body.star_rating rating
+ * @param req.body.comments rater comments
+ * @param req.body.favorited_driver bool if rater favorited ratee
+ */
 app.post("/send-ratings", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let rater_ID = req.body.rater;
@@ -659,7 +645,6 @@ app.post("/send-ratings", async (req: Request, res: Response) => {
 
 		let updatedAvgRating = (defaultRating.Rating_Passenger * ratings.length + star_rating) / (ratings.length + 1);
 		await db.run(`UPDATE USER_INFO SET Rating_Passenger = ? WHERE Email = ?`, updatedAvgRating, ratee_ID);
-		// console.log(`${ratee_ID}'s average rating updated`);
 	} 
 	else { /** Calculate and update driver's average rating */
 		let defaultRating = await db.get(`SELECT Rating_Driver FROM USER_INFO WHERE Email = '${ratee_ID}'`);
@@ -672,7 +657,6 @@ app.post("/send-ratings", async (req: Request, res: Response) => {
 
 		let updatedAvgRating = (defaultRating.Rating_Driver * ratings.length + star_rating) / (ratings.length + 1);
 		await db.run(`UPDATE USER_INFO SET Rating_Driver = ? WHERE Email = ?`, updatedAvgRating, ratee_ID);
-		// console.log(`${ratee_ID}'s average rating updated`);
 
 		/** Send favorite request to specific driver if favoriteDriverRequest returns true */
 		if (favoriteDriverRequest) await db.run(`INSERT INTO favorites (rider_id, driver_id, date, status) VALUES (?,?,?,?)`, rater_ID, ratee_ID, currentDate, "Pending");
@@ -680,18 +664,17 @@ app.post("/send-ratings", async (req: Request, res: Response) => {
 });
 
 /**
- * @returns rider's favorites and pending favorites list
- * @returns driver's pending favorites list
+ * @param req.query.userid user email to fetch favorites for
+ * @returns getRidersFavoritesList rider's favorites and pending favorites list
+ * @returns getDriversPendingFavoritesList driver's pending favorites list
  */
 app.get("/get-favorites-list", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let user = req.query.userid;
 
 	let setRidersFavoritesList = await db.all(`SELECT favorites.favorite_id,user_info.first_name,user_info.last_name,favorites.status,favorites.date FROM user_info INNER JOIN favorites ON user_info.email = favorites.driver_id WHERE favorites.rider_id = ?`, [user]);
-	// console.log(setFavoritesList);
 
 	let setDriversPendingFavoritesList = await db.all(`SELECT favorites.favorite_id,user_info.first_name,user_info.last_name,favorites.date FROM user_info INNER JOIN favorites ON user_info.email = favorites.rider_id WHERE status = "Pending" AND favorites.driver_id = ?`, [user]);
-	// console.log(setDriversPendingFavoritesList);
 
 	res.json ({
 		getRidersFavoritesList: setRidersFavoritesList,
@@ -699,7 +682,14 @@ app.get("/get-favorites-list", async (req: Request, res: Response) => {
 	});
 });
 
-/** Unfavorite driver */
+/** 
+ * @todo fix me, edge cases with same first/last exist
+ * Unfavorite driver 
+ * @param req.body.userid rider email
+ * @param req.body.selectedFirstName first name of driver
+ * @param req.body.selectedLastName last name of driver 
+ * @returns getRidersFavoritesList list of favorites
+ */
 app.post("/unfavorite-driver", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let riderid = req.body.userid;
@@ -721,29 +711,39 @@ app.post("/unfavorite-driver", async (req: Request, res: Response) => {
 	});
 });
 
-/** Accept rider favorite request */
+/** 
+ * @todo fix me, edge cases with same first/last exist
+ * Accept rider favorite request 
+ * @param req.body.userid user email
+ * @param req.body.selectedFirstName first name of rider
+ * @param req.body.selectedLastName last name of rider
+ * @returns getDriversPendingFavoritesList
+ */
 app.post("/accept-favorite-request", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let driverid = req.body.userid;
 	let riderFirstName = req.body.selectedFirstName;
 	let riderLastName = req.body.selectedLastName;
-	// console.log("Selected rider: " + riderFirstName + " " + riderLastName);
 
 	let riderEmail = await db.get(`SELECT email FROM user_info WHERE first_name = '${riderFirstName}' AND last_name = '${riderLastName}'`);
-	// console.log("Selected rider email:", riderEmail.Email);
 
 	await db.run(`UPDATE favorites SET status = "Favorited" WHERE driver_id = '${driverid}' AND rider_id = '${riderEmail.Email}'`);
-	// console.log(`${driverid} accepted ${riderEmail.Email}'s favorite request`);
 
 	let setDriversPendingFavoritesList = await db.all(`SELECT favorites.favorite_id,user_info.first_name,user_info.last_name,favorites.date FROM user_info INNER JOIN favorites ON user_info.email = favorites.rider_id WHERE status = "Pending" AND favorites.driver_id = ?`, [driverid]);
-	// console.log(setPendingFavoritesList);
 
 	res.json({
 		getDriversPendingFavoritesList: setDriversPendingFavoritesList
 	});
 });
 
-/** Decline rider favorite request */
+/** 
+ * @todo fix me, edge cases with same first/last exist
+ * Decline rider favorite request 
+ * @param req.body.userid user email
+ * @param req.body.selectedFirstName first name of requester
+ * @param req.body.selectedLastName last name of requester
+ * @returns getDriversPendingFavoritesList
+ */
 app.post("/decline-favorite-request", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let driverid = req.body.userid;
@@ -765,7 +765,13 @@ app.post("/decline-favorite-request", async (req: Request, res: Response) => {
 	});
 });
 
-/** Send report to reports database */
+/** 
+ * Send report to reports database 
+ * @param req.body.reporter reporter email
+ * @param req.body.reportee reportee email
+ * @param req.body.reason report reason
+ * @param req.body.comments reporter comments
+ */
 app.post("/send-report", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let reporter_ID = req.body.reporter;
@@ -778,7 +784,12 @@ app.post("/send-report", async (req: Request, res: Response) => {
 	await db.run(`INSERT INTO REPORTS (Reporter_ID, Reportee_ID, Reason, Comments, Date, Time) VALUES (?,?,?,?,?,?)`, reporter_ID, reportee_ID, reason, comments, currentDate, currentTime);
 });
 
-/** Send payment to payments database */
+/** 
+ * Send payment to payments database 
+ * @param req.body.Rider_ID rider email
+ * @param req.body.Driver_ID driver email
+ * @param req.body.rideCost cost of ride
+ */
 app.post("/send-payment", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let rider_ID = req.body.Rider_ID;
@@ -794,7 +805,14 @@ app.post("/send-payment", async (req: Request, res: Response) => {
 	await db.run(`DELETE FROM PAYMENTS WHERE Payment_ID NOT IN (SELECT MIN(Payment_ID) FROM PAYMENTS GROUP BY Rider_ID, Driver_ID, Ride_Cost, Date, Time)`);
 });
 
-/** Update account information */
+/** 
+ * Update account information, but not payment information and update session token
+ * @param req.body.userEmail user email
+ * @param req.body.newFirstName updated first name
+ * @param req.body.newLastName updated last name
+ * @param req.body.newAccountType updated account type
+ * @param req.body.newPhoneNumber updated phone number
+ */
 app.post("/edit-account", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let account = {
@@ -802,16 +820,18 @@ app.post("/edit-account", async (req: Request, res: Response) => {
 		FirstName: req.body.newFirstName,
 		LastName: req.body.newLastName,
 		AccountType: req.body.newAccountType,
-		// PayPalEmail: req.body.newPaypalEmail,
 		PhoneNumber: req.body.newPhoneNumber,
 	};
 
-	// await db.run(`UPDATE USER_INFO SET First_Name = ?, Last_Name = ?, Type_User = ?, Pay_Pal = ?, Phone_Number = ? WHERE Email = ?`, [account.FirstName, account.LastName, account.AccountType, account.PayPalEmail, account.PhoneNumber, account.Email]);
 	await db.run(`UPDATE USER_INFO SET First_Name = ?, Last_Name = ?, Type_User = ?, Phone_Number = ? WHERE Email = ?`, [account.FirstName, account.LastName, account.AccountType, account.PhoneNumber, account.Email]);
 	setTokenCookie(res, account);
 });
 
-/** Update payment information */
+/** 
+ * Update payment information and update session token
+ * @param req.body.userEmail user email
+ * @param req.body.newPayPalEmail new payment email
+ */
 app.post("/edit-payment-information", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let account = { 
@@ -823,20 +843,26 @@ app.post("/edit-payment-information", async (req: Request, res: Response) => {
 	setTokenCookie(res, account);
 });
 
-/** @returns account information */
+/** 
+ * @returns account information 
+ * @param req.query.accountEmail user email to view account for
+ */
 app.get("/view-account-info", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let userEmail = req.query.accountEmail;
 
 	let account = await db.all(`SELECT * FROM USER_INFO WHERE Email = ?`, [userEmail]);
-	// console.log(account);
 
 	res.json({
 		account: account[0]
 	});
 });
 
-/** Changes driver status to online/offline */
+/** 
+ * Changes driver status to online/offline and update session token
+ * @param req.body.userEmail user email
+ * @param req.body.currentStatus current status(not the one to change to)
+ */
 app.post("/change-status", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	
@@ -844,8 +870,6 @@ app.post("/change-status", async (req: Request, res: Response) => {
 		Email: req.body.userEmail,
 		currentStatus: req.body.currentStatus
 	}
-
-	// console.log("Current status:", account.currentStatus);
 
 	if (account.currentStatus === "Online") await db.run(`UPDATE USER_INFO SET Status_User = 'Offline' WHERE Email = '${account.Email}'`);
 	else await db.run(`UPDATE USER_INFO SET Status_User = 'Online' WHERE Email = '${account.Email}'`);
@@ -871,7 +895,13 @@ app.post("/change-status", async (req: Request, res: Response) => {
 
 /** Rider actions */
 
-/** Sends ride information to ride queue table */
+/** 
+ * Sends ride information to ride queue table 
+ * @param req.body.rider_id rider email
+ * @param req.body.pickupLocation pickup location
+ * @param req.body.dropoffLocation destination
+ * @param req.body.rideCost cost of ride
+ */
 app.post("/ride-queue", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let rider_id = req.body.rider_id;
@@ -887,7 +917,10 @@ app.post("/ride-queue", async (req: Request, res: Response) => {
 	await db.run(`INSERT INTO RIDES (Rider_ID, Rider_FirstName, Rider_LastName, Pickup_Location, Dropoff_Location, Ride_Cost, Ride_Date, Status) VALUES (?,?,?,?,?,?,?,?)`, rider_id, riderFirstName.First_Name, riderLastName.Last_Name, pickupLocation, dropoffLocation, rideCost, currentDate, "QUEUED");
 });
 
-/** Riders cancelling from choose drivers page */
+/** 
+ * Riders cancelling from choose drivers page 
+ * @param req.query.riderid rider email
+ */
 app.get("/cancel-request", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let rider_id = req.query.riderid;
@@ -896,7 +929,11 @@ app.get("/cancel-request", async (req: Request, res: Response) => {
 	await db.run(`DELETE FROM PENDING_DRIVERS WHERE Rider_ID = '${rider_id}'`);
 });
 
-/** @returns available drivers */
+/** 
+ * gets available drivers
+ * @param req.query.riderid rider email
+ * @returns availableFavoriteDrivers and otherAvaialableDrivers
+ */
 app.get("/available-drivers", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let riderEmail = req.query.riderid;
@@ -929,7 +966,14 @@ app.get("/available-drivers", async (req: Request, res: Response) => {
 	});
 });
 
-/** Request specific driver */
+/** 
+ * @todo fix me, edge cases exist for same first/last
+ * Request specific driver 
+ * @param req.body.rider rider email
+ * @param req.body.selectedDriverFirstName first name of driver
+ * @param req.body.selectedDriverLastName last name of driver
+ * @returns pendingDriversList
+ */
 app.post("/request-driver", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let rider_id = req.body.rider;
@@ -950,7 +994,14 @@ app.post("/request-driver", async (req: Request, res: Response) => {
 	});
 });
 
-/** Cancel request specific driver */
+/** 
+ * @todo fix me, edge cases exist for same first/last
+ * Cancel request specific driver 
+ * @param req.body.rider rider email
+ * @param req.body.selectedDriverFirstName first name of driver
+ * @param req.body.selectedDriverLastName last name of driver
+ * @returns cancelledDriver: string the cancelled drivers email
+ */
 app.post("/cancel-request-driver", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let rider_id = req.body.rider;
@@ -967,7 +1018,12 @@ app.post("/cancel-request-driver", async (req: Request, res: Response) => {
 	});
 });
 
-/** Check if any driver accepted rider request */
+/** 
+ * @todo return false rather than undefined
+ * Check if any driver accepted rider request 
+ * @param req.query.riderid rider email
+ * @returns recievedDriver: bool|undefined if accepted return true 
+ */
 app.get("/check-driver-accepted-status", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let riderid = req.query.riderid;
@@ -984,7 +1040,12 @@ app.get("/check-driver-accepted-status", async (req: Request, res: Response) => 
 	});
 });
 
-/** @returns ride payment information to payment page */
+/** 
+ * @todo convert all of these db.gets into a single one
+ * gets ride payment info
+ * @param req.query.riderid rider email
+ * @returns ride payment information to payment page 
+ */
 app.get("/get-ride-payment-information", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let riderid = req.query.riderid;
@@ -1006,7 +1067,10 @@ app.get("/get-ride-payment-information", async (req: Request, res: Response) => 
 	});
 });
 
-/** Riders cancelling their ride on the payment page */
+/**
+ * Riders cancelling their ride on the payment page 
+ * @param req.body.riderid rider email
+ */
 app.post("/cancel-ride-from-payment", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let rider = req.body.riderid;
@@ -1014,7 +1078,11 @@ app.post("/cancel-ride-from-payment", async (req: Request, res: Response) => {
 	await db.run(`UPDATE rides SET status = "CANCELLED(RIDER)" WHERE rider_id = '${rider}' AND status = "PAYMENT"`);
 });
 
-/** Check if driver has arrived */
+/** 
+ * Check if driver has arrived 
+ * @param req.query.riderid rider email
+ * @returns getDriverArrivedStatus
+ */
 app.get("/check-if-driver-arrived", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let riderid = req.query.riderid;
@@ -1032,7 +1100,11 @@ app.get("/check-if-driver-arrived", async (req: Request, res: Response) => {
 
 /** Driver actions */
 
-/** @returns available riders */
+/** 
+ * get rider queue
+ * @param req.query.driveremail driver email
+ * @returns pendingRiderRequestsList, allRequestsList 
+ */
 app.get("/ride-queue", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let driverEmail = req.query.driveremail;
@@ -1061,19 +1133,21 @@ app.get("/ride-queue", async (req: Request, res: Response) => {
 	});
 });
 
-/** Driver accepting rider request */
+/** 
+ * @todo fix me, edge cases with same first/last
+ * Driver accepting rider request 
+ * @param req.body.driverid driver email
+ * @param req.body.selectedRiderFirstName rider first name
+ * @param req.body.selectedRiderLastName rider last name
+ */
 app.post("/accept-ride-request", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let driver = req.body.driverid;
 	let riderFirstName = req.body.selectedRiderFirstName;
 	let riderLastName = req.body.selectedRiderLastName;
-	// console.log("Selected rider first name:", riderFirstName);
-	// console.log("Selected rider last name:", riderLastName);
 
 	let driverFirstName = await db.get(`SELECT first_name FROM user_info WHERE email='${driver}'`);
 	let driverLastName = await db.get(`SELECT last_name FROM user_info WHERE email='${driver}'`);
-	// console.log("Current driver first name:", driverFirstName.First_Name);
-	// console.log("Current driver last name:", driverLastName.Last_Name);
 
 	/** Update driver information to selected ride request */
 	await db.run(`UPDATE rides SET driver_id = ?, driver_firstname = ?, driver_lastname = ? WHERE rider_firstname = '${riderFirstName}' AND rider_lastname = '${riderLastName}' AND Status = "QUEUED"`, [driver, driverFirstName.First_Name, driverLastName.Last_Name]);
@@ -1082,7 +1156,10 @@ app.post("/accept-ride-request", async (req: Request, res: Response) => {
 	await db.run(`UPDATE rides SET status = "PAYMENT" WHERE rider_firstname = '${riderFirstName}' AND rider_lastname = '${riderLastName}' AND status = "QUEUED"`);
 });
 
-/** @returns ride information */
+/** 
+ * @param req.query.userid user email
+ * @returns riderRideInfo, driverRideInfo
+ */
 app.get("/get-ride-information", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let userid = req.query.userid;
@@ -1096,7 +1173,11 @@ app.get("/get-ride-information", async (req: Request, res: Response) => {
 	});
 });
 
-/** Check if rider payed driver */
+/** 
+ * Check if rider payed driver 
+ * @param req.query.driverid driver email
+ * @returns rideStatus: string the current ride payment status
+ */
 app.get("/get-rider-payment-status", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let driverid = req.query.driverid;
@@ -1110,52 +1191,47 @@ app.get("/get-rider-payment-status", async (req: Request, res: Response) => {
 	});
 });
 
-/** Cancelling ride */
+/** 
+ * @todo return error message if one occurs instead of just printing to server console
+ * Cancelling ride 
+ * @param req.body.userid user email
+ * @param req.body.passedCancellation bool for cancellation passed deadline
+ */
 app.post("/cancel-ride", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let userid = req.body.userid;
 	let passedCancellation: boolean = req.body.passedCancellation;
-	// console.log(passedCancellation);
 
 	let userType = await db.get(`SELECT type_user FROM user_info WHERE email = '${userid}'`);
-	// console.log(userType.Type_User);
 
 	/** Rider cancelling before deadline */
 	if (userType.Type_User === 1 && passedCancellation === false) {
-		// console.log("Rider cancelling before deadline");
 		await db.run(`UPDATE rides SET status = "CANCELLED(RIDER)" WHERE rider_id = '${userid}' AND status = "PAID"`);
 	}
 	
 	/** Rider cancelling after deadline */
 	else if (userType.Type_User === 1 && passedCancellation === true) {
-		// console.log("Rider cancelling after deadline");
 		await db.run(`UPDATE rides SET status = "CANCELLED(RIDER)" WHERE rider_id = '${userid}' AND status = "PAID" || status = "PAYMENT"`);
 
 		let currentWarnings = await db.get(`SELECT warnings FROM user_info WHERE email = '${userid}'`);
-		// console.log("Current warnings:", currentWarnings);
 
 		let newWarningsCount = currentWarnings.Warnings + 1;
-		// console.log("New warnings:", newWarningsCount);
 
 		await db.get(`UPDATE user_info SET warnings = '${newWarningsCount}' WHERE email = '${userid}'`);
 	}
 
 	/** Driver cancelling before deadline */
 	else if (userType.Type_User === 2 && passedCancellation === false) {
-		// console.log("Driver cancelling before deadline");
 		await db.run(`UPDATE rides SET status = "CANCELLED(DRIVER)" WHERE driver_id = '${userid}' AND status = "PAID" OR status = "PAYMENT"`);
 	}
 	
 	/** Driver cancelling after deadline */
 	else if (userType.Type_User === 2 && passedCancellation === true) {
-		// console.log("Driver cancelling after deadline");
 		await db.run(`UPDATE rides SET status = "CANCELLED(DRIVER)" WHERE driver_id = '${userid}' AND status = "PAID" OR status = "PAYMENT"`);
 
 		let currentWarnings = await db.get(`SELECT warnings FROM user_info WHERE email = '${userid}'`);
-		// console.log("Current warnings:", currentWarnings);
 
 		let newWarningsCount = currentWarnings.Warnings + 1;
-		// console.log("New warnings:", newWarningsCount);
 
 		await db.get(`UPDATE user_info SET warnings = '${newWarningsCount}' WHERE email = '${userid}'`);
 	}
@@ -1165,7 +1241,11 @@ app.post("/cancel-ride", async (req: Request, res: Response) => {
 	}
 });
 
-/** Check if driver cancelled ride */
+/** 
+ * Check if driver cancelled ride 
+ * @param req.query.riderid rider email
+ * @returns getCancellationStatus
+ */
 app.get("/check-driver-cancellation-status", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let riderid = req.query.riderid;
@@ -1180,7 +1260,11 @@ app.get("/check-driver-cancellation-status", async (req: Request, res: Response)
 	});
 });
 
-/** Check if rider cancelled ride */
+/** 
+ * Check if rider cancelled ride
+ * @param req.query.driverid driver email
+ * @returns getCancellationStatus
+ */
 app.get("/check-rider-cancellation-status", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let driverid = req.query.driverid;
@@ -1195,7 +1279,10 @@ app.get("/check-rider-cancellation-status", async (req: Request, res: Response) 
 	});
 });
 
-/** Change status to waiting(driver) to show driver arrived */
+/** 
+ * Change status to waiting(driver) to show driver arrived
+ * @param req.body.driverid driver email 
+ */
 app.post("/driver-arrived-pickup", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let driverid = req.body.driverid;
@@ -1203,7 +1290,10 @@ app.post("/driver-arrived-pickup", async (req: Request, res: Response) => {
 	await db.run(`UPDATE rides SET status = "WAITING(DRIVER)" WHERE driver_id = '${driverid}' AND status = "PAID"`);
 })
 
-/** Starting the ride */
+/** 
+ * Starting the ride 
+ * @param req.body.driverid driver email
+ */
 app.post("/start-ride", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let driverid = req.body.driverid;
