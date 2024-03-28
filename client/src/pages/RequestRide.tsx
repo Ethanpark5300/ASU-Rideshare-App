@@ -236,7 +236,6 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
 
     const buildingOptions: BuildingOption[] = buildingsData.buildings.map((building: Building) => ({
         value: building.code,
-        // label: `${building.code} - ${building.name} (${building.address})`,
         label: `${building.code} - ${building.name}`,
         address: building.address,
     }));
