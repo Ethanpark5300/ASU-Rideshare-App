@@ -191,7 +191,6 @@ app.post("/password_request", async (req: Request, res: Response) => {
 });
 /**
  * this adds prospective user to register table and sends prospective user a verification string by email
- * body contains the properties email, firstName, lastName, password
  * @param req.body.email prospective user email
  * @param req.body.firstName first name given
  * @param req.body.lastName last name given
@@ -199,6 +198,13 @@ app.post("/password_request", async (req: Request, res: Response) => {
  * @returns registrationSuccess: bool if the operation succeeded, message: string|undefined error message if one occurred
  */
 app.post("/registration", async (req: Request, res: Response) => {
+	if (!req.body.email.endsWith("@asu.edu")) {
+		res.json({
+			registrationSuccess: false,
+			message: "Email is not an ASU email!",
+		});
+		return;
+	}
 	const salt: string = await bcrypt.genSalt(saltRounds);
 	const hashedPassword: string = await bcrypt.hash(req.body.password, salt)
 
