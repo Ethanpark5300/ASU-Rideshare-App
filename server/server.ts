@@ -579,10 +579,9 @@ app.post("/send-blocked", async (req: Request, res: Response) => {
  */
 app.get("/get-blocked-list", async (req:  Request, res: Response) => {
 	let db = await dbPromise;
-	let user = req.query.userid;
+	let userid = req.query.userid;
 
-	let getBlockedList = await db.all(`SELECT blocked.blocked_id,user_info.first_name,user_info.last_name,blocked.date FROM user_info INNER JOIN blocked ON user_info.email = blocked.blockee_id WHERE blocked.blocker_id = ?`, [user]);
-	// console.log(getBlockedList);
+	let getBlockedList = await db.all(`SELECT blocked.blocked_id, blocked.blockee_id, user_info.first_name, user_info.last_name, blocked.date FROM user_info INNER JOIN blocked ON user_info.email = blocked.blockee_id WHERE blocked.blocker_id = '${userid}'`);
 
 	res.json({
 		blockedList: getBlockedList,
@@ -590,26 +589,19 @@ app.get("/get-blocked-list", async (req:  Request, res: Response) => {
 });
 
 /** 
- * @todo fix me; edge cases exist for people with same first/last
  * Unblocking users for specific user 
  * @param req.body.userid email
- * @param req.body.selectedFirstName first name of blockee
- * @param req.body.selectedLastName last name of blockee
- * @returns blocked list for user
+ * @param req.body.selectedUser email of blockee
+ * @returns updated blocked list for user
  */
 app.post("/unblock-user", async (req: Request, res: Response) => {
 	let db = await dbPromise;
-	let user = req.body.userid;
-	let selectedUserFirstName = req.body.selectedFirstName;
-	let selectedUserLastName = req.body.selectedLastName;
-	
-	let blockeeUser = await db.get(`SELECT email FROM user_info WHERE first_name ='${selectedUserFirstName}' AND last_name ='${selectedUserLastName}'`);
-	// console.log(blockeeUser.Email);
+	let userid = req.body.userid;
+	let selectedUser = req.body.selectedUserEmail;
 
-	await db.run(`DELETE FROM blocked WHERE blocker_id = '${user}' AND blockee_id = '${blockeeUser.Email}'`);
-	// console.log(`${user} unblocked ${blockeeUser.Email}`);
+	await db.run(`DELETE FROM blocked WHERE blocker_id = '${userid}' AND blockee_id = '${selectedUser}'`);
 
-	let getBlockedList = await db.all(`SELECT blocked.blocked_id,user_info.first_name,user_info.last_name,blocked.date FROM user_info INNER JOIN blocked ON user_info.email = blocked.blockee_id WHERE blocked.blocker_id = ?`, [user]);
+	let getBlockedList = await db.all(`SELECT blocked.blocked_id, blocked.blockee_id, user_info.first_name, user_info.last_name, blocked.date FROM user_info INNER JOIN blocked ON user_info.email = blocked.blockee_id WHERE blocked.blocker_id = '${userid}'`);
 
 	res.json({
 		blockedList: getBlockedList,

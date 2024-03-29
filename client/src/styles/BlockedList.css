@@ -24,6 +24,10 @@
     justify-content: center;
 }
 
+#blocked-list table {
+    margin-inline: auto;
+}
+
 #blocked-list button {
     border-radius: 1000px;
     cursor: pointer;

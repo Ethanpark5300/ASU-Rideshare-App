@@ -2,10 +2,11 @@ import '../styles/FavoritesList.css';
 import PageTitle from '../components/PageTitle/PageTitle';
 import { useCallback, useEffect, useState } from 'react';
 import { useAppSelector } from '../store/hooks';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function FavoritesList() {
     const account = useAppSelector((state) => state.account);
+    const navigate = useNavigate();
     const [userType, setUserType] = useState<number>();
     const [ridersFavoritesList, setRidersFavoritesList] = useState<any[]>([]);
     const [driversPendingFavoritesList, setDriversPendingFavoritesList] = useState<any[]>([]);
@@ -171,9 +172,7 @@ function FavoritesList() {
                 )}
                 <div className="favorites-btns-container">
                     <button onClick={getFavoritesList} className='refresh-btn'>Refresh</button>
-                    <Link to="/Profile">
-                        <button className='back-to-profile-btn'>Back to Profile</button>
-                    </Link>
+                    <button className='back-to-profile-btn' onClick={() => navigate("/")}>Back to Profile</button>
                 </div>
             </main>
         </PageTitle>

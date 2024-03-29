@@ -17,21 +17,19 @@ function BlockedList() {
         }
     }, [account?.account?.email]);
 
-    const unblockUser = async (selectedUser: { First_Name: string; Last_Name: string; }) => {
+    const unblockUser = async (selectedUser: { Blockee_ID: string; }) => {
         try {
             await fetch(`/unblock-user`, {
                 method: "POST",
                 headers: { "Content-type": "application/json" },
                 body: JSON.stringify({
                     userid: account?.account?.email,
-                    selectedFirstName: selectedUser?.First_Name,
-                    selectedLastName: selectedUser?.Last_Name
+                    selectedUserEmail: selectedUser?.Blockee_ID
                 }),
             })
                 .then((res) => res.json())
                 .then((data) => {
                     setBlockedList(data.blockedList);
-                    getBlockedList();
                 });
         } catch (error) {
             console.error("Error unblocking request:", error);
@@ -50,13 +48,22 @@ function BlockedList() {
                 </header>
                 
                 {blockedList.length > 0 ? (
-                    <div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
                         {blockedList.map((blockee) => (
-                            <div key={blockee.Blocked_ID}>
-                                <p>{blockee.First_Name} {blockee.Last_Name} {blockee.Date} <button onClick={() => unblockUser(blockee)}>Remove</button></p>
-                            </div>
+                            <tr key={blockee.Blocked_ID}>
+                                <td>{blockee.First_Name} {blockee.Last_Name}</td>
+                                <td>{blockee.Date}</td>
+                                <td><button onClick={() => unblockUser(blockee)}>Remove</button></td>
+                            </tr>
                         ))}
-                    </div>
+                    </table>
                 ) : (
                     <div className = "blocked-list-container">No blocked list available.</div>
                 )}
