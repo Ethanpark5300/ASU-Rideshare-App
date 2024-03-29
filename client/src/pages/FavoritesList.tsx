@@ -51,42 +51,38 @@ function FavoritesList() {
         }
     };
 
-    const acceptFavoriteRequest = async (selectedUser: { First_Name: string; Last_Name: string; }) => {
+    const acceptFavoriteRequest = async (selectedRider: { Rider_ID: string }) => {
         try {
             await fetch(`/accept-favorite-request`, {
                 method: "POST",
                 headers: { "Content-type": "application/json" },
                 body: JSON.stringify({
-                    userid: account?.account?.email,
-                    selectedFirstName: selectedUser?.First_Name,
-                    selectedLastName: selectedUser?.Last_Name
+                    driverid: account?.account?.email,
+                    riderid: selectedRider?.Rider_ID
                 }),
             })
                 .then((res) => res.json())
                 .then((data) => {
                     setRidersFavoritesList(data.getDriversPendingFavoritesList);
-                    getFavoritesList();
                 });
         } catch (error) {
             console.error("Error unfavoriting request:", error);
         }
     };
 
-    const declineFavoriteRequest = async (selectedUser: { First_Name: string; Last_Name: string; }) => {
+    const declineFavoriteRequest = async (selectedRider: { Rider_ID: string }) => {
         try {
             await fetch(`/decline-favorite-request`, {
                 method: "POST",
                 headers: { "Content-type": "application/json" },
                 body: JSON.stringify({
-                    userid: account?.account?.email,
-                    selectedFirstName: selectedUser?.First_Name,
-                    selectedLastName: selectedUser?.Last_Name
+                    driverid: account?.account?.email,
+                    riderid: selectedRider?.Rider_ID
                 }),
             })
                 .then((res) => res.json())
                 .then((data) => {
                     setRidersFavoritesList(data.getDriversPendingFavoritesList);
-                    getFavoritesList();
                 });
         } catch (error) {
             console.error("Error unfavoriting request:", error);
