@@ -32,21 +32,19 @@ function FavoritesList() {
         }
     }, [account?.account?.email]);
 
-    const unfavoriteUser = async (selectedUser: { First_Name: string; Last_Name: string; }) => {
+    const unfavoriteDriver = async (selectedDriver: { Driver_ID: string; }) => {
         try {
             await fetch(`/unfavorite-driver`, {
                 method: "POST",
                 headers: { "Content-type": "application/json" },
                 body: JSON.stringify({
-                    userid: account?.account?.email,
-                    selectedFirstName: selectedUser?.First_Name,
-                    selectedLastName: selectedUser?.Last_Name
+                    riderid: account?.account?.email,
+                    selectedDriver: selectedDriver?.Driver_ID
                 }),
             })
                 .then((res) => res.json())
                 .then((data) => {
                     setRidersFavoritesList(data.getRidersFavoritesList);
-                    getFavoritesList();
                 });
         } catch (error) {
             console.error("Error unfavoriting request:", error);
@@ -126,7 +124,7 @@ function FavoritesList() {
                                             <td>{favorite.First_Name} {favorite.Last_Name}</td>
                                             <td>{favorite.Status}</td>
                                             <td>{favorite.Date}</td>
-                                            <td><button className='remove-btn' onClick={() => unfavoriteUser(favorite)}>Remove</button></td>
+                                            <td><button className='remove-btn' onClick={() => unfavoriteDriver(favorite)}>Remove</button></td>
                                         </tr>
                                     ))}
                                 </tbody>

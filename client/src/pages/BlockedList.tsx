@@ -24,7 +24,7 @@ function BlockedList() {
                 headers: { "Content-type": "application/json" },
                 body: JSON.stringify({
                     userid: account?.account?.email,
-                    selectedUserEmail: selectedUser?.Blockee_ID
+                    selectedUser: selectedUser?.Blockee_ID
                 }),
             })
                 .then((res) => res.json())

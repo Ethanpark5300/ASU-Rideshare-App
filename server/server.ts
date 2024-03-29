@@ -577,7 +577,7 @@ app.post("/send-blocked", async (req: Request, res: Response) => {
  * @param req.query.userid user email 
  * @returns blocked list for specific user 
  */
-app.get("/get-blocked-list", async (req:  Request, res: Response) => {
+app.get("/get-blocked-list", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let userid = req.query.userid;
 
@@ -597,7 +597,7 @@ app.get("/get-blocked-list", async (req:  Request, res: Response) => {
 app.post("/unblock-user", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let userid = req.body.userid;
-	let selectedUser = req.body.selectedUserEmail;
+	let selectedUser = req.body.selectedUser;
 
 	await db.run(`DELETE FROM blocked WHERE blocker_id = '${userid}' AND blockee_id = '${selectedUser}'`);
 
@@ -668,11 +668,10 @@ app.post("/send-ratings", async (req: Request, res: Response) => {
  */
 app.get("/get-favorites-list", async (req: Request, res: Response) => {
 	let db = await dbPromise;
-	let user = req.query.userid;
+	let userid = req.query.userid;
 
-	let setRidersFavoritesList = await db.all(`SELECT favorites.favorite_id,user_info.first_name,user_info.last_name,favorites.status,favorites.date FROM user_info INNER JOIN favorites ON user_info.email = favorites.driver_id WHERE favorites.rider_id = ?`, [user]);
-
-	let setDriversPendingFavoritesList = await db.all(`SELECT favorites.favorite_id,user_info.first_name,user_info.last_name,favorites.date FROM user_info INNER JOIN favorites ON user_info.email = favorites.rider_id WHERE status = "Pending" AND favorites.driver_id = ?`, [user]);
+	let setRidersFavoritesList = await db.all(`SELECT favorites.favorite_id, favorites.driver_id, user_info.first_name, user_info.last_name, favorites.status, favorites.date FROM user_info INNER JOIN favorites ON user_info.email = favorites.driver_id WHERE favorites.rider_id = '${userid}'`);
+	let setDriversPendingFavoritesList = await db.all(`SELECT favorites.favorite_id, favorites.rider_id, user_info.first_name, user_info.last_name, favorites.date FROM user_info INNER JOIN favorites ON user_info.email = favorites.rider_id WHERE status = "Pending" AND favorites.driver_id = '${userid}'`);
 
 	res.json ({
 		getRidersFavoritesList: setRidersFavoritesList,
@@ -681,28 +680,19 @@ app.get("/get-favorites-list", async (req: Request, res: Response) => {
 });
 
 /** 
- * @todo fix me, edge cases with same first/last exist
  * Unfavorite driver 
- * @param req.body.userid rider email
- * @param req.body.selectedFirstName first name of driver
- * @param req.body.selectedLastName last name of driver 
- * @returns getRidersFavoritesList list of favorites
+ * @param req.body.riderid rider email
+ * @param req.body.selectedDriver email of driver
+ * @returns getRidersFavoritesList updated list of favorites
  */
 app.post("/unfavorite-driver", async (req: Request, res: Response) => {
 	let db = await dbPromise;
-	let riderid = req.body.userid;
-	let driverFirstName = req.body.selectedFirstName;
-	let driverLastName = req.body.selectedLastName;
-	// console.log("Selected driver: " + driverFirstName + " " + driverLastName);
+	let riderid = req.body.riderid;
+	let driverid = req.body.selectedDriver;
+	
+	await db.run(`DELETE FROM favorites WHERE rider_id = '${riderid}' AND driver_id = '${driverid}'`);
 
-	let driverEmail = await db.get(`SELECT email FROM user_info WHERE first_name = '${driverFirstName}' AND last_name = '${driverLastName}'`);
-	// console.log("Selected driver email:", driverEmail.Email);
-
-	await db.run(`DELETE FROM favorites WHERE rider_id = '${riderid}' AND driver_id = '${driverEmail.Email}'`);
-	// console.log(riderid + " unfavorited " + driverEmail.Email);
-
-	let setRidersFavoritesList = await db.all(`SELECT favorites.favorite_id,user_info.first_name,user_info.last_name,favorites.status,favorites.date FROM user_info INNER JOIN favorites ON user_info.email = favorites.driver_id WHERE favorites.rider_id = '${riderid}'`);
-	// console.log(setFavoritesList);
+	let setRidersFavoritesList = await db.all(`SELECT favorites.favorite_id, favorites.driver_id, user_info.first_name, user_info.last_name, favorites.status, favorites.date FROM user_info INNER JOIN favorites ON user_info.email = favorites.driver_id WHERE favorites.rider_id = '${riderid}'`);
 
 	res.json ({
 		getRidersFavoritesList: setRidersFavoritesList,
