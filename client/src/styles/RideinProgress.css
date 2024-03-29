@@ -49,8 +49,13 @@
     color: white;
 }
 
-#ride-in-progress .refresh-btn,
-#ride-in-progress .end-ride-btn {
+#ride-in-progress .end-ride-btn,
+#ride-in-progress .refresh-btn {
     background-color: var(--brand-gold);
-    color: black;
+    color: #000;
+}
+
+#ride-in-progress .refresh-btn2 {
+    background-color: #000;
+    color: white;
 }

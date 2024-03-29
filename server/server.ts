@@ -762,7 +762,7 @@ app.post("/send-report", async (req: Request, res: Response) => {
  * Send payment to payments database 
  * @param req.body.Rider_ID rider email
  * @param req.body.Driver_ID driver email
- * @param req.body.rideCost cost of ride
+ * @param req.body.rideCost ride cost
  */
 app.post("/send-payment", async (req: Request, res: Response) => {
 	let db = await dbPromise;
@@ -871,24 +871,20 @@ app.post("/change-status", async (req: Request, res: Response) => {
 
 /** 
  * Sends ride information to ride queue table 
- * @param req.body.rider_id rider email
+ * @param req.body.riderid rider email
  * @param req.body.pickupLocation pickup location
  * @param req.body.dropoffLocation destination
  * @param req.body.rideCost cost of ride
  */
 app.post("/ride-queue", async (req: Request, res: Response) => {
 	let db = await dbPromise;
-	let rider_id = req.body.rider_id;
+	let riderid = req.body.riderid;
 	let pickupLocation = req.body.pickupLocation;
 	let dropoffLocation = req.body.dropoffLocation;
-	let cost = req.body.rideCost;
+	let rideCost = req.body.rideCost;
 	let currentDate = new Date().toLocaleDateString();
 
-	let riderFirstName = await db.get(`SELECT First_Name FROM USER_INFO WHERE Email='${rider_id}'`);
-	let riderLastName = await db.get(`SELECT Last_Name FROM USER_INFO WHERE Email='${rider_id}'`);
-	let rideCost = cost;
-
-	await db.run(`INSERT INTO RIDES (Rider_ID, Rider_FirstName, Rider_LastName, Pickup_Location, Dropoff_Location, Ride_Cost, Ride_Date, Status) VALUES (?,?,?,?,?,?,?,?)`, rider_id, riderFirstName.First_Name, riderLastName.Last_Name, pickupLocation, dropoffLocation, rideCost, currentDate, "QUEUED");
+	await db.run(`INSERT INTO RIDES (Rider_ID, Pickup_Location, Dropoff_Location, Ride_Cost, Ride_Date, Status) VALUES (?,?,?,?,?,?)`, riderid, pickupLocation, dropoffLocation, rideCost, currentDate, "QUEUED");
 });
 
 /** 
@@ -911,9 +907,6 @@ app.get("/cancel-request", async (req: Request, res: Response) => {
 app.get("/available-drivers", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let riderEmail = req.query.riderid;
-
-	// Set rider status to false
-	await db.run(`UPDATE USER_INFO SET Status_User = 'Offline' WHERE Email = '${riderEmail}'`);
 
 	// Get favorite drivers who are available and not blocked
 	let getFavoriteDriversList = await db.all(`SELECT Driver_ID FROM FAVORITES WHERE status = "Favorited" AND Rider_ID = ?`, [riderEmail]);
@@ -941,27 +934,21 @@ app.get("/available-drivers", async (req: Request, res: Response) => {
 });
 
 /** 
- * @todo fix me, edge cases exist for same first/last
  * Request specific driver 
- * @param req.body.rider rider email
- * @param req.body.selectedDriverFirstName first name of driver
- * @param req.body.selectedDriverLastName last name of driver
+ * @param req.body.riderid rider email
+ * @param req.body.driverid driver email
  * @returns pendingDriversList
  */
 app.post("/request-driver", async (req: Request, res: Response) => {
 	let db = await dbPromise;
-	let rider_id = req.body.rider;
-	let driverFirstName = req.body.selectedDriverFirstName;
-	let driverLastName = req.body.selectedDriverLastName;
-	let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-
-	let driverEmail = await db.get(`SELECT Email FROM USER_INFO WHERE First_Name = ? AND Last_Name = ?`, driverFirstName, driverLastName);
+	let riderid = req.body.riderid;
+	let driverid = req.body.driverid;
 
 	// Insert the pending driver record into the PENDING_DRIVERS table
-	await db.run(`INSERT INTO PENDING_DRIVERS (Rider_ID, Driver_ID, Time) VALUES (?,?,?)`, rider_id, driverEmail.Email, currentTime);
+	await db.run(`INSERT INTO PENDING_DRIVERS (Rider_ID, Driver_ID) VALUES (?,?)`, riderid, driverid);
 
 	// Retrieve the updated list of pending drivers
-	let pendingDriversList = await db.all(`SELECT PENDING_DRIVERS.PendingDriver_ID, USER_INFO.First_Name, USER_INFO.Last_Name FROM USER_INFO INNER JOIN PENDING_DRIVERS ON USER_INFO.Email = PENDING_DRIVERS.Driver_ID`);
+	let pendingDriversList = await db.all(`SELECT pending_drivers.driver_id, user_info.first_name, user_info.last_name FROM user_info INNER JOIN pending_drivers ON user_info.email = pending_drivers.driver_id`);
 
 	res.json({
 		pendingDriversList: pendingDriversList,
@@ -969,31 +956,25 @@ app.post("/request-driver", async (req: Request, res: Response) => {
 });
 
 /** 
- * @todo fix me, edge cases exist for same first/last
  * Cancel request specific driver 
- * @param req.body.rider rider email
- * @param req.body.selectedDriverFirstName first name of driver
- * @param req.body.selectedDriverLastName last name of driver
+ * @param req.body.riderid rider email
+ * @param req.body.driverid driver email
  * @returns cancelledDriver: string the cancelled drivers email
  */
 app.post("/cancel-request-driver", async (req: Request, res: Response) => {
 	let db = await dbPromise;
-	let rider_id = req.body.rider;
-	let driverFirstName = req.body.selectedDriverFirstName;
-	let driverLastName = req.body.selectedDriverLastName;
-
-	let driverEmail = await db.get(`SELECT Email FROM USER_INFO WHERE First_Name = ? AND Last_Name = ?`, driverFirstName, driverLastName);
+	let riderid = req.body.riderid;
+	let driverid = req.body.driverid;
 
 	// Delete the pending driver record from the PENDING_DRIVERS table
-	await db.run(`DELETE FROM PENDING_DRIVERS WHERE Rider_ID = ? AND Driver_ID = ?`, rider_id, driverEmail.Email);
+	await db.run(`DELETE FROM pending_drivers WHERE rider_id = '${riderid}' AND Driver_ID = '${driverid}'`);
 	
 	res.json({
-		cancelledDriver: driverEmail.Email,
+		cancelledDriver: driverid,
 	});
 });
 
 /** 
- * @todo return false rather than undefined
  * Check if any driver accepted rider request 
  * @param req.query.riderid rider email
  * @returns recievedDriver: bool|undefined if accepted return true 
@@ -1004,18 +985,16 @@ app.get("/check-driver-accepted-status", async (req: Request, res: Response) => 
 
 	/** Check if any driver accepted rider request */
 	let checkDriverStatus = await db.get(`SELECT driver_id FROM rides WHERE rider_id = '${riderid}' AND status = "PAYMENT"`);
-	// console.log(checkDriverStatus);
 
-	if(checkDriverStatus === undefined) return;
+	if(checkDriverStatus === undefined) return true;
 	
-	// Driver accepted;
+	// Driver accepted
 	res.json({
 		recievedDriver: true,
 	});
 });
 
 /** 
- * @todo convert all of these db.gets into a single one
  * gets ride payment info
  * @param req.query.riderid rider email
  * @returns ride payment information to payment page 
@@ -1023,21 +1002,12 @@ app.get("/check-driver-accepted-status", async (req: Request, res: Response) => 
 app.get("/get-ride-payment-information", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let riderid = req.query.riderid;
-	
-	let driverFirstName = await db.get(`SELECT driver_firstname FROM rides WHERE rider_id = '${riderid}' AND status = "PAYMENT"`);
-	let driverLastName = await db.get(`SELECT driver_lastname FROM rides WHERE rider_id = '${riderid}' AND status = "PAYMENT"`);
-	let driverEmail = await db.get(`SELECT email FROM user_info WHERE first_name = '${driverFirstName.Driver_FirstName}' AND last_name = '${driverLastName.Driver_LastName}'`);
-	let driverPayPalEmail = await db.get(`SELECT pay_pal FROM user_info WHERE email = '${driverEmail.Email}'`);
-	let rideCost = await db.get(`SELECT ride_cost FROM rides WHERE rider_id = '${riderid}' AND status = "PAYMENT"`);
 
-	if(!driverFirstName || !driverLastName || !driverEmail || !driverPayPalEmail || !rideCost) return;
+	let ridePaymentInformation = await db.get(`SELECT rides.driver_id, user_info.first_name, user_info.last_name, user_info.pay_pal, rides.ride_cost FROM user_info INNER JOIN rides WHERE rider_id = '${riderid}' AND status = "PAYMENT"`);
+	if (ridePaymentInformation.length <= 0) return;
 
 	res.json({
-		driverFirstName: driverFirstName.Driver_FirstName,
-		driverLastName: driverLastName.Driver_LastName,
-		driverEmail: driverEmail.Email,
-		driverPayPalEmail: driverPayPalEmail.Pay_Pal,
-		rideCost: rideCost.Ride_Cost
+		ridePaymentInformation: ridePaymentInformation
 	});
 });
 
@@ -1047,9 +1017,9 @@ app.get("/get-ride-payment-information", async (req: Request, res: Response) => 
  */
 app.post("/cancel-ride-from-payment", async (req: Request, res: Response) => {
 	let db = await dbPromise;
-	let rider = req.body.riderid;
+	let riderid = req.body.riderid;
 
-	await db.run(`UPDATE rides SET status = "CANCELLED(RIDER)" WHERE rider_id = '${rider}' AND status = "PAYMENT"`);
+	await db.run(`UPDATE rides SET status = "CANCELLED(RIDER)" WHERE rider_id = '${riderid}' AND status = "PAYMENT"`);
 });
 
 /** 
@@ -1096,8 +1066,8 @@ app.get("/ride-queue", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let driverEmail = req.query.driveremail;
 
-	// Get all ride requests with status "TRUE"
-	let getRidersRequests = await db.all(`SELECT Ride_ID, Rider_ID, Rider_FirstName, Rider_LastName, Pickup_Location, Dropoff_Location FROM RIDES WHERE Status = "QUEUED"`);
+	// Get all ride requests with status "QUEUED"
+	let getRidersRequests = await db.all(`SELECT rides.ride_id, rides.rider_id, user_info.first_name, user_info.last_name, rides.pickup_location, rides.dropoff_location FROM rides INNER JOIN user_info ON rides.rider_id = user_info.email WHERE rides.status = "QUEUED"`);
 
 	// Get all riders who blocked the driver
 	let getBlockedRiders = await db.all(`SELECT Blockee_ID FROM BLOCKED WHERE Blocker_ID = ?`, [driverEmail]);
@@ -1112,7 +1082,7 @@ app.get("/ride-queue", async (req: Request, res: Response) => {
 	let allRequestsList = getRidersRequests.filter((request: { Rider_ID: string; }) => !excludedRiderEmails.includes(request.Rider_ID));
 
 	// Get pending rider requests for the specific driver
-	let getPendingRiderRequests = await db.all(`SELECT RIDES.Ride_ID, RIDES.Rider_ID, RIDES.Rider_FirstName, RIDES.Rider_LastName, RIDES.Pickup_Location, RIDES.Dropoff_Location FROM PENDING_DRIVERS INNER JOIN RIDES ON PENDING_DRIVERS.Rider_ID = RIDES.Rider_ID WHERE PENDING_DRIVERS.Driver_ID = '${driverEmail}' AND Rides.Status = "QUEUED"`);
+	let getPendingRiderRequests = await db.all(`SELECT rides.ride_id, rides.rider_id, user_info.first_name, user_info.last_name, rides.pickup_location, rides.dropoff_location FROM pending_drivers INNER JOIN rides ON pending_drivers.rider_id = rides.rider_id INNER JOIN user_info ON rides.rider_id = user_info.email WHERE pending_drivers.driver_id = ${driverEmail} AND rides.status = "QUEUED"`);
 	
 	res.json({
 		pendingRiderRequestsList: getPendingRiderRequests,
@@ -1121,26 +1091,16 @@ app.get("/ride-queue", async (req: Request, res: Response) => {
 });
 
 /** 
- * @todo fix me, edge cases with same first/last
  * Driver accepting rider request 
  * @param req.body.driverid driver email
- * @param req.body.selectedRiderFirstName rider first name
- * @param req.body.selectedRiderLastName rider last name
+ * @param req.body.riderid rider email
  */
 app.post("/accept-ride-request", async (req: Request, res: Response) => {
 	let db = await dbPromise;
-	let driver = req.body.driverid;
-	let riderFirstName = req.body.selectedRiderFirstName;
-	let riderLastName = req.body.selectedRiderLastName;
+	let driverid = req.body.driverid;
+	let riderid = req.body.riderid;
 
-	let driverFirstName = await db.get(`SELECT first_name FROM user_info WHERE email='${driver}'`);
-	let driverLastName = await db.get(`SELECT last_name FROM user_info WHERE email='${driver}'`);
-
-	/** Update driver information to selected ride request */
-	await db.run(`UPDATE rides SET driver_id = ?, driver_firstname = ?, driver_lastname = ? WHERE rider_firstname = '${riderFirstName}' AND rider_lastname = '${riderLastName}' AND Status = "QUEUED"`, [driver, driverFirstName.First_Name, driverLastName.Last_Name]);
-
-	/** Set selected ride request status to payment */
-	await db.run(`UPDATE rides SET status = "PAYMENT" WHERE rider_firstname = '${riderFirstName}' AND rider_lastname = '${riderLastName}' AND status = "QUEUED"`);
+	await db.run(`UPDATE rides SET driver_id = '${driverid}', status = "PAYMENT" WHERE rider_id = '${riderid}' AND Status = "QUEUED"`);
 });
 
 /** 
@@ -1151,8 +1111,8 @@ app.get("/get-ride-information", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let userid = req.query.userid;
 
-	let getRiderRideInfo = await db.get(`SELECT driver_firstname,driver_lastname,pickup_location,dropoff_location FROM rides WHERE rider_id = '${userid}' AND status = "PAID" OR status = "WAITING(DRIVER)" OR status = "ONGOING"`);
-	let getDriverRideInfo = await db.get(`SELECT rider_firstname,rider_lastname,pickup_location,dropoff_location FROM rides WHERE driver_id = '${userid}' AND status = "PAYMENT" OR status = "PAID" OR status = "WAITING(DRIVER)" OR status = "ONGOING"`);
+	let getRiderRideInfo = await db.get(`SELECT user_info.first_name, user_info.last_name, rides.pickup_location, rides.dropoff_location FROM rides INNER JOIN user_info ON rides.driver_id = user_info.email WHERE rides.rider_id = '${userid}' AND status = "PAID" OR status = "WAITING(DRIVER)" OR status = "ONGOING"`);
+	let getDriverRideInfo = await db.get(`SELECT user_info.first_name, user_info.last_name, rides.pickup_location, rides.dropoff_location FROM rides INNER JOIN user_info ON rides.rider_id = user_info.email WHERE driver_id = '${userid}' AND status = "PAYMENT" OR status = "PAID" OR status = "WAITING(DRIVER)" OR status = "ONGOING"`);
 
 	res.json({
 		riderRideInfo: getRiderRideInfo,
@@ -1173,13 +1133,13 @@ app.get("/get-rider-payment-status", async (req: Request, res: Response) => {
 	if(ridePaymentStatus.length	<= 0) return
 
 	let currentRideStatus = ridePaymentStatus[ridePaymentStatus.length - 1].Status;
+
 	res.json({
 		rideStatus: currentRideStatus,
 	});
 });
 
 /** 
- * @todo return error message if one occurs instead of just printing to server console
  * Cancelling ride 
  * @param req.body.userid user email
  * @param req.body.passedCancellation bool for cancellation passed deadline
@@ -1188,43 +1148,44 @@ app.post("/cancel-ride", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let userid = req.body.userid;
 	let passedCancellation: boolean = req.body.passedCancellation;
-
-	let userType = await db.get(`SELECT type_user FROM user_info WHERE email = '${userid}'`);
-
-	/** Rider cancelling before deadline */
-	if (userType.Type_User === 1 && passedCancellation === false) {
-		await db.run(`UPDATE rides SET status = "CANCELLED(RIDER)" WHERE rider_id = '${userid}' AND status = "PAID"`);
-	}
 	
-	/** Rider cancelling after deadline */
-	else if (userType.Type_User === 1 && passedCancellation === true) {
-		await db.run(`UPDATE rides SET status = "CANCELLED(RIDER)" WHERE rider_id = '${userid}' AND status = "PAID" || status = "PAYMENT"`);
+	try {
+		let userType = await db.get(`SELECT type_user FROM user_info WHERE email = '${userid}'`);
 
-		let currentWarnings = await db.get(`SELECT warnings FROM user_info WHERE email = '${userid}'`);
+		/** Rider cancelling before deadline */
+		if (userType.Type_User === 1 && passedCancellation === false) {
+			await db.run(`UPDATE rides SET status = "CANCELLED(RIDER)" WHERE rider_id = '${userid}' AND status = "PAID"`);
+		}
 
-		let newWarningsCount = currentWarnings.Warnings + 1;
+		/** Rider cancelling after deadline */
+		else if (userType.Type_User === 1 && passedCancellation === true) {
+			await db.run(`UPDATE rides SET status = "CANCELLED(RIDER)" WHERE rider_id = '${userid}' AND status = "PAID" || status = "PAYMENT"`);
 
-		await db.get(`UPDATE user_info SET warnings = '${newWarningsCount}' WHERE email = '${userid}'`);
-	}
+			let currentWarnings = await db.get(`SELECT warnings FROM user_info WHERE email = '${userid}'`);
+			let newWarningsCount = currentWarnings.Warnings + 1;
 
-	/** Driver cancelling before deadline */
-	else if (userType.Type_User === 2 && passedCancellation === false) {
-		await db.run(`UPDATE rides SET status = "CANCELLED(DRIVER)" WHERE driver_id = '${userid}' AND status = "PAID" OR status = "PAYMENT"`);
-	}
-	
-	/** Driver cancelling after deadline */
-	else if (userType.Type_User === 2 && passedCancellation === true) {
-		await db.run(`UPDATE rides SET status = "CANCELLED(DRIVER)" WHERE driver_id = '${userid}' AND status = "PAID" OR status = "PAYMENT"`);
+			await db.get(`UPDATE user_info SET warnings = '${newWarningsCount}' WHERE email = '${userid}'`);
+		}
 
-		let currentWarnings = await db.get(`SELECT warnings FROM user_info WHERE email = '${userid}'`);
+		/** Driver cancelling before deadline */
+		else if (userType.Type_User === 2 && passedCancellation === false) {
+			await db.run(`UPDATE rides SET status = "CANCELLED(DRIVER)" WHERE driver_id = '${userid}' AND status = "PAID" OR status = "PAYMENT"`);
+		}
 
-		let newWarningsCount = currentWarnings.Warnings + 1;
+		/** Driver cancelling after deadline */
+		// else if (userType.Type_User === 2 && passedCancellation === true) {
+		else {
+			await db.run(`UPDATE rides SET status = "CANCELLED(DRIVER)" WHERE driver_id = '${userid}' AND status = "PAID" OR status = "PAYMENT"`);
 
-		await db.get(`UPDATE user_info SET warnings = '${newWarningsCount}' WHERE email = '${userid}'`);
-	}
+			let currentWarnings = await db.get(`SELECT warnings FROM user_info WHERE email = '${userid}'`);
+			let newWarningsCount = currentWarnings.Warnings + 1;
 
-	else {
-		console.log("Error cancelling ride");
+			await db.get(`UPDATE user_info SET warnings = '${newWarningsCount}' WHERE email = '${userid}'`);
+		}
+	} catch (error) {
+		res.json({
+			errorMessage : error
+		})
 	}
 });
 
@@ -1300,7 +1261,6 @@ app.post("/end-ride", async (req: Request, res: Response) => {
 	let driverid = req.body.driverid;
 	let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 	
-	// await db.run(`UPDATE rides SET dropoff_time = ?, status = ? WHERE driver_id = ? AND status = ?`, [currentTime, "COMPLETED", driverid, "ONGOING"]);
 	await db.run(`UPDATE rides SET dropoff_time = '${currentTime}', status = "COMPLETED" WHERE driver_id = '${driverid}' AND status = "ONGOING"`);
 });
 

@@ -20,6 +20,10 @@
     margin-bottom: 1rem;
 }
 
+#choose-driver p {
+    line-height: 2;
+}
+
 #choose-driver .choosedriver-panel {
     position: absolute;
     background-color: #fff;

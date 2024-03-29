@@ -14,7 +14,7 @@ function WaitingDriver() {
     const [currentLocation, setCurrentLocation] = useState<{ lat: number, lng: number }>(null);
     const [pickupAddress, setPickupAddress] = useState<string>('');
     const [pickupLocation, setPickupLocation] = useState<{ lat: number, lng: number }>(null);
-    const [errorMessage, setErrorMessage] = useState<string>('');
+    const [errorMessage, setErrorMessage] = useState<any>();
     const [riderRideInfo, setRiderRideInfo] = useState<any>();
     const [passedCancellation, setPassedCancellation] = useState<boolean>(false);
     const [beforeCancellationPopup, setBeforeCancellationPopup] = useState<boolean>(false);
@@ -103,6 +103,10 @@ function WaitingDriver() {
                     passedCancellation: passedCancellation
                 }),
             })
+                .then((res) => res.json())
+                .then((data) => {
+                    setErrorMessage(data.errorMessage);
+                });
         } catch (error: any) {
             console.log("Error cancelling ride:", error);
         }
@@ -173,13 +177,13 @@ function WaitingDriver() {
             }
             checkDriverStarted();
             if(driverStarted !== "ONGOING") return;
-            navigate("/RideInProgress")
+            navigate("/RideInProgress");
         }, 1000);
         return () => clearInterval(interval);
     }, [account?.account?.email, driverStarted, navigate]);
 
     return (
-        <PageTitle title="Waiting">
+        <PageTitle title="Waiting Driver">
             <main id="waiting">
                 <div className="map-container">
                     <div style={{ width: '100%', height: '100vh', position: 'absolute' }}>
@@ -207,7 +211,7 @@ function WaitingDriver() {
                         <>
                             <h1>Waiting for Driver...</h1>
                             <CancellationTimer initialMinutes={0} initialSeconds={15} onTimerEnd={handleTimerEnd} />
-                            <p><b>Driver Name:</b> {riderRideInfo.Driver_FirstName} {riderRideInfo.Driver_LastName}</p>
+                            <p><b>Driver Name:</b> {riderRideInfo.First_Name} {riderRideInfo.Last_Name}</p>
                             <p><b>Pick-up Location:</b> {riderRideInfo.Pickup_Location}</p>
                             <p><b>Drop-off Location:</b> {riderRideInfo.Dropoff_Location}</p>
                             <div className="waiting-btns-container">

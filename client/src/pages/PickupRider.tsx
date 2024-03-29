@@ -219,12 +219,11 @@ const PickupRider: React.FC<PickupRiderProps> = (props) => {
                     {(rideInfo) && (
                         <>
                             <h1>Pickup Rider</h1>
-                            <p><b>Rider Name:</b> {rideInfo.Rider_FirstName} {rideInfo.Rider_LastName}</p>
+                            <p><b>Rider Name:</b> {rideInfo.First_Name} {rideInfo.Last_Name}</p>
                             <p><b>Pickup Location:</b> {rideInfo.Pickup_Location}</p>
                             {(!arrivalTime) && (<p><b>Estimated Arrival Time:</b></p>)}
                             {(arrivalTime) && (<p><b>Estimated Arrival Time:</b> {arrivalTime} ({estimatedTimeArrival})</p>)}
-                            {(estimatedRemainingDistance === 0.0) && (<p><b>Distance Remaining:</b></p>)}
-                            {(estimatedRemainingDistance !== 0.0) && (<p><b>Distance Remaining:</b> {estimatedRemainingDistance} miles</p>)}
+                            <p><b>Distance Remaining:</b> {estimatedRemainingDistance} miles</p>
                             <div className="pickup-rider-btns-container">
                                 {(estimatedRemainingDistance === 0.0) && (
                                     <>

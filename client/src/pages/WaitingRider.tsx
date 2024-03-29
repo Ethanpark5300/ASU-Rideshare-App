@@ -16,6 +16,7 @@ function WaitingRider() {
     const [passedCancellationPopup, setPassedCancellationPopup] = useState<boolean>(false);
     const [cancellationRiderStatus, setCheckRiderCancellationStatus] = useState<string>();
     const [cancelledRiderPopup, setCancelledRiderPopup] = useState<boolean>(false);
+    const [errorMessage, setErrorMessage] = useState<Error>()
 
     useEffect(() => {
         const delay: number = 125;
@@ -74,6 +75,10 @@ function WaitingRider() {
                     passedCancellation: passedCancellation
                 }),
             })
+                .then((res) => res.json())
+                .then((data) => {
+                    setErrorMessage(data.errorMessage);
+                });
         } catch (error: any) {
             console.log("Error cancelling ride:", error);
         }
@@ -111,14 +116,14 @@ function WaitingRider() {
     }, [cancellationRiderStatus, checkRiderCancellationStatus]);
 
     return (
-        <PageTitle title="Waiting">
+        <PageTitle title="Waiting Rider">
             <main id="waiting">
                 <div className="waiting-container">
                     {(driverRideInfo) && (
                         <>
                             <h1>Waiting for Rider...</h1>
                             <CancellationTimer initialMinutes={0} initialSeconds={15} onTimerEnd={handleTimerEnd} />
-                            <p><b>Rider Name:</b> {driverRideInfo.Rider_FirstName} {driverRideInfo.Rider_LastName}</p>
+                            <p><b>Rider Name:</b> {driverRideInfo.First_Name} {driverRideInfo.Last_Name}</p>
                             <p><b>Pick-up Location:</b> {driverRideInfo.Pickup_Location}</p>
                             <p><b>Drop-off Location:</b> {driverRideInfo.Dropoff_Location}</p>
                             <div className="waiting-btns-container">

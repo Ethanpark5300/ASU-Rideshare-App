@@ -211,7 +211,7 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
                                     method: "POST",
                                     headers: { "Content-type": "application/json" },
                                     body: JSON.stringify({
-                                        rider_id: props.riderEmail,
+                                        riderid: props.riderEmail,
                                         pickupLocation: pickupLocation,
                                         dropoffLocation: dropoffLocation,
                                         rideCost: distanceInMiles,

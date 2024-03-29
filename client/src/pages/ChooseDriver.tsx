@@ -24,33 +24,31 @@ const ChooseDriver: React.FC = () => {
         }
     }, [account?.account?.email]);
 
-    const requestDriver = async (driver: { First_Name: string; Last_Name: string; }) => {
+    const requestDriver = async (selectedDriver: { Email: string; }) => {
         try {
             await fetch(`/request-driver`, {
                 method: "POST",
                 headers: { "Content-type": "application/json" },
                 body: JSON.stringify({
-                    rider: account?.account?.email,
-                    selectedDriverFirstName: driver.First_Name,
-                    selectedDriverLastName: driver.Last_Name
+                    riderid: account?.account?.email,
+                    driverid: selectedDriver?.Email
                 }),
             });
-            setRequestedDrivers((prevDrivers) => [...prevDrivers, driver]);
+            setRequestedDrivers((prevDrivers) => [...prevDrivers, selectedDriver]);
             refreshDriversList();
         } catch (error) {
             console.error("Error requesting driver:", error);
         }
     };
 
-    const cancelRequestDriver = async (selectedDriver: { First_Name: string; Last_Name: string; Email: string; }) => {
+    const cancelRequestDriver = async (selectedDriver: { Email: string; }) => {
         try {
             await fetch(`/cancel-request-driver`, {
                 method: "POST",
                 headers: { "Content-type": "application/json" },
                 body: JSON.stringify({
-                    rider: account?.account?.email,
-                    selectedDriverFirstName: selectedDriver?.First_Name,
-                    selectedDriverLastName: selectedDriver?.Last_Name
+                    riderid: account?.account?.email,
+                    driverid: selectedDriver?.Email
                 }),
             });
             setRequestedDrivers((prevDrivers) => prevDrivers.filter((driver) => driver.Email !== selectedDriver?.Email));
@@ -74,7 +72,6 @@ const ChooseDriver: React.FC = () => {
             const data = await response.json();
             // eslint-disable-next-line
             driverAccepted = data.recievedDriver;
-            // console.log(driverAccepted);
 
             if (!driverAccepted) return;
 

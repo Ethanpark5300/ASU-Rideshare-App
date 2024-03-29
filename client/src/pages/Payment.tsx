@@ -13,13 +13,9 @@ const paypalOptions = {
 const Payment: React.FC = (props) => {
     const account = useAppSelector((state) => state.account);
     const [paypalLoaded, setPaypalLoaded] = useState<boolean>(false);
-    const [paymentStatus, setPaymentStatus] = useState<string>('');
+    const [paymentStatus, setPaymentStatus] = useState<string>();
     const [showErrorPopup, setShowErrorPopup] = useState<boolean>(false);
-    const [driverEmail, setDriverEmail] = useState<string>();
-    const [driverFirstName, setDriverFirstName] = useState<string>();
-    const [driverLastName, setDriverLastName] = useState<string>();
-    const [driverPayPalEmail, setDriverPayPalEmail] = useState<string>();
-    const [rideCost, setRideCost] = useState<number>();
+    const [ridePaymentInformation, setRidePaymentInformation] = useState<any>([]);
     const [startButtonVisible, setStartButtonVisible] = useState<boolean>(true);
     const [cancelConfirmPromptVisible, setCancelConfirmPromptVisible] = useState<boolean>(false);
     const [cancellationDriverStatus, setCheckDriverCancellationStatus] = useState<string>();
@@ -32,16 +28,34 @@ const Payment: React.FC = (props) => {
         shape: 'pill' as const,
         label: 'pay' as const,
     };
+
+    useEffect(() => {
+        const delay: number = 125;
+        const timerId = setTimeout(() => {
+            async function getRidePaymentInformation() {
+                try {
+                    const response = await fetch(`/get-ride-payment-information?riderid=${account?.account?.email}`);
+                    const data = await response.json();
+                    setRidePaymentInformation(data.ridePaymentInformation);
+                } catch (error) {
+                    console.error("Error getting ride payment information:", error);
+                }
+            };
+            getRidePaymentInformation();
+        }, delay);
+
+        return () => clearTimeout(timerId);
+    }, [account?.account?.email]);
   
     const createOrder = (data: any, actions: any) => {
         return actions.order.create({
             purchase_units: [
                 {
                     amount: {
-                        value: rideCost,
+                        value: ridePaymentInformation.Ride_Cost,
                     },
                     driver: {
-                        email_address: driverPayPalEmail,
+                        email_address: ridePaymentInformation.Pay_Pal,
                     },
                 },
             ],
@@ -71,8 +85,8 @@ const Payment: React.FC = (props) => {
                     headers: { "Content-type": "application/json" },
                     body: JSON.stringify({
                         Rider_ID: account?.account?.email,
-                        Driver_ID: driverEmail,
-                        rideCost: rideCost,
+                        Driver_ID: ridePaymentInformation.Driver_ID,
+                        rideCost: ridePaymentInformation.Ride_Cost,
                     }),
                 })
             }
@@ -112,28 +126,6 @@ const Payment: React.FC = (props) => {
     const handleDeclineCancel = () => {
         setCancelConfirmPromptVisible(false);
     }
-
-    useEffect(() => {
-        const delay : number = 125;
-        const timerId = setTimeout(() => {
-            async function getRidePaymentInformation() {
-                try {
-                    const response = await fetch(`/get-ride-payment-information?riderid=${account?.account?.email}`);
-                    const data = await response.json();
-                    setDriverEmail(data.driverEmail);
-                    setDriverFirstName(data.driverFirstName);
-                    setDriverLastName(data.driverLastName);
-                    setDriverPayPalEmail(data.driverPayPalEmail);
-                    setRideCost(data.rideCost);
-                } catch (error) {
-                    console.error("Error getting ride payment information:", error);
-                }
-            };
-            getRidePaymentInformation();
-        }, delay);
-
-        return () => clearTimeout(timerId);
-    }, [account?.account?.email]);
 
     const handleConfirmCancel = () => {
         try {
@@ -180,16 +172,16 @@ const Payment: React.FC = (props) => {
                         <div className="paypal-btns-container">
                             {startButtonVisible && (
                                 <section className="start-payment-btns-container">
-                                    <h2>Driver: {driverFirstName} {driverLastName}</h2>
-                                    <h2>Ride Cost: ${rideCost}</h2>
+                                    <h2>Driver: {ridePaymentInformation.First_Name} {ridePaymentInformation.Last_Name}</h2>
+                                    <h2>Ride Cost: ${ridePaymentInformation.Ride_Cost}</h2>
                                     <button className='btn start-payment-btn' onClick={handleStartButtonClick}>Start Payment</button>
                                     <button className='btn cancel-ride-btn' onClick={handleCancelRideRequest}>Cancel Ride</button>
                                 </section>
                             )}
                             {!startButtonVisible && (
                                 <div className="payment-btns-container">
-                                    <h2>Driver: {driverFirstName} {driverLastName}</h2>
-                                    <h2>Ride Cost: ${rideCost}</h2>
+                                    <h2>Driver: {ridePaymentInformation.First_Name} {ridePaymentInformation.Last_Name}</h2>
+                                    <h2>Ride Cost: ${ridePaymentInformation.Ride_Cost}</h2>
                                     <PayPalScriptProvider options={paypalOptions}>
                                         {paypalLoaded ? (
                                             <PayPalButtons

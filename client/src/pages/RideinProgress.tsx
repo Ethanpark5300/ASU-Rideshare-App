@@ -187,7 +187,7 @@ const RideInProgress: React.FC<RideInProgressProps> = (props) => {
                     {(props.userType === 1 && riderRideInfo) && (
                         <>
                             <h1>Ride in Progress</h1>
-                            <p><b>Driver Name:</b> {riderRideInfo.Driver_FirstName} {riderRideInfo.Driver_LastName} </p>
+                            <p><b>Driver Name:</b> {riderRideInfo.First_Name} {riderRideInfo.Last_Name} </p>
                             <p><b>Dropoff Point:</b> {riderRideInfo.Dropoff_Location} </p>
                             {(!arrivalTime) && (<p><b>Estimated Arrival Time:</b></p>)}
                             {(arrivalTime) && (<p><b>Estimated Arrival Time:</b> {arrivalTime} ({estimatedTimeArrival})</p>)}
@@ -204,28 +204,20 @@ const RideInProgress: React.FC<RideInProgressProps> = (props) => {
                     {(props.userType === 2 && driverRideInfo) && (
                         <>
                             <h1>Ride in Progress</h1>
-                            <p><b>Rider Name:</b> {driverRideInfo.Rider_FirstName} {driverRideInfo.Rider_LastName}</p>
+                            <p><b>Rider Name:</b> {driverRideInfo.First_Name} {driverRideInfo.Last_Name}</p>
                             <p><b>Dropoff Point:</b> {driverRideInfo.Dropoff_Location} </p>
                             {(!arrivalTime) && (<p><b>Estimated Arrival Time:</b> </p>)}
                             {(arrivalTime) && (<p><b>Estimated Arrival Time:</b> {arrivalTime} ({estimatedTimeArrival})</p>)}
-                            {(estimatedRemainingDistance !== 0.0) && (<p><b>Distance Remaining:</b></p>)}
-                            {(estimatedRemainingDistance === 0.0) && (<p><b>Distance Remaining:</b> {estimatedRemainingDistance} miles</p>)}
-
-                            {/** @returns driver buttons while ride ongoing */}
-                            {(estimatedRemainingDistance !== 0) && (
-                                <div className="ride-in-progress-btns-container">
-                                    <button className='btn refresh-btn' onClick={calculateETA}>Refresh</button>
-                                    <button className='btn emergency-btn'>Emergency Services</button>
-                                </div>
-                            )}
-
-                            {/** @returns driver buttons while ride completed */}
-                            {(estimatedRemainingDistance === 0) && (
-                                <div className="ride-in-progress-btns-container">
-                                    <button className='btn end-ride-btn' onClick={completeRide}>End Ride</button>
-                                    <button className='btn emergency-btn'>Emergency Services</button>
-                                </div>
-                            )}
+                            <p><b>Distance Remaining:</b> {estimatedRemainingDistance} miles</p>
+                            <div className="ride-in-progress-btns-container">
+                                {(0 <= estimatedRemainingDistance && estimatedRemainingDistance <= 1) && (
+                                    <>
+                                        <button className='btn end-ride-btn' onClick={completeRide}>End Ride</button>
+                                    </>
+                                )}
+                                <button className='btn emergency-btn'>Emergency Services</button>
+                                <button className='btn refresh-btn2' onClick={calculateETA}>Refresh</button>
+                            </div>
                         </>
                     )}
                 </aside>
