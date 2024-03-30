@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import '../styles/Rating.css';
 import PageTitle from '../components/PageTitle/PageTitle';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../store/hooks';
 
 interface RatingFormState {
@@ -11,17 +11,11 @@ interface RatingFormState {
 }
 
 const Rating: React.FC = (props) => {
+    const navigate = useNavigate();
     const account = useAppSelector((state) => state.account);
 
     /** @TODO Replace value with ratee name */
     const rateeUser = "FirstName LastName";
-
-    // eslint-disable-next-line
-    const [formData, setFormData] = useState<RatingFormState>({
-        rating: 0,
-        comment: '',
-        favorite: false,
-    });
 
     const [formChanges, setFormChanges] = useState<RatingFormState>({
         rating: 0,
@@ -42,25 +36,22 @@ const Rating: React.FC = (props) => {
         setFormChanges({ ...formChanges, favorite: newValue });
     };
 
-    const handleSubmit = (event: React.FormEvent) => {
-        event.preventDefault();
-        setFormData({ ...formChanges });
-
+    const handleSubmit = () => {
         try {
-            fetch(`/send-ratings`, {
-                method: "POST",
-                headers: { "Content-type": "application/json" },
-                body: JSON.stringify({
-                    rater: account?.account?.email,
-                    ratee: rateeUser,
-                    star_rating: formChanges.rating,
-                    comments: formChanges.comment,
-                    favorited_driver: formChanges.favorite
-                }),
-            })
+            // fetch(`/send-ratings`, {
+            //     method: "POST",
+            //     headers: { "Content-type": "application/json" },
+            //     body: JSON.stringify({
+            //         rater: account?.account?.email,
+            //         ratee:  ,
+            //         star_rating: formChanges.rating,
+            //         comments: formChanges.comment,
+            //         favorited_driver: formChanges.favorite
+            //     }),
+            // })
 
-            /** @TODO Add custom popup to redirect user back to home page */
-            alert('User rated!');
+            console.log(formChanges);
+            // navigate("/Home")
         }
         catch (e: any) {
             console.log(e);
@@ -140,15 +131,9 @@ const Rating: React.FC = (props) => {
                 </div>
                 {/* Submit, Report, Block buttons */}
                 <div className="buttons-container">
-                    <button onClick={handleSubmit} className="submit-button">
-                        Submit
-                    </button>
-                    <Link to="/Report">
-                        <button className='report-button'>Report</button>
-                    </Link>
-                    <button onClick={handleBlock} className="block-button">
-                        Block
-                    </button>
+                    <button onClick={handleSubmit} className="submit-button">Submit</button>
+                    <button onClick={() => navigate("/Report")} className='report-button'>Report</button>
+                    <button onClick={handleBlock} className="block-button">Block</button>
                 </div>
             </main>
         </PageTitle>

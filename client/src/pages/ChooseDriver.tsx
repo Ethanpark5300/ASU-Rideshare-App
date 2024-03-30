@@ -1,16 +1,16 @@
 import "../styles/ChooseDriver.css";
 import PageTitle from "../components/PageTitle/PageTitle";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import LiveTracking from "../components/GoogleMaps/LiveTracking";
 import { useAppSelector } from "../store/hooks";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const ChooseDriver: React.FC = () => {
     const account = useAppSelector((state) => state.account);
     const [driversAvailableList, setDriversAvailableList] = useState<any[]>([]);
     const [favoriteDriversAvailableList, setFavoriteDriversAvailableList] = useState<any[]>([]);
     const [requestedDrivers, setRequestedDrivers] = useState<any[]>([]);
-    let driverAccepted = useRef<boolean>(false);
+    const [driverAccepted, setDriverAccepted] = useState<string>();
     const navigate = useNavigate();
 
     const refreshDriversList = useCallback(async () => {
@@ -61,26 +61,25 @@ const ChooseDriver: React.FC = () => {
     const cancelRideRequest = useCallback(async () => {
         try {
             await fetch(`/cancel-request?riderid=${account?.account?.email}`);
+            navigate("/Payment");
         } catch (error) {
             console.error("Error cancelling ride request:", error);
         }
-    }, [account?.account?.email]);
+    }, [account?.account?.email, navigate]);
 
     const checkRideStatus = useCallback(async () => {
         try {
             const response = await fetch(`/check-driver-accepted-status?riderid=${account?.account?.email}`);
             const data = await response.json();
-            // eslint-disable-next-line
-            driverAccepted = data.recievedDriver;
+            setDriverAccepted(data.recievedDriver);
+            console.log(driverAccepted);
 
-            if (!driverAccepted) return;
-
-            // Redirect rider to payment if driver accepted their request
+            if (driverAccepted !== "PAYMENT") return;
             navigate("/Payment");
         } catch (error) {
-            // console.error("Error checking ride status:", error);
+            console.error("Error checking ride status:", error);
         }
-    }, [account?.account?.email, navigate]);
+    }, [account?.account?.email, navigate, driverAccepted]);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -154,9 +153,7 @@ const ChooseDriver: React.FC = () => {
                     <section className="choose-driver-btns-container">
                         <button className="btn check-status-btn" onClick={checkRideStatus}>Check Status</button>
                         <button className="btn refresh-list-btn" onClick={refreshDriversList}>Refresh</button>
-                        <Link to="/">
-                            <button className="btn cancel-ride-btn" onClick={cancelRideRequest}>Cancel</button>
-                        </Link>
+                        <button className="btn cancel-ride-btn" onClick={cancelRideRequest}>Cancel</button>
                     </section>
                 </aside>
                 <LiveTracking />

@@ -12,7 +12,7 @@ function WaitingDriver() {
     const [mapLoaded, setMapLoaded] = useState<boolean>(false);
     const { isLoaded: mapsLoaded, loadError } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
     const [currentLocation, setCurrentLocation] = useState<{ lat: number, lng: number }>(null);
-    const [pickupAddress, setPickupAddress] = useState<string>('');
+    const [pickupAddress, setPickupAddress] = useState<string>();
     const [pickupLocation, setPickupLocation] = useState<{ lat: number, lng: number }>(null);
     const [errorMessage, setErrorMessage] = useState<any>();
     const [riderRideInfo, setRiderRideInfo] = useState<any>();
@@ -209,7 +209,7 @@ function WaitingDriver() {
                 <div className="waiting-container">
                     {(riderRideInfo) && (
                         <>
-                            <h1>Waiting for Driver...</h1>
+                            <h1>Waiting for Driver</h1>
                             <CancellationTimer initialMinutes={0} initialSeconds={15} onTimerEnd={handleTimerEnd} />
                             <p><b>Driver Name:</b> {riderRideInfo.First_Name} {riderRideInfo.Last_Name}</p>
                             <p><b>Pick-up Location:</b> {riderRideInfo.Pickup_Location}</p>

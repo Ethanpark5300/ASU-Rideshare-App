@@ -23,7 +23,7 @@ const RideInProgress: React.FC<RideInProgressProps> = (props) => {
     const [riderRideInfo, setRiderRideInfo] = useState<any>();
     const [driverRideInfo, setDriverRideInfo] = useState<any>();
     const [showDirections, setShowDirections] = useState<boolean>(false);
-    const [rideCompleted, setRideCompleted] = useState<string>();
+    const [checkRideCompleted, setCheckRideCompleted] = useState<string>();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -103,7 +103,7 @@ const RideInProgress: React.FC<RideInProgressProps> = (props) => {
                     const remainingDistanceInMiles = remainingDistanceInMeters * 0.000621371; // Convert meters to miles
 
                     setEstimatedTimeArrival(leg.duration.text);
-                    setEstimatedRemainingDistance(Math.round(remainingDistanceInMiles * 10)/10);
+                    setEstimatedRemainingDistance(Math.round(remainingDistanceInMiles * 10) / 10);
 
                     const estimatedDurationInSeconds = leg.duration.value;
                     const arrivalTimeInMilliseconds = Date.now() + (estimatedDurationInSeconds * 1000);
@@ -135,20 +135,24 @@ const RideInProgress: React.FC<RideInProgressProps> = (props) => {
         }
     };
 
-    // useEffect(() => {
-    //     const interval = setInterval(() => {
-    //         async function checkRideEnded() {
-    //             try {
-    //                 const response = await fetch(`/check-if-ride-ended?userid=${props.userEmail}`);
-    //                 const data = await response.json();
-    //             } catch (error) {
-    //                 console.log("Error checking if ride ended:", error);
-    //             }
-    //         }
-    //         checkRideEnded();
-    //     }, 1000);
-    //     return () => clearInterval(interval);
-    // }, [props.userEmail, navigate]);
+    const checkRideEnded = useCallback(async () => {
+        try {
+            const response = await fetch(`/check-if-ride-ended?userid=${props.userEmail}&usertype=${props.userType}`);
+            const data = await response.json();
+            setCheckRideCompleted(data.rideStatus);
+        } catch (error) {
+            console.log("Error checking if ride ended:", error);
+        }
+    }, [props.userEmail, props.userType]) 
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            checkRideEnded();
+            if (checkRideCompleted !== "COMPLETED") return;
+            navigate("/Rating");
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [checkRideCompleted, navigate, checkRideEnded]);
 
     return (
         <PageTitle title='Ride in Progress'>
@@ -206,14 +210,13 @@ const RideInProgress: React.FC<RideInProgressProps> = (props) => {
                             <h1>Ride in Progress</h1>
                             <p><b>Rider Name:</b> {driverRideInfo.First_Name} {driverRideInfo.Last_Name}</p>
                             <p><b>Dropoff Point:</b> {driverRideInfo.Dropoff_Location} </p>
-                            {(!arrivalTime) && (<p><b>Estimated Arrival Time:</b> </p>)}
+                            {(!arrivalTime) && (<p><b>Estimated Arrival Time:</b></p>)}
                             {(arrivalTime) && (<p><b>Estimated Arrival Time:</b> {arrivalTime} ({estimatedTimeArrival})</p>)}
-                            <p><b>Distance Remaining:</b> {estimatedRemainingDistance} miles</p>
+                            {(!estimatedRemainingDistance) && (<p><b>Distance Remaining:</b></p>)}
+                            {(estimatedRemainingDistance) && (<p><b>Distance Remaining:</b> {estimatedRemainingDistance} miles</p>)}
                             <div className="ride-in-progress-btns-container">
                                 {(0 <= estimatedRemainingDistance && estimatedRemainingDistance <= 1) && (
-                                    <>
-                                        <button className='btn end-ride-btn' onClick={completeRide}>End Ride</button>
-                                    </>
+                                    <button className='btn end-ride-btn' onClick={completeRide}>End Ride</button>
                                 )}
                                 <button className='btn emergency-btn'>Emergency Services</button>
                                 <button className='btn refresh-btn2' onClick={calculateETA}>Refresh</button>
