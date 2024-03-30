@@ -609,10 +609,9 @@ app.post("/unblock-user", async (req: Request, res: Response) => {
 });
 
 /** 
- * @todo check to see if send-ratings client side actually has a ratee, and fix me
  * Insert ratings to ratings table and calculate/update average ratings 
  * @param req.body.rater user email for rater
- * @param req.body.ratee @todo should exist, user email for ratee
+ * @param req.body.ratee
  * @param req.body.star_rating rating
  * @param req.body.comments rater comments
  * @param req.body.favorited_driver bool if rater favorited ratee
@@ -620,7 +619,7 @@ app.post("/unblock-user", async (req: Request, res: Response) => {
 app.post("/send-ratings", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let rater_ID = req.body.rater;
-	let ratee_ID = "zealsmeal@asu.edu";
+	let ratee_ID = req.body.ratee;
 	let star_rating = req.body.star_rating;
 	let comments = req.body.comments;
 	let currentDate = new Date().toLocaleDateString();
