@@ -13,8 +13,11 @@ interface RatingFormState {
 const Rating: React.FC = (props) => {
     const account = useAppSelector((state) => state.account);
 
-    /** @TODO Replace value with ratee name */
-    const rateeUser = "FirstName LastName";
+    /** @TODO Replace value with ratee name and email */
+	const rateeUser = {
+		name: "FirstName LastName",
+		email: "userEmail@asu.edu"
+	};
 
     // eslint-disable-next-line
     const [formData, setFormData] = useState<RatingFormState>({
@@ -52,7 +55,7 @@ const Rating: React.FC = (props) => {
                 headers: { "Content-type": "application/json" },
                 body: JSON.stringify({
                     rater: account?.account?.email,
-                    ratee: rateeUser,
+                    ratee: rateeUser.email,
                     star_rating: formChanges.rating,
                     comments: formChanges.comment,
                     favorited_driver: formChanges.favorite
@@ -74,7 +77,7 @@ const Rating: React.FC = (props) => {
                 headers: { "Content-type": "application/json" },
                 body: JSON.stringify({
                     blocker: account?.account?.email,
-                    blockee: rateeUser,
+                    blockee: rateeUser.email,
                 }),
             })
             alert('User blocked!');
@@ -87,7 +90,7 @@ const Rating: React.FC = (props) => {
     return (
         <PageTitle title="Rating">
             <main id="rating">
-                <h1>Rate {rateeUser}</h1>
+                <h1>Rate {rateeUser.name}</h1>
 
                 {/* Five star ratings */}
                 <div className="stars-container">
