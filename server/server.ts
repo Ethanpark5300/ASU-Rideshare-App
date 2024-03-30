@@ -612,6 +612,7 @@ app.post("/unblock-user", async (req: Request, res: Response) => {
 });
 
 /** 
+ * @todo check to see if send-ratings client side actually has a ratee, and fix me
  * Insert ratings to ratings table and calculate/update average ratings 
  * @param req.body.rater user email for rater
  * @param req.body.ratee @todo user email for ratee

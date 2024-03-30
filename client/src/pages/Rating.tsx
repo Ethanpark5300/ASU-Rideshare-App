@@ -65,7 +65,7 @@ const Rating: React.FC = (props) => {
                 headers: { "Content-type": "application/json" },
                 body: JSON.stringify({
                     blocker: account?.account?.email,
-                    blockee: rateeUser,
+                    blockee: rateeUser.email,
                 }),
             })
             alert('User blocked!');
@@ -78,7 +78,7 @@ const Rating: React.FC = (props) => {
     return (
         <PageTitle title="Rating">
             <main id="rating">
-                <h1>Rate {rateeUser}</h1>
+                <h1>Rate {rateeUser.name}</h1>
 
                 {/* Five star ratings */}
                 <div className="stars-container">
