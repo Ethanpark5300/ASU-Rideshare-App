@@ -977,7 +977,7 @@ app.post("/cancel-request-driver", async (req: Request, res: Response) => {
 /** 
  * Check if any driver accepted rider request 
  * @param req.query.riderid rider email
- * @returns recievedDriver: bool|undefined if accepted return true 
+ * @returns recievedDriver: bool if accepted return true 
  */
 app.get("/check-driver-accepted-status", async (req: Request, res: Response) => {
 	let db = await dbPromise;
@@ -985,12 +985,10 @@ app.get("/check-driver-accepted-status", async (req: Request, res: Response) => 
 
 	/** Check if any driver accepted rider request */
 	let checkDriverStatus = await db.get(`SELECT driver_id FROM rides WHERE rider_id = '${riderid}' AND status = "PAYMENT"`);
-
-	if(checkDriverStatus === undefined) return true;
 	
 	// Driver accepted
 	res.json({
-		recievedDriver: true,
+		recievedDriver: (checkDriverStatus !== undefined), //return true if something was returned from database
 	});
 });
 
