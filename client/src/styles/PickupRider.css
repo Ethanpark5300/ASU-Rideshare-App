@@ -40,8 +40,8 @@
 }
 
 .start-ride-btn {
-    background-color: var(--brand-maroon);
-    color: white;
+    background-color: var(--brand-gold);
+    color: black;
 }
 
 .refresh-btn {
@@ -50,8 +50,8 @@
 }
 
 .emergency-btn {
-    background-color: var(--brand-gold);
-    color: black;
+    background-color: var(--brand-maroon);
+    color: white;
 }
 
 #pickup-rider .back-to-home-btn {

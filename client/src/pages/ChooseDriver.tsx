@@ -72,7 +72,6 @@ const ChooseDriver: React.FC = () => {
             const response = await fetch(`/check-driver-accepted-status?riderid=${account?.account?.email}`);
             const data = await response.json();
             setDriverAccepted(data.recievedDriver);
-            console.log(driverAccepted);
 
             if (driverAccepted !== "PAYMENT") return;
             navigate("/Payment");

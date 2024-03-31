@@ -41,17 +41,18 @@
 }
 
 .comment-input {
-    width: 500px;
+    width: 90%;
+    max-width: 500px;
     height: 100px;
     padding: .75rem;
-    border: 2px solid lightgray;
-    outline: transparent;
+    border: none;
+    outline: 2px solid lightgray;
     border-radius: 4px;
     transition: all 0.3s;
 }
 
 .comment-input:focus {
-    border: 2px solid black;
+    outline: 2px solid black;
 }
 
 .favorite-container {
@@ -62,7 +63,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1rem
+    gap: 1rem;
+    margin-top: 1rem;
 }
 
 #rating button {
@@ -75,16 +77,26 @@
     line-height: 16px;
 }
 
-.report-button,
-.block-button {
-    color: #fff;
+.report-button {
     background-color: var(--brand-maroon);
+    color: #fff;
 }
 
 .submit-button {
     background-color: var(--brand-gold);
+    color: #000;
+}
+
+.block-button {
+    background-color: #000;
+    color: #fff;
 }
 
 #rating button:hover {
     transform: scale(1.05);
+}
+
+#rating input[type="radio"] {
+    cursor: pointer;
+    accent-color: var(--brand-maroon);
 }

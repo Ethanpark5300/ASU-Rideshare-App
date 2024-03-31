@@ -611,11 +611,63 @@ app.post("/unblock-user", async (req: Request, res: Response) => {
 	});
 });
 
+/** Retrieve ratings information to ratings page */
+app.get("/get-ratings-information", async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let userid = req.query.userid;
+	let userType = await db.get(`SELECT Type_User FROM USER_INFO WHERE Email = '${userid}'`);
+
+	/** Return driver information if rider */
+	if (userType.Type_User === 1) {
+		let getDriverInformation = await db.all(`SELECT rides.driver_id, user_info.first_name, user_info.last_name FROM user_info INNER JOIN rides ON rides.driver_id = user_info.email WHERE rider_id = '${userid}' AND status = "COMPLETED"`);
+		if (getDriverInformation.length <= 0) return;
+
+		let driverInformation = getDriverInformation[getDriverInformation.length-1];
+
+		res.json({
+			driverRatingInformation: driverInformation
+		});
+	}
+
+	/** Return rider information if driver */
+	else {
+		let getRiderInformation = await db.all(`SELECT rides.rider_id, user_info.first_name, user_info.last_name FROM user_info INNER JOIN rides ON rides.rider_id = user_info.email WHERE driver_id = '${userid}' AND status = "COMPLETED"`);
+		if (getRiderInformation.length <= 0) return;
+
+		let riderInformation = getRiderInformation[getRiderInformation.length-1];
+
+		res.json({
+			riderRatingInformation: riderInformation
+		});
+	}
+});
+
+/** Check if rider already sent favorite request to driver or driver is already favorited */
+app.get("/check-driver-favorite-status", async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let riderid = req.query.riderid;
+	let favoriteStatus : string;
+
+	let getLatestDriverID = await db.all(`SELECT driver_id FROM rides WHERE rider_id = '${riderid}' AND status = "COMPLETED"`);
+	let latestDriverID = getLatestDriverID[getLatestDriverID.length-1].Driver_ID;
+	
+	let getCurrentDriverFavoriteStatus = await db.all(`SELECT status FROM favorites WHERE rider_id = '${riderid}' AND driver_id = '${latestDriverID}'`);
+	
+	if (getCurrentDriverFavoriteStatus.length <= 0) {
+		favoriteStatus = "Omitted";
+	} else {
+		favoriteStatus = getCurrentDriverFavoriteStatus[getCurrentDriverFavoriteStatus.length-1].Status;
+	}
+
+	res.json({
+		currentDriverFavoriteStatus: favoriteStatus
+	});
+});
+
 /** 
- * @todo check to see if send-ratings client side actually has a ratee, and fix me
  * Insert ratings to ratings table and calculate/update average ratings 
  * @param req.body.rater user email for rater
- * @param req.body.ratee @todo user email for ratee
+ * @param req.body.ratee user email for ratee
  * @param req.body.star_rating rating
  * @param req.body.comments rater comments
  * @param req.body.favorited_driver bool if rater favorited ratee
@@ -854,8 +906,7 @@ app.post("/change-status", async (req: Request, res: Response) => {
 	setTokenCookie(res, account);
 });
 
-/** @returns ride/drive history */
-/** @TODO Insert values after a ride is over (Save for end) */
+/** @FIXME return ride/drive history */
 // app.get("/ride-history", async (req: Request, res: Response) => {
 // 	let db = await dbPromise;
 // 	let accountEmail = req.query.accountEmail;
