@@ -41,17 +41,22 @@
 #report button {
   color: white;
   background: var(--brand-maroon);
-  padding: 8px 20px;
+  padding: 8px 16px;
   border-radius: 1000px;
   text-transform: uppercase;
-  font-size: 12px;
-  font-weight: bold;
+  font-size: 1rem;
+  line-height: 1rem;
   cursor: pointer;
+  font-weight: 700;
+  transform: 0.3s;
 }
 
-/* Tablet and Desktop Styles (you can customize these based on your design) */
+#report button:hover {
+  transform: scale(1.05);
+}
+
 @media (min-width: 768px) {
   .reportContainer {
-    max-width: 500px; /* Adjust the max-width for larger screens */
+    max-width: 500px;
   }
 }

@@ -826,21 +826,21 @@ app.post("/decline-favorite-request", async (req: Request, res: Response) => {
 
 /** 
  * Send report to reports database 
- * @param req.body.reporter reporter email
- * @param req.body.reportee reportee email
+ * @param req.body.reporterID reporter email
+ * @param req.body.reporteeID reportee email
  * @param req.body.reason report reason
  * @param req.body.comments reporter comments
  */
-app.post("/send-report", async (req: Request, res: Response) => {
+app.post("/report-user", async (req: Request, res: Response) => {
 	let db = await dbPromise;
-	let reporter_ID = req.body.reporter;
-	let reportee_ID = req.body.reportee;
+	let reporterID = req.body.reporterID;
+	let reporteeID = req.body.reporteeID;
 	let reason = req.body.reason;
 	let comments = req.body.comments;
 	let currentDate = new Date().toLocaleDateString();
 	let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-	await db.run(`INSERT INTO REPORTS (Reporter_ID, Reportee_ID, Reason, Comments, Date, Time) VALUES (?,?,?,?,?,?)`, reporter_ID, reportee_ID, reason, comments, currentDate, currentTime);
+	await db.run(`INSERT INTO REPORTS (Reporter_ID, Reportee_ID, Reason, Comments, Date, Time) VALUES (?,?,?,?,?,?)`, reporterID, reporteeID, reason, comments, currentDate, currentTime);
 });
 
 /** 

@@ -76,17 +76,17 @@ const Rating: React.FC = (props) => {
 
     const handleRiderRatingSubmit = () => {
         try {
-            // fetch(`/send-rider-ratings`, {
-            //     method: "POST",
-            //     headers: { "Content-type": "application/json" },
-            //     body: JSON.stringify({
-            //         riderid: account?.account?.email,
-            //         driverid: riderRatingInformation.Driver_ID,
-            //         star_rating: formChanges.rating,
-            //         comments: formChanges.comment,
-            //         favorited_driver: formChanges.favorite
-            //     }),
-            // })
+            fetch(`/send-rider-ratings`, {
+                method: "POST",
+                headers: { "Content-type": "application/json" },
+                body: JSON.stringify({
+                    riderid: account?.account?.email,
+                    driverid: riderRatingInformation.Driver_ID,
+                    star_rating: formChanges.rating,
+                    comments: formChanges.comment,
+                    favorited_driver: formChanges.favorite
+                }),
+            })
             setCompletedPrompt(true);
         } catch (error: any) {
             console.log("Error sending rider rating:", error);
