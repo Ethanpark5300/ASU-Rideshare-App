@@ -665,55 +665,70 @@ app.get("/check-driver-favorite-status", async (req: Request, res: Response) => 
 });
 
 /** 
- * Insert ratings to ratings table and calculate/update average ratings 
- * @param req.body.rater user email for rater
- * @param req.body.ratee user email for ratee
- * @param req.body.star_rating rating
- * @param req.body.comments rater comments
- * @param req.body.favorited_driver bool if rater favorited ratee
+ * Insert rider ratings to ratings table and calculate/update average driver ratings 
+ * @param req.body.riderid rider email
+ * @param req.body.driverid driver email
+ * @param req.body.star_rating five-star rating
+ * @param req.body.comments rating comments
+ * @param req.body.favorited_driver bool if rider favorited driver
  */
-app.post("/send-ratings", async (req: Request, res: Response) => {
+app.post("/send-rider-ratings", async (req: Request, res: Response) => {
 	let db = await dbPromise;
-	let rater_ID = req.body.rater;
-	let ratee_ID = req.body.rateeUser;
+	let riderid = req.body.riderid;
+	let driverid = req.body.driverid;
+	let star_rating = req.body.star_rating;
+	let comments = req.body.comments;
+	let favoriteDriverRequest = req.body.favorited_driver;
+	let currentDate = new Date().toLocaleDateString();
+	let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+	/** Insert ratings to ratings and rides table */
+	await db.run(`INSERT INTO ratings (rater_id, ratee_id, star_rating, comments, date, time) VALUES (?,?,?,?,?,?)`, riderid, driverid, star_rating, comments, currentDate, currentTime);
+	await db.run(`UPDATE rides SET given_driver_rating = '${star_rating}' WHERE rider_id = '${riderid}' AND driver_id = '${driverid}' AND ride_date = '${currentDate}'`);
+
+	/** Calculate and update driver's average rating */
+	let defaultRating = await db.get(`SELECT rating_driver FROM user_info WHERE email = '${driverid}'`);
+	let ratings = await db.all(`SELECT star_rating FROM ratings WHERE ratee_id = '${driverid}'`);
+	let totalRating = 0;
+
+	for (let i = 0; i < ratings.length; i++) totalRating += ratings[i].Star_Rating;
+	let updatedAvgRating = (defaultRating.Rating_Driver * ratings.length + star_rating) / (ratings.length + 1);
+
+	await db.run(`UPDATE user_info SET rating_driver = '${updatedAvgRating}' WHERE email = '${driverid}'`);
+
+	/** Send favorite request to specific driver if favoriteDriverRequest returns true */
+	if (favoriteDriverRequest) await db.run(`INSERT INTO favorites (rider_id, driver_id, date, status) VALUES (?,?,?,?)`, riderid, driverid, currentDate, "Pending");
+});
+
+/** 
+ * Insert driver ratings to ratings table and calculate/update average rider ratings 
+ * @param req.body.driverid driver email
+ * @param req.body.riderid rider email
+ * @param req.body.star_rating five-star rating
+ * @param req.body.comments rating comments
+ */
+app.post("/send-driver-ratings", async (req: Request, res: Response) => { 
+	let db = await dbPromise;
+	let driverid = req.body.driverid;
+	let riderid = req.body.riderid;
 	let star_rating = req.body.star_rating;
 	let comments = req.body.comments;
 	let currentDate = new Date().toLocaleDateString();
 	let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-	let rateeUserType = await db.get(`SELECT Type_User FROM USER_INFO WHERE Email = '${ratee_ID}'`);
-	let favoriteDriverRequest = req.body.favorited_driver;
 
-	/** Insert ratings to ratings table */
-	await db.run('INSERT INTO RATINGS (Rater_ID, Ratee_ID, Star_Rating, Comments, Date, Time) VALUES (?,?,?,?,?,?)', rater_ID, ratee_ID, star_rating, comments, currentDate, currentTime);
+	/** Insert ratings to ratings and rides table */
+	await db.run(`INSERT INTO ratings (rater_id, ratee_id, star_rating, comments, date, time) VALUES (?,?,?,?,?,?)`, driverid, riderid, star_rating, comments, currentDate, currentTime);
+	await db.run(`UPDATE rides SET given_rider_rating = '${star_rating}' WHERE rider_id = '${riderid}' AND driver_id = '${driverid}' AND ride_date = '${currentDate}'`);
 
-	/** Calculate and update rider's average rating  */
-	if (rateeUserType.Type_User === 1) {
-		let defaultRating = await db.get(`SELECT Rating_Passenger FROM USER_INFO WHERE Email = '${ratee_ID}'`);
-		let ratings = await db.all(`SELECT Star_Rating FROM RATINGS WHERE Ratee_ID = '${ratee_ID}'`);
-		let totalRating = 0;
+	/** Calculate and update rider's average rating */
+	let defaultRating = await db.get(`SELECT rating_passenger FROM user_info WHERE email = '${riderid}'`);
+	let ratings = await db.all(`SELECT star_rating FROM ratings WHERE ratee_id = '${riderid}'`);
+	let totalRating = 0;
 
-		for (let i = 0; i < ratings.length; i++) {
-			totalRating += ratings[i].Star_Rating;
-		}
+	for (let i = 0; i < ratings.length; i++) totalRating += ratings[i].Star_Rating;
+	let updatedAvgRating = (defaultRating.Rating_Passenger * ratings.length + star_rating) / (ratings.length + 1);
 
-		let updatedAvgRating = (defaultRating.Rating_Passenger * ratings.length + star_rating) / (ratings.length + 1);
-		await db.run(`UPDATE USER_INFO SET Rating_Passenger = ? WHERE Email = ?`, updatedAvgRating, ratee_ID);
-	} 
-	else { /** Calculate and update driver's average rating */
-		let defaultRating = await db.get(`SELECT Rating_Driver FROM USER_INFO WHERE Email = '${ratee_ID}'`);
-		let ratings = await db.all(`SELECT Star_Rating FROM RATINGS WHERE Ratee_ID = '${ratee_ID}'`);
-		let totalRating = 0;
-
-		for (let i = 0; i < ratings.length; i++) {
-			totalRating += ratings[i].Star_Rating;
-		}
-
-		let updatedAvgRating = (defaultRating.Rating_Driver * ratings.length + star_rating) / (ratings.length + 1);
-		await db.run(`UPDATE USER_INFO SET Rating_Driver = ? WHERE Email = ?`, updatedAvgRating, ratee_ID);
-
-		/** Send favorite request to specific driver if favoriteDriverRequest returns true */
-		if (favoriteDriverRequest) await db.run(`INSERT INTO favorites (rider_id, driver_id, date, status) VALUES (?,?,?,?)`, rater_ID, ratee_ID, currentDate, "Pending");
-	}
+	await db.run(`UPDATE USER_INFO SET Rating_Passenger = ? WHERE Email = ?`, updatedAvgRating, riderid);
 });
 
 /**
