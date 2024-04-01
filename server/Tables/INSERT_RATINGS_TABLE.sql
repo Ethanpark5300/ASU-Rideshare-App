@@ -9,4 +9,4 @@ VALUES
 	('hmincidentallyduring@asu.edu',	'overexertionaha@asu.edu',	2,	'Meh',	'2024-1-30',	'8:19 AM'),
 	('pathogenesisskeleton@asu.edu',	'boohootreasured@asu.edu',	1,	'Bad',	'2024-3-16',	'9:18 AM'),
 	('malnutritionstraddle@asu.edu',	'underneaththroughout@asu.edu',	1,	'Bad',	'2024-3-5',	'10:50 AM'),
-	('malnutritionstraddle@asu.edu',	'mechanicallygah@asu.edu',	5,	'Great',	'2024-2-15',	'9:30 PM')
+	('malnutritionstraddle@asu.edu',	'mechanicallygah@asu.edu',	5,	'Great',	'2024-2-15',	'9:30 PM');
