@@ -9,4 +9,4 @@ VALUES
 	('underachieveack@asu.edu',	'aboveevangelize@asu.edu',	5,	'2024-1-17',	'5:30 PM'),
 	('consequentlywhy@asu.edu',	'hmphupliftingly@asu.edu',	5,	'2024-3-25',	'7:16 AM'),
 	('overexertionaha@asu.edu',	'boohootreasured@asu.edu',	5,	'2024-2-29',	'6:30 PM'),
-	('underneaththroughout@asu.edu',	'mechanicallygah@asu.edu',	5,	'2024-2-27',	'9:15 PM'),
+	('underneaththroughout@asu.edu',	'mechanicallygah@asu.edu',	5,	'2024-2-27',	'9:15 PM');
