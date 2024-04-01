@@ -1,7 +1,11 @@
 #rating {
     text-align: center;
     background-color: #f1f1f1;
-    height: calc(100vh - 67px)
+    height: calc(100vh - 67px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 }
 
 #rating h1 {
@@ -42,7 +46,7 @@
 
 .comment-input {
     width: 90%;
-    max-width: 500px;
+    width: 600px;
     height: 100px;
     padding: .75rem;
     border: none;
@@ -60,6 +64,13 @@
 }
 
 .buttons-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.buttons-container2 {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -99,4 +110,27 @@
 #rating input[type="radio"] {
     cursor: pointer;
     accent-color: var(--brand-maroon);
+}
+
+#rating .completion-prompt {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    width: 300px;
+    height: 166px;
+    background-color: #fff;
+    padding: 2rem;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    gap: 1rem
+}
+
+#rating .home-btn {
+    align-self: center;
+    background-color: #000;
+    color: white;
 }

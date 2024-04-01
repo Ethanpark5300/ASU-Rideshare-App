@@ -80,7 +80,6 @@ function EditPayment() {
                     <button onClick={handleSaveChanges}>Save Changes</button>
                 </div>
             </main>
-            {/* connects to paypal would only be changing email. */}
         </PageTitle>
     );
 }

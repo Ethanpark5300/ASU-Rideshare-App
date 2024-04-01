@@ -12,6 +12,7 @@ const Rating: React.FC = (props) => {
     const [driverRatingInformation, setDriverRatingInformation] = useState<any>([]);
     const [driverFavoriteStatus, setDriverFavoriteStatus] = useState<string>();
     const [showFavoriteButtons, setShowFavoriteButtons] = useState<boolean>(true);
+    const [completedPrompt, setCompletedPrompt] = useState<boolean>(false);
 
     const getAccountInformation = useCallback(async () => {
         try {
@@ -75,17 +76,18 @@ const Rating: React.FC = (props) => {
 
     const handleRiderRatingSubmit = () => {
         try {
-            fetch(`/send-rider-ratings`, {
-                method: "POST",
-                headers: { "Content-type": "application/json" },
-                body: JSON.stringify({
-                    riderid: account?.account?.email,
-                    driverid: riderRatingInformation.Driver_ID,
-                    star_rating: formChanges.rating,
-                    comments: formChanges.comment,
-                    favorited_driver: formChanges.favorite
-                }),
-            })
+            // fetch(`/send-rider-ratings`, {
+            //     method: "POST",
+            //     headers: { "Content-type": "application/json" },
+            //     body: JSON.stringify({
+            //         riderid: account?.account?.email,
+            //         driverid: riderRatingInformation.Driver_ID,
+            //         star_rating: formChanges.rating,
+            //         comments: formChanges.comment,
+            //         favorited_driver: formChanges.favorite
+            //     }),
+            // })
+            setCompletedPrompt(true);
         } catch (error: any) {
             console.log("Error sending rider rating:", error);
         }
@@ -103,21 +105,39 @@ const Rating: React.FC = (props) => {
                     comments: formChanges.comment,
                 }),
             })
+            setCompletedPrompt(true);
         } catch (error: any) {
             console.log("Error sending rider rating:", error);
         }
     };
 
-    const handleBlock = async () => {
+    const handleBlockDriver = async () => {
         try {
-            fetch(`/send-blocked`, {
+            fetch(`/block-driver`, {
                 method: "POST",
                 headers: { "Content-type": "application/json" },
                 body: JSON.stringify({
-                    blocker: account?.account?.email,
+                    riderid: account?.account?.email,
+                    driverid: riderRatingInformation.Driver_ID
                 }),
             })
-            alert('User blocked!');
+            alert('Driver has been blocked');
+        } catch (error: any) {
+            console.log("Error blocking user:", error);
+        }
+    };
+
+    const handleBlockRider = async () => {
+        try {
+            fetch(`/block-rider`, {
+                method: "POST",
+                headers: { "Content-type": "application/json" },
+                body: JSON.stringify({
+                    driverid: account?.account?.email,
+                    riderid: driverRatingInformation.Rider_ID
+                }),
+            })
+            alert('Rider has been blocked');
         } catch (error: any) {
             console.log("Error blocking user:", error);
         }
@@ -199,7 +219,7 @@ const Rating: React.FC = (props) => {
                         <div className="buttons-container">
                             <button onClick={handleRiderRatingSubmit} className="submit-button">Submit</button>
                             <button onClick={() => navigate("/Report")} className='report-button'>Report</button>
-                            <button onClick={handleBlock} className="block-button">Block</button>
+                            <button onClick={handleBlockDriver} className="block-button">Block</button>
                         </div>
                     </>
                 )}
@@ -239,12 +259,18 @@ const Rating: React.FC = (props) => {
                         </div>
 
                         {/* Submit, Report, Block buttons */}
-                        <div className="buttons-container">
+                        <div className="buttons-container2">
                             <button onClick={handleDriverRatingSubmit} className="submit-button">Submit</button>
                             <button onClick={() => navigate("/Report")} className='report-button'>Report</button>
-                            <button onClick={handleBlock} className="block-button">Block</button>
+                            <button onClick={handleBlockRider} className="block-button">Block</button>
                         </div>
                     </>
+                )}
+                {completedPrompt && (
+                    <div className="completion-prompt">
+                        <p>Thank you for using ASU Rideshare App. Your rating has been successfully submitted.</p>
+                        <button onClick={() => navigate("/")} className='home-btn'>Home Page</button>
+                    </div>
                 )}
             </main>
         </PageTitle>

@@ -562,18 +562,33 @@ const verifyToken = function (token: string): Object | undefined {
 }
 
 /**
- * Send block info to the blocked database
- * @param req.body.blocker the user email blocking
- * @param req.body.blockee the user email getting blocked
+ * Send rider block driver info to the blocked database
+ * @param req.body.riderid rider (blocker) email
+ * @param req.body.driverid driver (blockee) email
  */
-app.post("/send-blocked", async (req: Request, res: Response) => {
+app.post("/block-driver", async (req: Request, res: Response) => {
 	let db = await dbPromise;
-	let blocker_ID = req.body.blocker;
-	let blockee_ID = req.body.blockee;
+	let riderid = req.body.riderid;
+	let driverid = req.body.driverid;
 	let currentDate = new Date().toLocaleDateString();
 	let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 	
-	await db.run('INSERT INTO BLOCKED (Blocker_ID, Blockee_ID, Date, Time) VALUES (?,?,?,?)', blocker_ID, blockee_ID, currentDate, currentTime);
+	await db.run('INSERT INTO BLOCKED (Blocker_ID, Blockee_ID, Date, Time) VALUES (?,?,?,?)', riderid, driverid, currentDate, currentTime);
+});
+
+/**
+ * Send driver block rider info to the blocked database
+ * @param req.body.driverid driver (blocker) email
+ * @param req.body.riderid rider (blockee) email
+ */
+app.post("/block-rider", async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let driverid = req.body.driverid;
+	let riderid = req.body.riderid;
+	let currentDate = new Date().toLocaleDateString();
+	let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+	await db.run('INSERT INTO BLOCKED (Blocker_ID, Blockee_ID, Date, Time) VALUES (?,?,?,?)', driverid, riderid, currentDate, currentTime);
 });
 
 /**
@@ -666,8 +681,8 @@ app.get("/check-driver-favorite-status", async (req: Request, res: Response) => 
 
 /** 
  * Insert rider ratings to ratings table and calculate/update average driver ratings 
- * @param req.body.riderid rider email
- * @param req.body.driverid driver email
+ * @param req.body.riderid rider (rater) email
+ * @param req.body.driverid driver (ratee) email
  * @param req.body.star_rating five-star rating
  * @param req.body.comments rating comments
  * @param req.body.favorited_driver bool if rider favorited driver
@@ -702,8 +717,8 @@ app.post("/send-rider-ratings", async (req: Request, res: Response) => {
 
 /** 
  * Insert driver ratings to ratings table and calculate/update average rider ratings 
- * @param req.body.driverid driver email
- * @param req.body.riderid rider email
+ * @param req.body.driverid driver (rater) email
+ * @param req.body.riderid rider (ratee) email
  * @param req.body.star_rating five-star rating
  * @param req.body.comments rating comments
  */
