@@ -9,4 +9,4 @@ VALUES
 	('accidentallydemolish@asu.edu',	'collectivizeprovided@asu.edu',	'2024-2-17',	'9:35 PM'),
 	('mechanicallygah@asu.edu',	'conscientisepaginate@asu.edu',	'2024-2-27',	'11:47 AM'),
 	('meaningfullyoff@asu.edu',	'underneaththroughout@asu.edu',	'2024-2-12',	'3:40 PM'),
-	('meaningfullyoff@asu.edu',	'mechanicallygah@asu.edu',	'2024-3-29',	'5:00 PM'),
+	('meaningfullyoff@asu.edu',	'mechanicallygah@asu.edu',	'2024-3-29',	'5:00 PM');
