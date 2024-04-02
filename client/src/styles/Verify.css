@@ -1,0 +1,54 @@
+#blocked-list {
+    height: calc(100vh - 68.6px);
+    background-color: #f1f1f1;
+}
+
+#verify header {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
+#verify h1 {
+    background-color: var(--brand-gold);
+    padding: .5re
+}
+
+#verify .verify-text-container {
+    display: flex;
+    justify-content: center;
+}
+
+#verify .verify-text-container h2 {
+    margin-right: 10px;
+}
+
+#verify .verify-btns-container {
+    display: flex;
+    justify-content: center;
+}
+
+#verify button {
+    border-radius: 1000px;
+    cursor: pointer;
+    padding: 8px 16px;
+    font-weight: 700;
+    line-height: 16px;
+    transition: scale .03s ease-in-out;
+    margin: 1rem;
+    background-color: var(--brand-maroon);
+    color: white;
+}
+
+#verify button:hover {
+    transform: scale(1.05);
+}
+
+#verify .RegisterError {
+    color: #721c24;
+    font-weight: bold;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}

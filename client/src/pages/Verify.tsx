@@ -12,15 +12,15 @@ function Verify() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     //get data from redirect
+    
     const { state } = useLocation();
     //if state is null, redirect
     useEffect(() => {
         if (state === null) {
             navigate("/Register");
-        }
+        } 
     }, [state, navigate]);
-    const verifyEmail = state.email;
-
+    const verifyEmail = "";
     const verifyRef = useRef<string>("");
 
     const [registerFailed, setRegisterFailed] = useState<boolean>(false);
@@ -89,9 +89,12 @@ function Verify() {
     return (
         <PageTitle title="Verify">
             <main id="verify">
-                <h1>Join the Rideshare Community</h1>
-                <div>
-                    <h2>Verification ID</h2>
+                <header>
+                    <h1>Join the Rideshare Community</h1>
+                </header>
+
+                <div className = "verify-text-container">
+                    <h2>Verification ID:</h2>
                     <TextInput
                         placeholder=""
                         regex={/^[a-zA-Z0-9_@.]+$/}
@@ -99,8 +102,11 @@ function Verify() {
                         enterFunction={registerRequest}
                     />
                 </div>
-                <Button label="Verify" onClickFn={registerRequest} />
-                <Button label={"Resend Email (" + verifyEmail + ")"} onClickFn={resendRequest} />
+
+                <div className = "verify-btns-container">
+                    <Button label="Verify" onClickFn={registerRequest} />
+                    <Button label={"Resend Email (" + verifyEmail + ")"} onClickFn={resendRequest} />
+                </div>
                 {errorMsg && <p className="RegisterError">{errorMsg}</p>}
                 {registerMessage && (
                     <p className="RegisterError">{registerMessage}</p>
