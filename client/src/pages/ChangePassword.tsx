@@ -61,7 +61,10 @@ function ChangePassword() {
                     valueRef={newConfirmPassword}
                     enterFunction={changePassword}
                 /> 
+                <br/>
+                <br/>
                 <Button label="Change Password" onClickFn={changePassword} />
+                <br/>
                 {errorMsg && <p className="PasswordError">{errorMsg}</p>}
 
                 {passwordFailed && (
