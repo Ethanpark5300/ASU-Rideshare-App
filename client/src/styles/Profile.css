@@ -104,6 +104,14 @@
     cursor: pointer;
 }
 
+.changePassword {
+    padding: 10px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+}
+
 
 /* change to a flex display to allow for each box to encompass each element
 this will allow it to be only that size

@@ -91,6 +91,12 @@ const Profile: React.FC = (props) => {
                             <button>View Blocked</button>
                         </Link>
                     </div>
+
+                    <div className="changePassword">
+                        <Link to="/changePassword">
+                            <button>Change Password</button>
+                        </Link>
+                    </div>
                 </div>
 
                 <div className="profileInfo">
