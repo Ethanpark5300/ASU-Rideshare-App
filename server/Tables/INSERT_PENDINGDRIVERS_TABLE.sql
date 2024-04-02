@@ -1,4 +1,4 @@
-INSERT INTO PENDINGDRIVERS(Rider_ID, Driver_ID)
+INSERT INTO PENDING_DRIVERS(Rider_ID, Driver_ID)
 VALUES
 	('zealsmeal@asu.edu','accidentallydemolish@asu.edu'),
 	('fictionalizesplatter@asu.edu','propagandizefamously@asu.edu'),

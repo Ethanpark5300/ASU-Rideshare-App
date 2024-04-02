@@ -1,4 +1,4 @@
-INSERT INTO PAYMENTS(Rider_ID, Driver_ID, Rider_Cost, Date, Time)
+INSERT INTO PAYMENTS(Rider_ID, Driver_ID, Ride_Cost, Date, Time)
 VALUES
 	('zealsmeal@asu.edu',	'accidentallydemolish@asu.edu',	5,	'2024-1-23',	'11:30 AM'),
 	('fictionalizesplatter@asu.edu',	'propagandizefamously@asu.edu',	5,	'2024-3-12',	'9:45 AM'),
