@@ -15,6 +15,8 @@ function ChangePassword() {
     const [errorMsg, setErrorMsg] = useState<string | undefined>(undefined);
 
     const changePassword = async () => {
+        /*wrong passwords used
+        should this be newPassword!== newConfirmPassword*/
         if (givenPassword.current !== newPassword.current) {
             setPasswordFailed(true);
             setErrorMsg("Passwords do not match!");
@@ -65,10 +67,11 @@ function ChangePassword() {
                 <br/>
                 <Button label="Change Password" onClickFn={changePassword} />
                 <br/>
+                <br/>
                 {errorMsg && <p className="PasswordError">{errorMsg}</p>}
 
                 {passwordFailed && (
-                    <p className="PasswordError"> Change Password failed!</p>
+                    <p className="PasswordError">Change Password failed!</p>
                 )}
             </main>
         </PageTitle>
