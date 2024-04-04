@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./NavigationBar.css";
 import Navbar_Logo from "./Navbar-Logo.svg";
 import { useCallback, useEffect, useState } from "react";
@@ -8,6 +8,7 @@ import { AccountTypeFlag } from "../../account/Account";
 function Navbar() {
     const account = useAppSelector((state) => state.account);
     const [userType, setUserType] = useState();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const navEl = document.querySelector('.navbar-links') as HTMLElement;
@@ -80,9 +81,7 @@ function Navbar() {
                                 <Link className="nav__link fromLeft" to="/RideHistory">Ride History</Link>
                             </li>
                             <li>
-                                <Link to="/RequestRide">
-                                    <button>Request Ride</button>
-                                </Link>
+                                <button onClick={() => navigate("/RequestRide")}>Request Ride</button>
                             </li>
                         </ul>
                     )}
@@ -106,9 +105,7 @@ function Navbar() {
                                 <Link className="nav__link fromLeft" to="/RideHistory">Ride History</Link>
                             </li>
                             <li>
-                                <Link to="/ChooseRider">
-                                    <button>Pending Requests</button>
-                                </Link>
+                                <button onClick={() => navigate("/ChooseRider")}>Pending Requests</button>
                             </li>
                         </ul>
                     )}
@@ -117,14 +114,10 @@ function Navbar() {
                     {(!account.account || ((account.account.accountType & AccountTypeFlag.None) !== 0)) && (
                         <ul className="nav__list">
                             <li>
-                                <Link to="/Login">
-                                    <button>Login</button>
-                                </Link>
+                                <button onClick={() => navigate("/Login")}>Login</button>
                             </li>
                             <li>
-                                <Link to="/Register">
-                                    <button>Register</button>
-                                </Link>
+                                <button onClick={() => navigate("/Register")}>Register</button>
                             </li>
                         </ul>
                     )}

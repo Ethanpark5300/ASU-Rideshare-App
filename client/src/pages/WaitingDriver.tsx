@@ -3,7 +3,7 @@ import PageTitle from '../components/PageTitle/PageTitle';
 import { useCallback, useEffect, useState } from 'react';
 import { useAppSelector } from '../store/hooks';
 import CancellationTimer from '../components/Timer/Timer';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { GoogleMap, MarkerF, useJsApiLoader } from '@react-google-maps/api';
 
 function WaitingDriver() {
@@ -118,7 +118,7 @@ function WaitingDriver() {
         setBeforeCancellationPopup(false);
         setPassedCancellationPopup(false);
     }
-    
+
     const handleDeclineCancel = () => {
         setBeforeCancellationPopup(false);
         setPassedCancellationPopup(false);
@@ -176,7 +176,7 @@ function WaitingDriver() {
                 }
             }
             checkDriverStarted();
-            if(driverStarted !== "ONGOING") return;
+            if (driverStarted !== "ONGOING") return;
             navigate("/RideInProgress");
         }, 1000);
         return () => clearInterval(interval);
@@ -186,25 +186,19 @@ function WaitingDriver() {
         <PageTitle title="Waiting Driver">
             <main id="waiting">
                 <div className="map-container">
-                    <div style={{ width: '100%', height: '100vh', position: 'absolute' }}>
-                        {errorMessage && (
-                            <div className='error-message'>
-                                {errorMessage}
-                            </div>
-                        )}
-                        {mapLoaded && mapsLoaded && (
-                            <GoogleMap
-                                mapContainerStyle={{ width: '100%', height: '100%' }}
-                                center={currentLocation}
-                                zoom={19}
-                                onLoad={handleMapLoad}
-                            >
-                                {currentLocation && <MarkerF position={currentLocation} />}
-                                {pickupLocation && <MarkerF position={pickupLocation} />}
-                            </GoogleMap>
-                        )}
-                        {loadError && <div>Error loading Google Maps: {loadError.message}</div>}
-                    </div>
+                    {errorMessage && (<div className='error-message'>{errorMessage}</div>)}
+                    {mapLoaded && mapsLoaded && (
+                        <GoogleMap
+                            mapContainerStyle={{ width: '100%', height: '100%' }}
+                            center={currentLocation}
+                            zoom={19}
+                            onLoad={handleMapLoad}
+                        >
+                            {currentLocation && <MarkerF position={currentLocation} />}
+                            {pickupLocation && <MarkerF position={pickupLocation} />}
+                        </GoogleMap>
+                    )}
+                    {loadError && <div>Error loading Google Maps: {loadError.message}</div>}
                 </div>
                 <div className="waiting-container">
                     {(riderRideInfo) && (
@@ -252,9 +246,7 @@ function WaitingDriver() {
                 {cancelledDriverPopup && (
                     <div className='waiting-before-cancel-popup'>
                         <p>Sorry, driver has cancelled your ride.</p>
-                        <Link to="/">
-                            <button className='back-to-home-btn'>Back to Home</button>
-                        </Link>
+                        <button onClick={() => navigate("/")} className='back-to-home-btn'>Back to Home</button>
                     </div>
                 )}
 

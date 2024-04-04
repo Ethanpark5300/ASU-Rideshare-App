@@ -2,11 +2,11 @@ import '../styles/EditPayment.css';
 import PageTitle from '../components/PageTitle/PageTitle';
 import { useAppSelector } from '../store/hooks';
 import { SetStateAction, useCallback, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function EditPayment() {
     const account = useAppSelector((state) => state.account);
-
+    const navigate = useNavigate();
     const [loading, setLoading] = useState<boolean>(true);
     const [paypalEmail, setPaypalEmail] = useState<string>('');
 
@@ -59,11 +59,9 @@ function EditPayment() {
         <PageTitle title="Edit Payment">
             <main id="edit-payment">
                 <h1>Edit Payment</h1>
-                <Link to="/Profile">
-                    <button>Back to Profile Page</button>
-                </Link>
-                <br/>
-                <br/>
+                <button onClick={() => navigate("/Profile")}>Back to Profile Page</button>
+                <br />
+                <br />
                 <div className="infobox">
                     <label htmlFor="payPalEmail">Change PayPal Email to:</label>
                     <input
@@ -74,8 +72,8 @@ function EditPayment() {
                         onChange={handlePaypalEmailChange}
                     />
                 </div>
-                <br/>
-                <br/>
+                <br />
+                <br />
                 <div className="editchangesbutton">
                     <button onClick={handleSaveChanges}>Save Changes</button>
                 </div>

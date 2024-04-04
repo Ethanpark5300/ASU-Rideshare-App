@@ -1,11 +1,12 @@
 import '../styles/EditAccount.css';
 import PageTitle from '../components/PageTitle/PageTitle';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../store/hooks';
 import { useState, useEffect, SetStateAction, useCallback } from 'react';
 
 function EditAccount() {
     const account = useAppSelector((state) => state.account);
+    const navigate = useNavigate();
 
     const [loading, setLoading] = useState<boolean>(true);
     const [firstName, setFirstName] = useState<string>('');
@@ -108,9 +109,7 @@ function EditAccount() {
                     value={phoneNumber || ''}
                     onChange={handlePhoneNumberChange}
                 />
-                <Link to="/Profile">
-                    <button>Back to Profile Page</button>
-                </Link>
+                <button onClick={() => navigate("/Profile")}>Back to Profile Page</button>
                 <button onClick={handleSaveChanges}>Save Changes</button>
             </main>
         </PageTitle>

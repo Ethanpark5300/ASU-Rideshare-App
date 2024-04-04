@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { GoogleMap, useJsApiLoader, DirectionsRenderer, MarkerF } from '@react-google-maps/api';
 import PageTitle from '../components/PageTitle/PageTitle';
 import "../styles/PickupRider.css";
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 interface PickupRiderProps {
     driverEmail: string;
@@ -12,9 +12,7 @@ const PickupRider: React.FC<PickupRiderProps> = (props) => {
     const [currentLocation, setCurrentLocation] = useState<{ lat: number, lng: number }>(null);
     const [pickupAddress, setPickupAddress] = useState<string>();
     const [pickupLocation, setPickupLocation] = useState<{ lat: number, lng: number }>(null);
-    const [errorMessage, setErrorMessage] = useState<string>();
-    const [mapLoaded, setMapLoaded] = useState<boolean>(false);
-    const { isLoaded: mapsLoaded, loadError } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
+    const { isLoaded: mapsLoaded } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
     const [estimatedTimeArrival, setEstimatedTimeArrival] = useState<string>();
     const [estimatedRemainingDistance, setEstimatedRemainingDistance] = useState<number>();
     const [arrivalTime, setArrivalTime] = useState<string>();
@@ -50,19 +48,17 @@ const PickupRider: React.FC<PickupRiderProps> = (props) => {
                 (position) => {
                     const { latitude, longitude } = position.coords;
                     setCurrentLocation({ lat: latitude, lng: longitude });
-                    setErrorMessage('');
-                    setMapLoaded(true);
                 },
                 (error) => {
                     if (error.code === error.PERMISSION_DENIED) {
-                        setErrorMessage('User denied the request for Geolocation.');
+                        console.error("User denied the request for Geolocation.")
                     } else {
-                        setErrorMessage('An error occurred while retrieving location.');
+                        console.error("An error occurred while retrieving location.")
                     }
                 }
             );
         } else {
-            setErrorMessage('Geolocation is not supported by this browser.');
+            console.log("Geolocation is not supported by this browser.")
         }
     }, []);
 
@@ -75,7 +71,7 @@ const PickupRider: React.FC<PickupRiderProps> = (props) => {
                 const location = results[0].geometry.location;
                 setPickupLocation({ lat: location.lat(), lng: location.lng() });
             } else {
-                setErrorMessage('Geocode was not successful for the following reason: ' + status);
+                console.error("Geocode was not successful for the following reason: " + status);
             }
         });
     }, [mapsLoaded, pickupAddress]);
@@ -101,7 +97,7 @@ const PickupRider: React.FC<PickupRiderProps> = (props) => {
                     const remainingDistanceInMiles = remainingDistanceInMeters * 0.000621371; // Convert meters to miles
 
                     setEstimatedTimeArrival(leg.duration.text);
-                    setEstimatedRemainingDistance(Math.round(remainingDistanceInMiles * 10)/10);
+                    setEstimatedRemainingDistance(Math.round(remainingDistanceInMiles * 10) / 10);
 
                     const estimatedDurationInSeconds = leg.duration.value;
                     const arrivalTimeInMilliseconds = Date.now() + (estimatedDurationInSeconds * 1000);
@@ -116,10 +112,6 @@ const PickupRider: React.FC<PickupRiderProps> = (props) => {
                 }
             }
         );
-    };
-
-    const handleMapLoad = () => {
-        setMapLoaded(true);
     };
 
     /** Checking if the rider cancelled the ride */
@@ -163,7 +155,7 @@ const PickupRider: React.FC<PickupRiderProps> = (props) => {
         }, 1000);
         return () => clearInterval(interval);
     }, [estimatedRemainingDistance, props.driverEmail]);
-  
+
     /** Handling when the ride starts */
     async function startRide() {
         try {
@@ -188,32 +180,23 @@ const PickupRider: React.FC<PickupRiderProps> = (props) => {
         <PageTitle title='Pickup Rider'>
             <main id='pickup-rider'>
                 <div className="map-container">
-                    <div style={{ width: '100%', height: '100vh', position: 'absolute' }}>
-                        {errorMessage && (
-                            <div className='error-message'>
-                                {errorMessage}
-                            </div>
-                        )}
-                        {mapLoaded && mapsLoaded && (
-                            <GoogleMap
-                                mapContainerStyle={{ width: '100%', height: '100%' }}
-                                center={currentLocation || { lat: 0, lng: 0 }}
-                                zoom={19}
-                                onLoad={handleMapLoad}
-                            >
-                                {currentLocation && <MarkerF position={currentLocation} />}
-                                {pickupLocation && <MarkerF position={pickupLocation} />}
-                                {showDirections && directionsResponse && (
-                                    <DirectionsRenderer
-                                        key={directionsResponse.uniqueKey}
-                                        directions={directionsResponse.response}
-                                        options={{ suppressMarkers: true }}
-                                    />
-                                )}
-                            </GoogleMap>
-                        )}
-                        {loadError && <div>Error loading Google Maps: {loadError.message}</div>}
-                    </div>
+                    {mapsLoaded && (
+                        <GoogleMap
+                            mapContainerStyle={{ width: '100%', height: '100%' }}
+                            center={currentLocation}
+                            zoom={19}
+                        >
+                            {currentLocation && <MarkerF position={currentLocation} />}
+                            {pickupLocation && <MarkerF position={pickupLocation} />}
+                            {showDirections && directionsResponse && (
+                                <DirectionsRenderer
+                                    key={directionsResponse.uniqueKey}
+                                    directions={directionsResponse.response}
+                                    options={{ suppressMarkers: true }}
+                                />
+                            )}
+                        </GoogleMap>
+                    )}
                 </div>
                 <aside className="pickup-rider-info-container">
                     {(rideInfo) && (
@@ -248,9 +231,7 @@ const PickupRider: React.FC<PickupRiderProps> = (props) => {
                 {cancelledRiderPopup && (
                     <div className="rider-cancelled-popup">
                         <p>Sorry, rider cancelled the ride</p>
-                        <Link to="/">
-                            <button className='btn back-to-home-btn'>Back to Home</button>
-                        </Link>
+                        <button onClick={() => navigate("/")} className='btn back-to-home-btn'>Back to Home</button>
                     </div>
                 )}
             </main>

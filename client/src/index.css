@@ -15,7 +15,6 @@
 :root {
     --brand-maroon: #8C1D40;
     --brand-gold: #FFC627;
-    --modified-height: calc(100vh - 64.8px);
 }
 
 /* Make all buttons' border transparent */

@@ -5,7 +5,7 @@ import LiveTracking from "../components/GoogleMaps/LiveTracking";
 import { useAppSelector } from "../store/hooks";
 import { useNavigate } from "react-router-dom";
 
-const ChooseDriver: React.FC = () => {
+function ChooseDriver() {
     const account = useAppSelector((state) => state.account);
     const [driversAvailableList, setDriversAvailableList] = useState<any[]>([]);
     const [favoriteDriversAvailableList, setFavoriteDriversAvailableList] = useState<any[]>([]);

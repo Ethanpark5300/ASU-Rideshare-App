@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useAppSelector } from '../store/hooks';
 import LiveTracking from '../components/GoogleMaps/LiveTracking';
 import CancellationTimer from '../components/Timer/Timer';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function WaitingRider() {
     const account = useAppSelector((state) => state.account);
@@ -16,7 +16,6 @@ function WaitingRider() {
     const [passedCancellationPopup, setPassedCancellationPopup] = useState<boolean>(false);
     const [cancellationRiderStatus, setCheckRiderCancellationStatus] = useState<string>();
     const [cancelledRiderPopup, setCancelledRiderPopup] = useState<boolean>(false);
-    const [errorMessage, setErrorMessage] = useState<Error>()
 
     useEffect(() => {
         const delay: number = 125;
@@ -77,7 +76,7 @@ function WaitingRider() {
             })
                 .then((res) => res.json())
                 .then((data) => {
-                    setErrorMessage(data.errorMessage);
+                    console.error(data.errorMessage);
                 });
         } catch (error: any) {
             console.log("Error cancelling ride:", error);
@@ -164,9 +163,7 @@ function WaitingRider() {
                 {cancelledRiderPopup && (
                     <div className="rider-cancelled-popup">
                         <p>Sorry, rider cancelled the ride</p>
-                        <Link to="/">
-                            <button className='btn back-to-home-btn'>Back to Home</button>
-                        </Link>
+                        <button onClick={() => navigate("/")} className='btn back-to-home-btn'>Back to Home</button>
                     </div>
                 )}
 

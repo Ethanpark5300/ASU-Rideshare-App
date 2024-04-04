@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import "../styles/Payment.css"
 import PageTitle from '../components/PageTitle/PageTitle';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../store/hooks';
 
 const paypalOptions = {
@@ -10,7 +10,7 @@ const paypalOptions = {
     currency: 'USD',
 };
 
-const Payment: React.FC = (props) => {
+function Payment() {
     const account = useAppSelector((state) => state.account);
     const [paypalLoaded, setPaypalLoaded] = useState<boolean>(false);
     const [paymentStatus, setPaymentStatus] = useState<string>();
@@ -22,7 +22,6 @@ const Payment: React.FC = (props) => {
     const [cancelledDriverPopup, setCancelledDriverPopup] = useState<boolean>(false);
     const navigate = useNavigate();
 
-    //https://developer.paypal.com/docs/multiparty/checkout/standard/customize/buttons-style-guide/
     const buttonStyles = {
         color: 'gold' as const,
         shape: 'pill' as const,
@@ -46,7 +45,7 @@ const Payment: React.FC = (props) => {
 
         return () => clearTimeout(timerId);
     }, [account?.account?.email]);
-  
+
     const createOrder = (data: any, actions: any) => {
         return actions.order.create({
             purchase_units: [
@@ -97,9 +96,7 @@ const Payment: React.FC = (props) => {
             return (
                 <div className="payment-success-popup">
                     <p>Payment has been successful!</p>
-                    <Link to="/WaitingDriver">
-                        <button>Next</button>
-                    </Link>
+                    <button onClick={() => navigate("/WaitingDriver")}>Next</button>
                 </div>
             );
         } else if (paymentStatus === 'error' && showErrorPopup) {
@@ -122,7 +119,7 @@ const Payment: React.FC = (props) => {
     const handleCancelRideRequest = () => {
         setCancelConfirmPromptVisible(true);
     }
-    
+
     const handleDeclineCancel = () => {
         setCancelConfirmPromptVisible(false);
     }
@@ -153,7 +150,7 @@ const Payment: React.FC = (props) => {
             console.log("Error checking driver cancellation status:", error);
         }
     }, [account?.account?.email]);
-    
+
     useEffect(() => {
         const interval = setInterval(() => {
             checkDriverCancellationStatus();
@@ -216,14 +213,12 @@ const Payment: React.FC = (props) => {
                         </div>
                     </div>
                 )}
-                
+
                 {/** @return driver cancelling popup */}
                 {cancelledDriverPopup && (
                     <div className='cancel-popup'>
                         <p>Sorry, driver has cancelled your ride.</p>
-                        <Link to="/">
-                            <button className='back-to-home-btn'>Back to Home</button>
-                        </Link>
+                        <button onClick={() => navigate("/")} className='back-to-home-btn'>Back to Home</button>
                     </div>
                 )}
             </main>

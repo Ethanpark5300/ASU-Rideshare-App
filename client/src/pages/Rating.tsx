@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import '../styles/Rating.css';
 import PageTitle from '../components/PageTitle/PageTitle';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../store/hooks';
 
-const Rating: React.FC = (props) => {
+function Rating() {
     const navigate = useNavigate();
     const account = useAppSelector((state) => state.account);
     const [userType, setUserType] = useState<number>();

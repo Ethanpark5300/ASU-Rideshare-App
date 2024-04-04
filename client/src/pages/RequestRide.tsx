@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { GoogleMap, LoadScript, DirectionsRenderer, Autocomplete, MarkerF } from '@react-google-maps/api';
 import '../styles/RequestRide.css';
 import PageTitle from '../components/PageTitle/PageTitle';
@@ -6,7 +6,6 @@ import { FaMapMarkerAlt } from "react-icons/fa";
 import Select from 'react-select';
 import buildingsData from '../components/BuildingSearch/Buildings.json';
 import { useNavigate } from 'react-router-dom';
-import { useJsApiLoader } from '@react-google-maps/api';
 const libraries = ['places'] as any;
 
 interface RequestRideProps {
@@ -16,8 +15,6 @@ interface RequestRideProps {
 const RequestRide: React.FC<RequestRideProps> = (props) => {
     const [currentPosition, setCurrentPosition] = useState({ lat: 0, lng: 0 });
     const [mapCenter, setMapCenter] = useState({ lat: 0, lng: 0 });
-    const [mapLoaded, setMapLoaded] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
     const [origin, setOrigin] = useState<string>('');
     const [destination, setDestination] = useState<string>('');
     const [directions, setDirections] = useState<any>(null);
@@ -31,7 +28,6 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
     const [selectedDestinationBuilding, setSelectedDestinationBuilding] = useState<BuildingOption | null>(null);
     let [pickupLocation, setPickupLocation] = useState<string>(null);
     let [dropoffLocation, setDropoffLocation] = useState<string>(null);
-    const { isLoaded: mapsLoaded, loadError } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
     const navigate = useNavigate();
 
     interface Building {
@@ -52,13 +48,12 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
                 const { latitude, longitude } = position.coords;
                 setCurrentPosition({ lat: latitude, lng: longitude });
                 setMapCenter({ lat: latitude, lng: longitude });
-                setError(null);
             },
             (error) => {
                 if (error.code === error.PERMISSION_DENIED) {
-                    setError('User denied the request for Geolocation.');
+                    console.error('User denied the request for Geolocation.')
                 } else {
-                    setError('An error occurred while retrieving location.');
+                    console.log('An error occurred while retrieving location.')
                 }
             }
         );
@@ -67,16 +62,6 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
             navigator.geolocation.clearWatch(geoWatchId);
         };
     }, []);
-
-    useEffect(() => {
-        if (mapsLoaded) {
-            setMapLoaded(true);
-        }
-    }, [mapsLoaded]);
-
-    const handleMapLoad = () => {
-        setMapLoaded(true);
-    };
 
     function getPickupLocation() {
         let updatedPickupLocation = '';
@@ -266,12 +251,6 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
         setSelectedDestinationBuilding(null);
     };
 
-    useEffect(() => {
-        if (loadError) {
-            setError("Error loading Google Maps API. Please try again later.");
-        }
-    }, [loadError]);
-
     return (
         <PageTitle title='Request Ride'>
             <main id='request-ride'>
@@ -282,7 +261,6 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
                     <LoadScript
                         googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY || ''}
                         libraries={libraries}
-                        onLoad={handleMapLoad}
                     >
                         <div className="origin-container">
                             <div className="input-container">
@@ -424,27 +402,20 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
                         </div>
                     )}
                 </aside>
-                {error ? (
-                    <p className='request-error'>{error}</p>
-                ) : (
-                    mapLoaded && (
-                        <div>
-                            {currentPosition.lat !== 0 && currentPosition.lng !== 0 && (
-                                <div className="map-container">
-                                    <GoogleMap
-                                        mapContainerStyle={{ height: '100%', width: '100%' }}
-                                        zoom={18}
-                                        center={mapCenter}
-                                    >
-                                        <MarkerF position={currentPosition} />
-                                        {directions && <DirectionsRenderer directions={directions} />}
-                                    </GoogleMap>
-                                </div>
-                            )}
+                <div>
+                    {currentPosition.lat !== 0 && currentPosition.lng !== 0 && (
+                        <div className="map-container">
+                            <GoogleMap
+                                mapContainerStyle={{ height: '100%', width: '100%' }}
+                                zoom={19}
+                                center={mapCenter}
+                            >
+                                <MarkerF position={currentPosition} />
+                                {directions && <DirectionsRenderer directions={directions} />}
+                            </GoogleMap>
                         </div>
-                    )
-                )}
-                {loadError && <p className="request-error">{loadError.toString()}</p>}
+                    )}
+                </div>
             </main>
         </PageTitle>
     );

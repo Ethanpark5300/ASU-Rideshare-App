@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { GoogleMap, useJsApiLoader, DirectionsRenderer, MarkerF } from '@react-google-maps/api';
 import PageTitle from '../components/PageTitle/PageTitle';
 import "../styles/RideinProgress.css";
@@ -13,9 +13,7 @@ const RideInProgress: React.FC<RideInProgressProps> = (props) => {
     const [currentLocation, setCurrentLocation] = useState<{ lat: number, lng: number }>(null);
     const [dropoffAddress, setDropoffAddress] = useState<string>();
     const [dropoffLocation, setPickupLocation] = useState<{ lat: number, lng: number }>(null);
-    const [errorMessage, setErrorMessage] = useState<string>();
-    const [mapLoaded, setMapLoaded] = useState<boolean>(false);
-    const { isLoaded: mapsLoaded, loadError } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
+    const { isLoaded: mapsLoaded } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
     const [estimatedTimeArrival, setEstimatedTimeArrival] = useState<string>();
     const [estimatedRemainingDistance, setEstimatedRemainingDistance] = useState<number>();
     const [arrivalTime, setArrivalTime] = useState<string>();
@@ -52,19 +50,17 @@ const RideInProgress: React.FC<RideInProgressProps> = (props) => {
                 (position) => {
                     const { latitude, longitude } = position.coords;
                     setCurrentLocation({ lat: latitude, lng: longitude });
-                    setErrorMessage('');
-                    setMapLoaded(true);
                 },
                 (error) => {
                     if (error.code === error.PERMISSION_DENIED) {
-                        setErrorMessage('User denied the request for Geolocation.');
+                        console.error('User denied the request for Geolocation.');
                     } else {
-                        setErrorMessage('An error occurred while retrieving location.');
+                        console.error('An error occurred while retrieving location.');
                     }
                 }
             );
         } else {
-            setErrorMessage('Geolocation is not supported by this browser.');
+            console.error('Geolocation is not supported by this browser.');
         }
     }, []);
 
@@ -77,7 +73,7 @@ const RideInProgress: React.FC<RideInProgressProps> = (props) => {
                 const location = results[0].geometry.location;
                 setPickupLocation({ lat: location.lat(), lng: location.lng() });
             } else {
-                setErrorMessage('Geocode was not successful for the following reason: ' + status);
+                console.error('Geocode was not successful for the following reason: ' + status);
             }
         });
     }, [mapsLoaded, dropoffAddress]);
@@ -158,32 +154,23 @@ const RideInProgress: React.FC<RideInProgressProps> = (props) => {
         <PageTitle title='Ride in Progress'>
             <main id='ride-in-progress'>
                 <div className="map-container">
-                    <div style={{ width: '100%', height: '100vh', position: 'absolute' }}>
-                        {errorMessage && (
-                            <div className='error-message'>
-                                {errorMessage}
-                            </div>
-                        )}
-                        {mapLoaded && mapsLoaded && (
-                            <GoogleMap
-                                mapContainerStyle={{ width: '100%', height: '100%' }}
-                                center={currentLocation}
-                                zoom={19}
-                                onLoad={() => setMapLoaded(true)}
-                            >
-                                {currentLocation && <MarkerF position={currentLocation} />}
-                                {dropoffLocation && <MarkerF position={dropoffLocation} />}
-                                {showDirections && directionsResponse && (
-                                    <DirectionsRenderer
-                                        key={directionsResponse.uniqueKey}
-                                        directions={directionsResponse.response}
-                                        options={{ suppressMarkers: true }}
-                                    />
-                                )}
-                            </GoogleMap>
-                        )}
-                        {loadError && <div>Error loading Google Maps: {loadError.message}</div>}
-                    </div>
+                    {mapsLoaded && (
+                        <GoogleMap
+                            mapContainerStyle={{ width: '100%', height: '100%' }}
+                            center={currentLocation}
+                            zoom={19}
+                        >
+                            {currentLocation && <MarkerF position={currentLocation} />}
+                            {dropoffLocation && <MarkerF position={dropoffLocation} />}
+                            {showDirections && directionsResponse && (
+                                <DirectionsRenderer
+                                    key={directionsResponse.uniqueKey}
+                                    directions={directionsResponse.response}
+                                    options={{ suppressMarkers: true }}
+                                />
+                            )}
+                        </GoogleMap>
+                    )}
                 </div>
 
                 <aside className="ride-in-progress-container">

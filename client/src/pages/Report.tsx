@@ -1,10 +1,10 @@
 import "../styles/Report.css";
 import PageTitle from "../components/PageTitle/PageTitle";
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAppSelector } from "../store/hooks";
 import { useNavigate } from "react-router-dom";
 
-const Report: React.FC = (props) => {
+function Report() {
     const account = useAppSelector((state) => state.account);
     const navigate = useNavigate();
     const [userType, setUserType] = useState<number>();

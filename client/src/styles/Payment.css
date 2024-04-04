@@ -1,5 +1,5 @@
 #payment {
-    height: calc(100vh - 68.6px);
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;

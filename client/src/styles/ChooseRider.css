@@ -1,5 +1,7 @@
 #choose-rider {
-    height: calc(100vh - 68.6px);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
     background-color: #f1f1f1;
 }
 
@@ -7,6 +9,7 @@
     display: flex;
     justify-content: center;
     text-align: center;
+    margin-top: 4rem;
 }
 
 #choose-rider h1 {

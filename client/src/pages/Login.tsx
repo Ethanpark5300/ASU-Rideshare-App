@@ -78,10 +78,7 @@ function Login() {
                     
                     <div className="reglinkContainer">
                         <h3>Don't have an account?</h3>
-                        <h3>
-                            {" "}
-                            <Link to="/Register"> Register </Link>{" "}
-                        </h3>
+                        <h3><Link to="/Register">Register</Link></h3>
                     </div>
                 </div>
             </main>

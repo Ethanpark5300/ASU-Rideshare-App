@@ -5,7 +5,7 @@
     top: 0px;
     left: 0px;
     width: 100%;
-    height: var(--modified-height);
+    height: 100vh;
     background-color: white;
     z-index: -1;
     background: url("../images/Hero2.png") no-repeat center center fixed;
@@ -14,7 +14,7 @@
 
 #register h1 {
     margin-bottom: 20px;
-    margin-top: 20px;
+    margin-top: 4rem;
 }
 
 .RegisterError {

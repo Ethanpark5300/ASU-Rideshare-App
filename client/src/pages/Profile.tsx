@@ -1,14 +1,13 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import '../styles/Profile.css';
 import { useAppSelector } from '../store/hooks';
 import PageTitle from '../components/PageTitle/PageTitle';
 import { Button } from "../components/Buttons/Button";
 import { useAppDispatch } from "../store/hooks";
 import { setAccountStore } from "../store/features/accountSlice";
-// import { Account } from "../account/Account";
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-const Profile: React.FC = (props) => {
+function Profile() {
     const dispatch = useAppDispatch();
     const account = useAppSelector((state) => state.account);
     const navigate = useNavigate();
@@ -69,33 +68,23 @@ const Profile: React.FC = (props) => {
             <main id="profile">
                 <div className="sidebar">
                     <div className="paymentInfo">
-                        <Link to="/EditPayment">
-                            <button>Change Payment Info</button>
-                        </Link>
+                        <button onClick={() => navigate("/EditPayment")}>Change Payment Info</button>
                     </div>
 
                     <div className="rideHistory">
-                        <Link to="/RideHistory">
-                            <button>Ride History</button>
-                        </Link>
+                        <button onClick={() => navigate("/RideHistory")}>Ride History</button>
                     </div>
 
                     <div className="Favorites">
-                        <Link to="/FavoritesList">
-                            <button>View Favorites</button>
-                        </Link>
+                        <button onClick={() => navigate("/FavoritesList")}>View Favorites</button>
                     </div>
 
                     <div className="Blocked">
-                        <Link to="/BlockedList">
-                            <button>View Blocked</button>
-                        </Link>
+                        <button onClick={() => navigate("/BlockedList")}>View Blocked</button>
                     </div>
 
                     <div className="changePassword">
-                        <Link to="/changePassword">
-                            <button>Change Password</button>
-                        </Link>
+                        <button onClick={() => navigate("/ChangePassword")}>Change Password</button>
                     </div>
                 </div>
 
@@ -114,9 +103,7 @@ const Profile: React.FC = (props) => {
                             <p><strong>PayPal Account: </strong> {paypalEmail}</p>
 
                             <Button label="Logout" onClickFn={eatCookie} />
-                            <Link to="/EditAccount">
-                                <button>Edit Account</button>
-                            </Link>
+                            <button onClick={() => navigate("/EditAccount")}>Edit Account</button>
                         </>
                     )}
                     {(userType === 2) && (
@@ -129,9 +116,7 @@ const Profile: React.FC = (props) => {
                             <button onClick={changeStatus}>Change Status</button>
 
                             <Button label="Logout" onClickFn={eatCookie} />
-                            <Link to="/EditAccount">
-                                <button>Edit Account</button>
-                            </Link>
+                            <button onClick={() => navigate("/EditAccount")}>Edit Account</button>
                         </>
                     )}
                 </div>
