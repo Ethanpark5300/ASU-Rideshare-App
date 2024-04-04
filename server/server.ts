@@ -635,7 +635,7 @@ app.get("/get-ratings-information", async (req: Request, res: Response) => {
 	/** Return driver information if rider */
 	if (userType.Type_User === 1) {
 		let getDriverInformation = await db.all(`SELECT rides.driver_id, user_info.first_name, user_info.last_name FROM user_info INNER JOIN rides ON rides.driver_id = user_info.email WHERE rider_id = '${userid}' AND status = "COMPLETED"`);
-		if (getDriverInformation.length <= 0) return;
+		if(!getDriverInformation) return;
 
 		let driverInformation = getDriverInformation[getDriverInformation.length-1];
 
@@ -647,7 +647,7 @@ app.get("/get-ratings-information", async (req: Request, res: Response) => {
 	/** Return rider information if driver */
 	else {
 		let getRiderInformation = await db.all(`SELECT rides.rider_id, user_info.first_name, user_info.last_name FROM user_info INNER JOIN rides ON rides.rider_id = user_info.email WHERE driver_id = '${userid}' AND status = "COMPLETED"`);
-		if (getRiderInformation.length <= 0) return;
+		if(!getRiderInformation) return;
 
 		let riderInformation = getRiderInformation[getRiderInformation.length-1];
 
@@ -1068,7 +1068,7 @@ app.get("/check-driver-accepted-status", async (req: Request, res: Response) => 
 	let riderid = req.query.riderid;
 
 	let checkDriverStatus = await db.all(`SELECT status FROM rides WHERE rider_id = '${riderid}'`);
-	if (checkDriverStatus.length <= 0) return;
+	if(!checkDriverStatus) return;
 
 	let driverAccepted = checkDriverStatus[checkDriverStatus.length - 1].Status;
 	
@@ -1087,7 +1087,7 @@ app.get("/get-ride-payment-information", async (req: Request, res: Response) => 
 	let riderid = req.query.riderid;
 
 	let ridePaymentInformation = await db.get(`SELECT rides.driver_id, user_info.first_name, user_info.last_name, user_info.pay_pal, rides.ride_cost FROM user_info INNER JOIN rides WHERE rider_id = '${riderid}' AND status = "PAYMENT"`);
-	if (ridePaymentInformation.length <= 0) return;
+	if(!ridePaymentInformation) return;
 
 	res.json({
 		ridePaymentInformation: ridePaymentInformation
@@ -1115,7 +1115,7 @@ app.get("/check-if-driver-arrived", async (req: Request, res: Response) => {
 	let riderid = req.query.riderid;
 
 	let driverArrivedStatus = await db.all(`SELECT status FROM rides WHERE rider_id='${riderid}'`);
-	if (driverArrivedStatus.length <= 0) return;
+	if(!driverArrivedStatus) return;
 
 	let setDriverArrivedStatus = driverArrivedStatus[driverArrivedStatus.length - 1].Status;
 
@@ -1130,7 +1130,7 @@ app.get("/check-if-driver-started-ride", async (req: Request, res: Response) => 
 	let riderid = req.query.riderid;
 
 	let driverStartedStatus = await db.all(`SELECT status FROM rides WHERE rider_id = '${riderid}'`);
-	if (driverStartedStatus.length <= 0) return;
+	if(!driverStartedStatus) return;
 
 	let setDriverStartedStatus = driverStartedStatus[driverStartedStatus.length-1].Status;
 
@@ -1147,23 +1147,23 @@ app.get("/check-if-ride-ended", async (req: Request, res: Response) => {
 
 	/** Return latest ride status from rider */
 	if(userType === "1") {
-		let rideStatus = await db.all(`SELECT status FROM rides WHERE rider_id = '${userid}'`);
-		if(rideStatus.length <= 0) return;
+		let riderRideStatus = await db.all(`SELECT status FROM rides WHERE rider_id = '${userid}'`);
+		if (!riderRideStatus) return;
 
-		let latestRideStatus = rideStatus[rideStatus.length-1].Status;
+		let latestRiderRideStatus = riderRideStatus[riderRideStatus.length-1].Status;
 		
 		res.json({
-			rideStatus : latestRideStatus
+			rideStatus: latestRiderRideStatus
 		});
 	} 
 	else { /** Return latest ride status from driver */
-		let rideStatus = await db.all(`SELECT status FROM rides WHERE driver_id = '${userid}'`);
-		if (rideStatus.length <= 0) return;
+		let driverRideStatus = await db.all(`SELECT status FROM rides WHERE driver_id = '${userid}'`);
+		if (!driverRideStatus) return;
 
-		let latestRideStatus = rideStatus[rideStatus.length - 1].Status;
+		let latestDriverRideStatus = driverRideStatus[driverRideStatus.length - 1].Status;
 
 		res.json({
-			rideStatus: latestRideStatus
+			rideStatus: latestDriverRideStatus
 		});
 	}
 });
@@ -1243,7 +1243,7 @@ app.get("/get-rider-payment-status", async (req: Request, res: Response) => {
 	let driverid = req.query.driverid;
 
 	let ridePaymentStatus = await db.all(`SELECT status FROM rides WHERE driver_id = '${driverid}'`);
-	if(ridePaymentStatus.length	<= 0) return
+	if(!ridePaymentStatus) return;
 
 	let currentRideStatus = ridePaymentStatus[ridePaymentStatus.length - 1].Status;
 
@@ -1312,7 +1312,7 @@ app.get("/check-driver-cancellation-status", async (req: Request, res: Response)
 	let riderid = req.query.riderid;
 
 	let cancellationStatus = await db.all(`SELECT status FROM rides WHERE rider_id='${riderid}'`);
-	if (cancellationStatus.length <= 0) return;
+	if(!cancellationStatus) return;
 
 	let setCheckCancellationStatus = cancellationStatus[cancellationStatus.length - 1].Status;
 
@@ -1331,7 +1331,7 @@ app.get("/check-rider-cancellation-status", async (req: Request, res: Response) 
 	let driverid = req.query.driverid;
 
 	let cancellationStatus = await db.all(`SELECT status FROM rides WHERE driver_id='${driverid}'`);
-	if (cancellationStatus.length <= 0) return;
+	if(!cancellationStatus) return;
 
 	let setCheckCancellationStatus = cancellationStatus[cancellationStatus.length - 1].Status;
 

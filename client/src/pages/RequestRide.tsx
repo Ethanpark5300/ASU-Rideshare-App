@@ -259,7 +259,7 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
                         <h1>Request Ride</h1>
                     </header>
                     <LoadScript
-                        googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY || ''}
+                        googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
                         libraries={libraries}
                     >
                         <div className="origin-container">

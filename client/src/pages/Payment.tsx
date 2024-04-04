@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../store/hooks';
 
 const paypalOptions = {
-    clientId: process.env.REACT_APP_PAYPAL_CLIENT_ID || '',
+    clientId: process.env.REACT_APP_PAYPAL_CLIENT_ID,
     currency: 'USD',
 };
 
@@ -46,7 +46,7 @@ function Payment() {
         return () => clearTimeout(timerId);
     }, [account?.account?.email]);
 
-    const createOrder = (data: any, actions: any) => {
+    const createOrder = (actions: any) => {
         return actions.order.create({
             purchase_units: [
                 {
@@ -61,13 +61,13 @@ function Payment() {
         });
     };
 
-    const onApprove = (data: any, actions: any) => {
-        return actions.order.capture().then(function (details: any) {
+    const onApprove = (actions: any) => {
+        return actions.order.capture().then(function () {
             setPaymentStatus('success');
         });
     };
 
-    const onError = (error: any) => {
+    const onError = () => {
         setPaymentStatus('error');
         setShowErrorPopup(true);
     };
@@ -180,15 +180,13 @@ function Payment() {
                                     <h2>Driver: {ridePaymentInformation.First_Name} {ridePaymentInformation.Last_Name}</h2>
                                     <h2>Ride Cost: ${ridePaymentInformation.Ride_Cost}</h2>
                                     <PayPalScriptProvider options={paypalOptions}>
-                                        {paypalLoaded ? (
+                                        {paypalLoaded && (
                                             <PayPalButtons
                                                 createOrder={createOrder}
                                                 onApprove={onApprove}
                                                 onError={onError}
                                                 style={buttonStyles}
                                             />
-                                        ) : (
-                                            <div>Loading PayPal buttons...</div>
                                         )}
                                     </PayPalScriptProvider>
                                     <div className="center-container">
