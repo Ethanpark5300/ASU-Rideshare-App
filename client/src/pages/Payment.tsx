@@ -8,6 +8,7 @@ import { useAppSelector } from '../store/hooks';
 const paypalOptions = {
     clientId: process.env.REACT_APP_PAYPAL_CLIENT_ID,
     currency: 'USD',
+    disableFunding: 'paylater'
 };
 
 function Payment() {
