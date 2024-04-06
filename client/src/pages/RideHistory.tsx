@@ -8,6 +8,8 @@ function RideHistory() {
     const [userType, setUserType] = useState<number>();
     const [ridersRideHistoryList, setRidersRideHistoryList] = useState<any[]>([]);
     const [driversDriveHistoryList, setDriversDriveHistoryList] = useState<any[]>([]);
+    const [riderTotalSpendings, setRiderTotalSpendings] = useState<number>(0);
+    const [driverTotalEarnings, setDriverTotalEarnings] = useState<number>(0);
 
     const getAccountInformation = useCallback(async () => {
         try {
@@ -30,10 +32,32 @@ function RideHistory() {
         }
     }, [account?.account?.email]);
 
+    const getRiderTotalSpendings = useCallback(async () => {
+        try {
+            const response = await fetch(`/get-total-spendings?riderid=${account?.account?.email}`);
+            const data = await response.json();
+            setRiderTotalSpendings(data.ridersTotalSpendings);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    }, [account?.account?.email]);
+
+    const getDriverTotalEarnings = useCallback(async () => {
+        try {
+            const response = await fetch(`/get-total-earnings?driverid=${account?.account?.email}`);
+            const data = await response.json();
+            setDriverTotalEarnings(data.driversTotalEarnings);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    }, [account?.account?.email]);
+
     useEffect(() => {
         getRideHistoryList();
         getAccountInformation();
-    }, [getRideHistoryList, getAccountInformation]);
+        getRiderTotalSpendings();
+        getDriverTotalEarnings();
+    }, [getAccountInformation, getRideHistoryList, getRiderTotalSpendings, getDriverTotalEarnings]);
 
     return (
         <PageTitle title="Ride History">
@@ -42,7 +66,7 @@ function RideHistory() {
 
                 {/** @returns Rider history */}
                 {(userType === 1) && (
-                    <div>
+                    <>
                         <h2>Ride History</h2>
                         {ridersRideHistoryList.length > 0 ? (
                             <div>
@@ -59,12 +83,12 @@ function RideHistory() {
                         ) : (
                             <div>No ride history available.</div>
                         )}
-                    </div>
+                    </>
                 )}
 
                 {/** @returns Driver history */}
                 {(userType === 2) && (
-                    <div>
+                    <>
                         <h2>Drive History</h2>
                         {driversDriveHistoryList.length > 0 ? (
                             <div>
@@ -81,7 +105,7 @@ function RideHistory() {
                         ) : (
                             <div>No drive history available.</div>
                         )}
-                    </div>
+                    </>
                 )}
                 <button onClick={getRideHistoryList}>Refresh</button>
             </main>

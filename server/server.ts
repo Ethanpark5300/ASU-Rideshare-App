@@ -955,6 +955,52 @@ app.get("/ride-history", async (req: Request, res: Response) => {
 	});
 });
 
+/** 
+ * Returns rider total spendings
+ * @param req.query.riderid rider email
+ * @returns ridersTotalSpendings rider total spendings
+*/
+app.get('/get-total-spendings', async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let riderid = req.query.riderid;
+	let totalSpendings : number = 0;
+
+	/** Retrieve all spendings from rides table from given rider */
+	let getRidersSpendingsHistory = await db.all(`SELECT ride_cost FROM rides WHERE rider_id = '${riderid}' AND status = "COMPLETED"`);
+
+	/** Calculate total spendings from rider */
+	for(let i = 0; i < getRidersSpendingsHistory.length; i++) {
+		totalSpendings += getRidersSpendingsHistory[i].Ride_Cost;
+	}
+
+	res.json({
+		ridersTotalSpendings: totalSpendings
+	});
+});
+
+/** 
+ * Returns driver total earnings
+ * @param req.query.driverid driver email
+ * @returns driversTotalEarnings driver total earnings
+*/
+app.get('/get-total-earnings', async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let driverid = req.query.driverid;
+	let totalEarnings : number = 0;
+
+	/** Retrieve all earnings from rides table from given driver */
+	let getDriversEarningsHistory = await db.all(`SELECT ride_cost FROM rides WHERE driver_id = '${driverid}' AND status = "COMPLETED"`);
+
+	/** Calculate total earnings from driver */
+	for (let i = 0; i < getDriversEarningsHistory.length; i++) {
+		totalEarnings += getDriversEarningsHistory[i].Ride_Cost;
+	}
+
+	res.json({
+		driversTotalEarnings: totalEarnings
+	});
+});
+
 /** Rider actions */
 
 /** 
