@@ -1001,6 +1001,40 @@ app.get('/get-total-earnings', async (req: Request, res: Response) => {
 	});
 });
 
+/** 
+ * Returns rider average rating
+ * @param req.query.riderid rider email
+ * @returns riderAverageRating rider average rating
+*/
+app.get('/get-rider-average-rating', async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let riderid = req.query.riderid;
+
+	/** Retrieve rider average rating from rides table from given rider */
+	let getAverageRiderRating = await db.get(`SELECT Rating_Passenger FROM user_info WHERE email = '${riderid}'`);
+
+	res.json({
+		riderAverageRating: getAverageRiderRating.Rating_Passenger
+	});
+});
+
+/** 
+ * Returns driver average rating
+ * @param req.query.driverid driver email
+ * @returns driverAverageRating driver average rating
+*/
+app.get('/get-driver-average-rating', async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let driverid = req.query.driverid;
+
+	/** Retrieve driver average rating from rides table from given driver */
+	let getAverageDriverRating = await db.get(`SELECT Rating_Driver FROM user_info WHERE email = '${driverid}'`);
+
+	res.json({
+		driverAverageRating: getAverageDriverRating.Rating_Driver
+	});
+});
+
 /** Rider actions */
 
 /** 

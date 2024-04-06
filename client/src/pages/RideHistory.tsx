@@ -10,6 +10,8 @@ function RideHistory() {
     const [driversDriveHistoryList, setDriversDriveHistoryList] = useState<any[]>([]);
     const [riderTotalSpendings, setRiderTotalSpendings] = useState<number>(0);
     const [driverTotalEarnings, setDriverTotalEarnings] = useState<number>(0);
+    const [riderAverageRating, setRiderAverageRating] = useState<number>(0);
+    const [driverAverageRating, setDriverAverageRating] = useState<number>(0);
 
     const getAccountInformation = useCallback(async () => {
         try {
@@ -50,6 +52,40 @@ function RideHistory() {
         } catch (error) {
             console.error("Error fetching data:", error);
         }
+    }, [account?.account?.email]);
+
+    useEffect(() => {
+        const delay: number = 125;
+        const timerId = setTimeout(() => {
+            async function getRiderAverageRating() {
+                try {
+                    const response = await fetch(`/get-rider-average-rating?riderid=${account?.account?.email}`);
+                    const data = await response.json();
+                    setRiderAverageRating(data.riderAverageRating);
+                } catch (error) {
+                    console.error("Error fetching data:", error);
+                }
+            };
+            getRiderAverageRating();
+        }, delay);
+        return () => clearTimeout(timerId);
+    }, [account?.account?.email]);
+    
+    useEffect(() => {
+        const delay: number = 125;
+        const timerId = setTimeout(() => {
+            async function getDriverAverageRating() {
+                try {
+                    const response = await fetch(`/get-driver-average-rating?driverid=${account?.account?.email}`);
+                    const data = await response.json();
+                    setDriverAverageRating(data.driverAverageRating);
+                } catch (error) {
+                    console.error("Error fetching data:", error);
+                }
+            };
+            getDriverAverageRating();
+        }, delay);
+        return () => clearTimeout(timerId);
     }, [account?.account?.email]);
 
     useEffect(() => {
