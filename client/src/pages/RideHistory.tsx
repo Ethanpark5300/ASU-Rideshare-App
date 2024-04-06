@@ -6,8 +6,8 @@ import { useCallback, useEffect, useState } from 'react';
 function RideHistory() {
     const account = useAppSelector((state) => state.account);
     const [userType, setUserType] = useState<number>();
-    const [ridersHistoryList, setRidersHistoryList] = useState<any[]>([]);
-    const [driversHistoryList, setDriversHistoryList] = useState<any[]>([]);
+    const [ridersRideHistoryList, setRidersRideHistoryList] = useState<any[]>([]);
+    const [driversDriveHistoryList, setDriversDriveHistoryList] = useState<any[]>([]);
 
     const getAccountInformation = useCallback(async () => {
         try {
@@ -19,21 +19,21 @@ function RideHistory() {
         }
     }, [account?.account?.email]);
 
-    const refreshRideHistoryList = useCallback(async () => {
+    const getRideHistoryList = useCallback(async () => {
         try {
-            const response = await fetch(`/ride-history?accountEmail=${account?.account?.email}`);
+            const response = await fetch(`/ride-history?userid=${account?.account?.email}`);
             const data = await response.json();
-            setRidersHistoryList(data.ridersHistoryList);
-            setDriversHistoryList(data.driversHistoryList);
+            setRidersRideHistoryList(data.ridersHistoryList);
+            setDriversDriveHistoryList(data.driversHistoryList);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
     }, [account?.account?.email]);
 
     useEffect(() => {
-        refreshRideHistoryList();
+        getRideHistoryList();
         getAccountInformation();
-    }, [refreshRideHistoryList, getAccountInformation]);
+    }, [getRideHistoryList, getAccountInformation]);
 
     return (
         <PageTitle title="Ride History">
@@ -44,9 +44,9 @@ function RideHistory() {
                 {(userType === 1) && (
                     <div>
                         <h2>Ride History</h2>
-                        {ridersHistoryList.length > 0 ? (
+                        {ridersRideHistoryList.length > 0 ? (
                             <div>
-                                {ridersHistoryList.map((ride) => (
+                                {ridersRideHistoryList.map((ride) => (
                                     <div key={ride.RideHistory_ID}>
                                         <table>
                                             <tr>
@@ -66,9 +66,9 @@ function RideHistory() {
                 {(userType === 2) && (
                     <div>
                         <h2>Drive History</h2>
-                        {driversHistoryList.length > 0 ? (
+                        {driversDriveHistoryList.length > 0 ? (
                             <div>
-                                {driversHistoryList.map((ride) => (
+                                {driversDriveHistoryList.map((ride) => (
                                     <div key={ride.RideHistory_ID}>
                                         <table>
                                             <tr>
@@ -83,7 +83,7 @@ function RideHistory() {
                         )}
                     </div>
                 )}
-                <button onClick={refreshRideHistoryList}>Refresh</button>
+                <button onClick={getRideHistoryList}>Refresh</button>
             </main>
         </PageTitle>
     );

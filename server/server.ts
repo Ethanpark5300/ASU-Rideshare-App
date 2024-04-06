@@ -936,20 +936,24 @@ app.post("/change-status", async (req: Request, res: Response) => {
 	setTokenCookie(res, account);
 });
 
-/** @FIXME return ride/drive history */
-// app.get("/ride-history", async (req: Request, res: Response) => {
-// 	let db = await dbPromise;
-// 	let accountEmail = req.query.accountEmail;
+/** 
+ * Returns rider and driver ride history list
+ * @param req.query.userid user email
+ * @returns ridersHistoryList rider ride history
+ * @returns driversHistoryList driver ride history
+*/
+app.get("/ride-history", async (req: Request, res: Response) => {
+	let db = await dbPromise;
+	let userid = req.query.userid;
 
+	let getRiderRideHistory = await db.all(`SELECT rides.ride_id, rides.driver_id, user_info.first_name, user_info.last_name, rides.pickup_location, rides.pickup_time, rides.dropoff_location, rides.dropoff_time, rides.ride_cost, rides.given_rider_rating, rides.given_driver_rating, rides.ride_date FROM rides INNER JOIN user_info ON rides.driver_id = user_info.email WHERE rides.rider_id = '${userid}' AND rides.status = "COMPLETED"`);
+	let getDriverRideHistory = await db.all(`SELECT rides.ride_id, rides.rider_id, user_info.first_name, user_info.last_name, rides.pickup_location, rides.pickup_time, rides.dropoff_location, rides.dropoff_time, rides.ride_cost, rides.given_rider_rating, rides.given_driver_rating, rides.ride_date FROM rides INNER JOIN user_info ON rides.rider_id = user_info.email WHERE rides.driver_id = '${userid}' AND rides.status = "COMPLETED"`);
 
-// 	let getRiderHistoryResults = await db.all(`SELECT Driver_FirstName, Driver_LastName, Pickup_Time, Dropoff_Location, Ride_Date, Cost, Given_Rider_Rating FROM RIDE_HISTORY WHERE Rider_ID='${accountEmail}'`)
-// 	let getDriverHistoryResults = await db.all(`SELECT Rider_FirstName, Rider_LastName, Ride_Date, Pickup_Time, Dropoff_Location, Earned, Given_Driver_Rating FROM RIDE_HISTORY WHERE Driver_ID='${accountEmail}'`);
-
-// 	res.json({
-// 		ridersHistoryList: getRiderHistoryResults,
-// 		driversHistoryList: getDriverHistoryResults
-// 	});
-// });
+	res.json({
+		ridersHistoryList: getRiderRideHistory,
+		driversHistoryList: getDriverRideHistory
+	});
+});
 
 /** Rider actions */
 
