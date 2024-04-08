@@ -47,7 +47,7 @@ function Payment() {
         return () => clearTimeout(timerId);
     }, [account?.account?.email]);
 
-    const createOrder = (actions: any) => {
+    const createOrder = (data: any, actions: any) => {
         return actions.order.create({
             purchase_units: [
                 {
@@ -62,7 +62,7 @@ function Payment() {
         });
     };
 
-    const onApprove = (actions: any) => {
+    const onApprove = (data: any, actions: any) => {
         return actions.order.capture().then(function () {
             setPaymentStatus('success');
         });

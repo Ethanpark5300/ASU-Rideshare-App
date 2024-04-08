@@ -5,11 +5,11 @@ import "../styles/RideinProgress.css";
 import { useNavigate } from 'react-router-dom';
 
 interface RideInProgressProps {
-    userEmail: string;
-    userType: number
+    userid: string;
 }
 
-const RideInProgress: React.FC<RideInProgressProps> = (props) => {
+function RideinProgress({ userid }: RideInProgressProps) {
+    const [userType, setUserType] = useState<number>();
     const [currentLocation, setCurrentLocation] = useState<{ lat: number, lng: number }>(null);
     const [dropoffAddress, setDropoffAddress] = useState<string>();
     const [dropoffLocation, setPickupLocation] = useState<{ lat: number, lng: number }>(null);
@@ -24,12 +24,22 @@ const RideInProgress: React.FC<RideInProgressProps> = (props) => {
     const [checkRideCompleted, setCheckRideCompleted] = useState<string>();
     const navigate = useNavigate();
 
+    const getAccountInformation = useCallback(async () => {
+        try {
+            const response = await fetch(`/view-account-info?accountEmail=${userid}`);
+            const data = await response.json();
+            if (data.account) setUserType(data.account.Type_User);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    }, [userid]);
+
     useEffect(() => {
         const delay: number = 125;
         const timerId = setTimeout(() => {
             async function getRideInformation() {
                 try {
-                    const response = await fetch(`/get-ride-information?userid=${props.userEmail}`);
+                    const response = await fetch(`/get-ride-information?userid=${userid}`);
                     const data = await response.json();
                     setRiderRideInfo(data.riderRideInfo);
                     setDriverRideInfo(data.driverRideInfo);
@@ -40,9 +50,8 @@ const RideInProgress: React.FC<RideInProgressProps> = (props) => {
             };
             getRideInformation();
         }, delay);
-
         return () => clearTimeout(timerId);
-    }, [props.userEmail, riderRideInfo]);
+    }, [userid, riderRideInfo]);
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -79,7 +88,7 @@ const RideInProgress: React.FC<RideInProgressProps> = (props) => {
     }, [mapsLoaded, dropoffAddress]);
 
     const calculateETA = () => {
-        setShowDirections(false);
+        setShowDirections(null);
 
         const directionsService = new window.google.maps.DirectionsService();
         directionsService.route(
@@ -122,7 +131,7 @@ const RideInProgress: React.FC<RideInProgressProps> = (props) => {
                 method: "POST",
                 headers: { "Content-type": "application/json" },
                 body: JSON.stringify({
-                    driverid: props.userEmail,
+                    driverid: userid,
                 }),
             })
         }
@@ -133,13 +142,13 @@ const RideInProgress: React.FC<RideInProgressProps> = (props) => {
 
     const checkRideEnded = useCallback(async () => {
         try {
-            const response = await fetch(`/check-if-ride-ended?userid=${props.userEmail}&usertype=${props.userType}`);
+            const response = await fetch(`/check-if-ride-ended?userid=${userid}&usertype=${userType}`);
             const data = await response.json();
             setCheckRideCompleted(data.rideStatus);
         } catch (error) {
             console.log("Error checking if ride ended:", error);
         }
-    }, [props.userEmail, props.userType]) 
+    }, [userid, userType]) 
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -149,6 +158,10 @@ const RideInProgress: React.FC<RideInProgressProps> = (props) => {
         }, 1000);
         return () => clearInterval(interval);
     }, [checkRideCompleted, navigate, checkRideEnded]);
+
+    useEffect(() => {
+        getAccountInformation();
+    }, [getAccountInformation])
 
     return (
         <PageTitle title='Ride in Progress'>
@@ -175,7 +188,7 @@ const RideInProgress: React.FC<RideInProgressProps> = (props) => {
 
                 <aside className="ride-in-progress-container">
                     {/** @returns Rider information */}
-                    {(props.userType === 1 && riderRideInfo) && (
+                    {(userType === 1 && riderRideInfo) && (
                         <>
                             <h1>Ride in Progress</h1>
                             <p><b>Driver Name:</b> {riderRideInfo.First_Name} {riderRideInfo.Last_Name} </p>
@@ -192,7 +205,7 @@ const RideInProgress: React.FC<RideInProgressProps> = (props) => {
                     )}
 
                     {/** @returns Driver information */}
-                    {(props.userType === 2 && driverRideInfo) && (
+                    {(userType === 2 && driverRideInfo) && (
                         <>
                             <h1>Ride in Progress</h1>
                             <p><b>Rider Name:</b> {driverRideInfo.First_Name} {driverRideInfo.Last_Name}</p>
@@ -216,4 +229,4 @@ const RideInProgress: React.FC<RideInProgressProps> = (props) => {
     );
 };
 
-export default RideInProgress;
+export default RideinProgress;

@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { GoogleMap, LoadScript, MarkerF } from '@react-google-maps/api';
-import { useJsApiLoader } from '@react-google-maps/api';
+import { useState, useEffect } from 'react';
+import { useJsApiLoader, GoogleMap, MarkerF } from '@react-google-maps/api';
+import "./GoogleMaps.css"
 
-const MapContainer: React.FC = () => {
+function MapContainer() {
     const [currentPosition, setCurrentPosition] = useState({ lat: 0, lng: 0 });
-    const [mapCenter, setMapCenter] = useState({ lat: 0, lng: 0 });
-    const [error, setError] = useState<string | null>(null);
-    const { isLoaded: mapsLoaded, loadError } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
+    const { isLoaded: mapsLoaded } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -14,40 +12,28 @@ const MapContainer: React.FC = () => {
                 (position) => {
                     const { latitude, longitude } = position.coords;
                     setCurrentPosition({ lat: latitude, lng: longitude });
-                    setMapCenter({ lat: latitude, lng: longitude });
                 },
                 (error) => {
                     console.error('Error getting user location:', error);
-                    setError('Error getting user location. Please enable location services.');
+                    console.warn('Error getting user location. Please enable location services.');
                 }
             );
         } else {
             console.error('Geolocation is not supported by this browser.');
-            setError('Geolocation is not supported by this browser.');
+            console.warn('Geolocation is not supported by this browser.');
         }
     }, []);
 
-    const mapStyles = {
-        height: '90.6vh',
-        width: '100%',
-    };
-
     return (
-        <div>
-            {error ? (
-                <p>{error}</p>
-            ) : (
-                <LoadScript
-                    googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
-                    onLoad={() => { }}
+        <div className="live-tracking-maps-container">
+            {mapsLoaded && (
+                <GoogleMap
+                    mapContainerStyle={{ width: '100%', height: '100%' }}
+                    zoom={13}
+                    center={currentPosition}
                 >
-                    {mapsLoaded && (
-                        <GoogleMap mapContainerStyle={mapStyles} zoom={13} center={mapCenter}>
-                            <MarkerF position={currentPosition} />
-                        </GoogleMap>
-                    )}
-                    {loadError && <div>Error loading map: {loadError.message}</div>}
-                </LoadScript>
+                    {currentPosition && <MarkerF position={currentPosition} />}
+                </GoogleMap>
             )}
         </div>
     );

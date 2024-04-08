@@ -205,6 +205,10 @@
     margin-top: 1rem;
 }
 
+#request-ride input[type="radio"] {
+    accent-color: var(--brand-maroon);
+}
+
 #request-ride input[type="radio"]:hover {
     cursor: pointer;
 }

@@ -153,7 +153,7 @@ function WaitingDriver() {
                     const data = await response.json();
                     setDriverArrivedStatus(data.getDriverArrivedStatus);
                 } catch (error) {
-                    console.log("Error checking if driver arrived:", error);
+                    // console.log("Error checking if driver arrived:", error);
                 }
             }
             checkDriverArrivedStatus();
@@ -172,7 +172,7 @@ function WaitingDriver() {
                     const data = await response.json();
                     setDriverStarted(data.getDriverStartedStatus);
                 } catch (error) {
-                    console.log("Error checking if driver started:", error);
+                    // console.log("Error checking if driver started:", error);
                 }
             }
             checkDriverStarted();

@@ -5,10 +5,10 @@ import "../styles/PickupRider.css";
 import { useNavigate } from 'react-router-dom';
 
 interface PickupRiderProps {
-    driverEmail: string;
+    driverid: string;
 }
 
-const PickupRider: React.FC<PickupRiderProps> = (props) => {
+function PickupRider({ driverid }: PickupRiderProps) {
     const [currentLocation, setCurrentLocation] = useState<{ lat: number, lng: number }>(null);
     const [pickupAddress, setPickupAddress] = useState<string>();
     const [pickupLocation, setPickupLocation] = useState<{ lat: number, lng: number }>(null);
@@ -28,7 +28,7 @@ const PickupRider: React.FC<PickupRiderProps> = (props) => {
         const timerId = setTimeout(() => {
             async function getRideInformation() {
                 try {
-                    const response = await fetch(`/get-ride-information?userid=${props.driverEmail}`);
+                    const response = await fetch(`/get-ride-information?userid=${driverid}`);
                     const data = await response.json();
                     setRideInfo(data.driverRideInfo);
                     setPickupAddress(data.driverRideInfo.Pickup_Location);
@@ -40,7 +40,7 @@ const PickupRider: React.FC<PickupRiderProps> = (props) => {
         }, delay);
 
         return () => clearTimeout(timerId);
-    }, [props.driverEmail]);
+    }, [driverid]);
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -117,13 +117,13 @@ const PickupRider: React.FC<PickupRiderProps> = (props) => {
     /** Checking if the rider cancelled the ride */
     const checkRiderCancellationStatus = useCallback(async () => {
         try {
-            const response = await fetch(`/check-rider-cancellation-status?driverid=${props.driverEmail}`);
+            const response = await fetch(`/check-rider-cancellation-status?driverid=${driverid}`);
             const data = await response.json();
             setCheckRiderCancellationStatus(data.getCancellationStatus);
         } catch (error) {
             console.log("Error checking driver cancellation status:", error);
         }
-    }, [props.driverEmail]);
+    }, [driverid]);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -144,7 +144,7 @@ const PickupRider: React.FC<PickupRiderProps> = (props) => {
                         method: "POST",
                         headers: { "Content-type": "application/json" },
                         body: JSON.stringify({
-                            driverid: props.driverEmail,
+                            driverid: driverid,
                         }),
                     })
                 } catch (error) {
@@ -154,7 +154,7 @@ const PickupRider: React.FC<PickupRiderProps> = (props) => {
             updateDriverArrivedStatus();
         }, 1000);
         return () => clearInterval(interval);
-    }, [estimatedRemainingDistance, props.driverEmail]);
+    }, [estimatedRemainingDistance, driverid]);
 
     /** Handling when the ride starts */
     async function startRide() {
@@ -163,7 +163,7 @@ const PickupRider: React.FC<PickupRiderProps> = (props) => {
                 method: "POST",
                 headers: { "Content-type": "application/json" },
                 body: JSON.stringify({
-                    driverid: props.driverEmail,
+                    driverid: driverid,
                 }),
             })
         } catch (error) {

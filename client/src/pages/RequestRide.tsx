@@ -1,18 +1,19 @@
 import { useState, useEffect, useRef } from 'react';
-import { GoogleMap, LoadScript, DirectionsRenderer, Autocomplete, MarkerF } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, DirectionsRenderer, Autocomplete, Marker, Libraries } from '@react-google-maps/api';
 import '../styles/RequestRide.css';
 import PageTitle from '../components/PageTitle/PageTitle';
 import { FaMapMarkerAlt } from "react-icons/fa";
 import Select from 'react-select';
 import buildingsData from '../components/BuildingSearch/Buildings.json';
 import { useNavigate } from 'react-router-dom';
-const libraries = ['places'] as any;
+
+const libraries: Libraries = ['places'];
 
 interface RequestRideProps {
-    riderEmail: string;
+    riderid: string;
 }
 
-const RequestRide: React.FC<RequestRideProps> = (props) => {
+function RequestRide({ riderid }: RequestRideProps) {
     const [currentPosition, setCurrentPosition] = useState({ lat: 0, lng: 0 });
     const [mapCenter, setMapCenter] = useState({ lat: 0, lng: 0 });
     const [origin, setOrigin] = useState<string>('');
@@ -42,25 +43,28 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
         address: string;
     }
 
-    useEffect(() => {
-        const geoWatchId = navigator.geolocation.watchPosition(
-            (position) => {
-                const { latitude, longitude } = position.coords;
-                setCurrentPosition({ lat: latitude, lng: longitude });
-                setMapCenter({ lat: latitude, lng: longitude });
-            },
-            (error) => {
-                if (error.code === error.PERMISSION_DENIED) {
-                    console.error('User denied the request for Geolocation.')
-                } else {
-                    console.log('An error occurred while retrieving location.')
-                }
-            }
-        );
+    const { isLoaded } = useJsApiLoader({
+        googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
+        libraries: libraries,
+    });
 
-        return () => {
-            navigator.geolocation.clearWatch(geoWatchId);
-        };
+    useEffect(() => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    setCurrentPosition({ lat: latitude, lng: longitude });
+                    setMapCenter({ lat: latitude, lng: longitude });
+                },
+                (error) => {
+                    console.error('Error getting user location:', error);
+                    console.warn('Error getting user location. Please enable location services.');
+                }
+            );
+        } else {
+            console.error('Geolocation is not supported by this browser.');
+            console.warn('Geolocation is not supported by this browser.');
+        }
     }, []);
 
     function getPickupLocation() {
@@ -146,7 +150,7 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
             const place = originAutocomplete.current.getPlace();
 
             if (place && place.formatted_address) {
-                setOrigin(place.formatted_address);
+                setOrigin(place.formatted_address || '');
             }
         }
     };
@@ -156,7 +160,7 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
             const place = destinationAutocomplete.current.getPlace();
 
             if (place && place.formatted_address) {
-                setDestination(place.formatted_address);
+                setDestination(place.formatted_address || '');
             }
         }
     };
@@ -196,7 +200,7 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
                                     method: "POST",
                                     headers: { "Content-type": "application/json" },
                                     body: JSON.stringify({
-                                        riderid: props.riderEmail,
+                                        riderid: riderid,
                                         pickupLocation: pickupLocation,
                                         dropoffLocation: dropoffLocation,
                                         rideCost: distanceInMiles,
@@ -258,142 +262,141 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
                     <header>
                         <h1>Request Ride</h1>
                     </header>
-                    <LoadScript
-                        googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
-                        libraries={libraries}
-                    >
-                        <div className="origin-container">
-                            <div className="input-container">
-                                <label htmlFor="origin" className='rr-label'>Pick-Up Location</label>
-                                {searchOriginFilter === 'normal' ? (
-                                    <Autocomplete
-                                        onLoad={(autocomplete) => (originAutocomplete.current = autocomplete)}
-                                        onPlaceChanged={handleOriginPlaceChanged}
-                                    >
-                                        <input
-                                            type="text"
-                                            name='origin'
-                                            id='origin'
-                                            placeholder="Pick-up Location..."
-                                            value={origin}
-                                            onChange={(e) => setOrigin(e.target.value)}
+                    {isLoaded && (
+                        <>
+                            <div className="origin-container">
+                                <div className="input-container">
+                                    <label htmlFor="origin" className='rr-label'>Pick-Up Location</label>
+                                    {searchOriginFilter === 'normal' ? (
+                                        <Autocomplete
+                                            onLoad={(autocomplete) => (originAutocomplete.current = autocomplete)}
+                                            onPlaceChanged={handleOriginPlaceChanged}
+                                        >
+                                            <input
+                                                type="text"
+                                                name='origin'
+                                                id='origin'
+                                                placeholder="Pick-up Location..."
+                                                value={origin || ''}
+                                                onChange={(e) => setOrigin(e.target.value)}
+                                            />
+                                        </Autocomplete>
+                                    ) : (
+                                        <Select
+                                            options={buildingOptions}
+                                            value={selectedOriginBuilding}
+                                            onChange={handleOriginBuildingChange}
+                                            isSearchable
+                                            placeholder="Building Search"
+                                            components={{ Option: customOption }}
+                                            styles={{
+                                                control: (provided: any) => ({
+                                                    ...provided,
+                                                    maxWidth: '275px',
+                                                }),
+                                            }}
                                         />
-                                    </Autocomplete>
-                                ) : (
-                                    <Select
-                                        options={buildingOptions}
-                                        value={selectedOriginBuilding}
-                                        onChange={handleOriginBuildingChange}
-                                        isSearchable
-                                        placeholder="Building Search"
-                                        components={{ Option: customOption }}
-                                        styles={{
-                                            control: (provided: any) => ({
-                                                ...provided,
-                                                maxWidth: '275px',
-                                            }),
-                                        }}
+                                    )}
+                                </div>
+                                <div className="current-location-tooltip">
+                                    <button
+                                        className='current-location-btn'
+                                        onClick={handleUseCurrentLocation}>
+                                        <FaMapMarkerAlt />
+                                    </button>
+                                    <span className='current-location-tooltip-text'>Use Current Location</span>
+                                </div>
+                            </div>
+                            <div className="search-filter-container">
+                                <div className="normal-search-container">
+                                    <input
+                                        type="radio"
+                                        name="origin-search-filter"
+                                        id="origin-normal-search"
+                                        checked={searchOriginFilter === 'normal'}
+                                        onChange={() => handleOriginSearchFilterChange('normal')}
                                     />
-                                )}
+                                    <label htmlFor="origin-normal-search">Normal Search</label>
+                                </div>
+                                <div className="building-search-container">
+                                    <input
+                                        type="radio"
+                                        name="origin-search-filter"
+                                        id="origin-building-search"
+                                        checked={searchOriginFilter === 'building'}
+                                        onChange={() => handleOriginSearchFilterChange('building')}
+                                    />
+                                    <label htmlFor="origin-building-search">Building Search</label>
+                                </div>
                             </div>
-                            <div className="current-location-tooltip">
-                                <button
-                                    className='current-location-btn'
-                                    onClick={handleUseCurrentLocation}>
-                                    <FaMapMarkerAlt />
-                                </button>
-                                <span className='current-location-tooltip-text'>Use Current Location</span>
-                            </div>
-                        </div>
-                        <div className="search-filter-container">
-                            <div className="normal-search-container">
-                                <input
-                                    type="radio"
-                                    name="origin-search-filter"
-                                    id="origin-normal-search"
-                                    checked={searchOriginFilter === 'normal'}
-                                    onChange={() => handleOriginSearchFilterChange('normal')}
-                                />
-                                <label htmlFor="origin-normal-search">Normal Search</label>
-                            </div>
-                            <div className="building-search-container">
-                                <input
-                                    type="radio"
-                                    name="origin-search-filter"
-                                    id="origin-building-search"
-                                    checked={searchOriginFilter === 'building'}
-                                    onChange={() => handleOriginSearchFilterChange('building')}
-                                />
-                                <label htmlFor="origin-building-search">Building Search</label>
-                            </div>
-                        </div>
 
-                        <div className="destination-container">
-                            <div className="input-container">
-                                <label htmlFor="destination" className='rr-label'>Drop-Off Location</label>
-                                {searchDestinationFilter === 'normal' ? (
-                                    <Autocomplete
-                                        onLoad={(autocomplete) => (destinationAutocomplete.current = autocomplete)}
-                                        onPlaceChanged={handleDestinationPlaceChanged}
-                                    >
-                                        <input
-                                            type="text"
+                            <div className="destination-container">
+                                <div className="input-container">
+                                    <label htmlFor="destination" className='rr-label'>Drop-Off Location</label>
+                                    {searchDestinationFilter === 'normal' ? (
+                                        <Autocomplete
+                                            onLoad={(autocomplete) => (destinationAutocomplete.current = autocomplete)}
+                                            onPlaceChanged={handleDestinationPlaceChanged}
+                                        >
+                                            <input
+                                                type="text"
+                                                name='destination'
+                                                id='destination'
+                                                placeholder="Drop-off Location..."
+                                                value={destination || ''}
+                                                onChange={(e) => setDestination(e.target.value)}
+                                            />
+                                        </Autocomplete>
+                                    ) : (
+                                        <Select
                                             name='destination'
                                             id='destination'
-                                            placeholder="Drop-off Location..."
-                                            value={destination}
-                                            onChange={(e) => setDestination(e.target.value)}
+                                            options={buildingOptions}
+                                            value={selectedDestinationBuilding}
+                                            onChange={handleDestinationBuildingChange}
+                                            isSearchable
+                                            placeholder="Building Search"
+                                            components={{ Option: customOption }}
+                                            styles={{
+                                                control: (provided: any) => ({
+                                                    ...provided,
+                                                    maxWidth: '275px',
+                                                }),
+                                            }}
                                         />
-                                    </Autocomplete>
-                                ) : (
-                                    <Select
-                                        name='destination'
-                                        id='destination'
-                                        options={buildingOptions}
-                                        value={selectedDestinationBuilding}
-                                        onChange={handleDestinationBuildingChange}
-                                        isSearchable
-                                        placeholder="Building Search"
-                                        components={{ Option: customOption }}
-                                        styles={{
-                                            control: (provided: any) => ({
-                                                ...provided,
-                                                maxWidth: '275px',
-                                            }),
-                                        }}
+                                    )}
+                                </div>
+                            </div>
+                            <div className={`search-filter-container ${searchDestinationFilter === 'building' ? 'search-filter-margin' : ''}`}>
+                                <div className="normal-search-container">
+                                    <input
+                                        type="radio"
+                                        name="destination-search-filter"
+                                        id="destination-normal-search"
+                                        checked={searchDestinationFilter === 'normal'}
+                                        onChange={() => handleDestinationSearchFilterChange('normal')}
                                     />
-                                )}
+                                    <label htmlFor="destination-normal-search">Normal Search</label>
+                                </div>
+                                <div className="building-search-container">
+                                    <input
+                                        type="radio"
+                                        name="destination-search-filter"
+                                        id="destination-building-search"
+                                        checked={searchDestinationFilter === 'building'}
+                                        onChange={() => handleDestinationSearchFilterChange('building')}
+                                    />
+                                    <label htmlFor="destination-building-search">Building Search</label>
+                                </div>
                             </div>
-                        </div>
-                        <div className={`search-filter-container ${searchDestinationFilter === 'building' ? 'search-filter-margin' : ''}`}>
-                            <div className="normal-search-container">
-                                <input
-                                    type="radio"
-                                    name="destination-search-filter"
-                                    id="destination-normal-search"
-                                    checked={searchDestinationFilter === 'normal'}
-                                    onChange={() => handleDestinationSearchFilterChange('normal')}
-                                />
-                                <label htmlFor="destination-normal-search">Normal Search</label>
-                            </div>
-                            <div className="building-search-container">
-                                <input
-                                    type="radio"
-                                    name="destination-search-filter"
-                                    id="destination-building-search"
-                                    checked={searchDestinationFilter === 'building'}
-                                    onChange={() => handleDestinationSearchFilterChange('building')}
-                                />
-                                <label htmlFor="destination-building-search">Building Search</label>
-                            </div>
-                        </div>
 
-                        <div className="request-btns-container">
-                            <button className='request-btn' onClick={handleSubmit}>Submit</button>
-                            <button className='clear-btn' onClick={handleClear}>Clear</button>
-                            <button className='preview-btn' onClick={handlePreview}>Preview</button>
-                        </div>
-                    </LoadScript>
+                            <div className="request-btns-container">
+                                <button className='request-btn' onClick={handleSubmit}>Submit</button>
+                                <button className='preview-btn' onClick={handlePreview}>Preview</button>
+                                <button className='clear-btn' onClick={handleClear}>Clear</button>
+                            </div>
+                        </>
+                    )}
                     {distance && duration && (
                         <div className='request-results-container'>
                             <p>Ride Cost: ${!isNaN(parseFloat(distance)) ? parseFloat(distance).toFixed(2) : 'N/A'}</p>
@@ -410,7 +413,7 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
                                 zoom={19}
                                 center={mapCenter}
                             >
-                                <MarkerF position={currentPosition} />
+                                <Marker position={currentPosition} />
                                 {directions && <DirectionsRenderer directions={directions} />}
                             </GoogleMap>
                         </div>
@@ -419,6 +422,6 @@ const RequestRide: React.FC<RequestRideProps> = (props) => {
             </main>
         </PageTitle>
     );
-};
+}
 
 export default RequestRide;

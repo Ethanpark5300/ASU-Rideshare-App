@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useJsApiLoader, GoogleMap, MarkerF } from '@react-google-maps/api';
 import "./GoogleMaps.css"
 
-const LiveTracking: React.FC = () => {
+function LiveTracking() {
     const [currentLocation, setCurrentLocation] = useState({ lat: 0, lng: 0 });
     const { isLoaded: mapsLoaded } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
 

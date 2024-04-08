@@ -3,8 +3,8 @@ import { Route, Routes } from 'react-router-dom';
 import { Account } from './account/Account';
 import { setAccountStore } from './store/features/accountSlice';
 import { useAppDispatch, useAppSelector } from './store/hooks';
-import "./App.css"
 import NavigationBar from './components/NavigationBar/NavigationBar';
+import "./App.css"
 
 //Pages
 import Home from './pages/Home';
@@ -41,7 +41,6 @@ function App() {
 				})
 					.then((res) => res.json())
 					.then((data) => {
-						//console.log(data);
 						if (data !== null) {
 							const accountData = new Account(data.Email, data.FirstName, data.LastName, data.PhoneNumber, data.AccountType, data.PayPalEmail, data.Status);
 							dispatch(setAccountStore(accountData));
@@ -50,7 +49,6 @@ function App() {
 						}
 					});
 			} catch (error) {
-				// Handle the error if necessary
 				console.error(error);
 			}
 		};
@@ -58,9 +56,7 @@ function App() {
 	}, [dispatch]);
 
 	const account = useAppSelector((state) => state.account);
-	//console.log("----")
-	// console.log(account.account);
-
+	
 	return (
 		<>
 			<NavigationBar />
@@ -71,18 +67,9 @@ function App() {
 				<Route path="/Profile" element={<Profile />} />
 				<Route path="/Register" element={<Register />} />
 				<Route path="/Verify" element={<Verify />} />
-				<Route
-					path="/RequestRide"
-					element={<RequestRide
-						riderEmail={account?.account?.email} />}
-				/>
+				<Route path="/RequestRide" element={<RequestRide riderid={account?.account?.email} />} />
 				<Route path="/RideHistory" element={<RideHistory />} />
-				<Route
-					path="/RideinProgress"
-					element={<RideinProgress
-						userEmail={account?.account?.email}
-						userType={account?.account?.accountType} />}
-				/>
+				<Route path="/RideinProgress" element={<RideinProgress userid={account?.account?.email} />} />
 				<Route path="/ChooseDriver" element={<ChooseDriver />} />
 				<Route path="/ChooseRider" element={<ChooseRider />} />
 				<Route path="/Rating" element={<Rating />} />
@@ -91,11 +78,7 @@ function App() {
 				<Route path="/BlockedList" element={<BlockedList />} />
 				<Route path="/EditAccount" element={<EditAccount />} />
 				<Route path="/EditPayment" element={<EditPayment />} />
-				<Route
-					path="/PickupRider"
-					element={<PickupRider
-						driverEmail={account?.account?.email} />} 
-				/>
+				<Route path="/PickupRider" element={<PickupRider driverid={account?.account?.email} />} />
 				<Route path="/WaitingDriver" element={<WaitingDriver />} />
 				<Route path="/WaitingRider" element={<WaitingRider />} />
 				<Route path="/ChangePassword" element={<ChangePassword />} />
