@@ -6,6 +6,9 @@ import { FaMapMarkerAlt } from "react-icons/fa";
 import Select from 'react-select';
 import buildingsData from '../components/BuildingSearch/Buildings.json';
 import { useNavigate } from 'react-router-dom';
+import CurrentLocationMarker from '../components/GoogleMaps/CurrentLocationMarker.svg';
+import PickupLocationMarker from '../components/GoogleMaps/PickupLocationMarker.svg';
+import DropoffLocationMarker from '../components/GoogleMaps/DropoffLocationMarker.svg';
 const libraries: Libraries = ['places'];
 
 interface RequestRideProps {
@@ -28,6 +31,8 @@ function RequestRide({ riderid }: RequestRideProps) {
     const [selectedDestinationBuilding, setSelectedDestinationBuilding] = useState<BuildingOption | null>(null);
     let [pickupLocation, setPickupLocation] = useState<string>(null);
     let [dropoffLocation, setDropoffLocation] = useState<string>(null);
+    const [pickupCoordinates, setPickupCoordinates] = useState<{ lat: number, lng: number }>(null);
+    const [dropoffCoordinates, setDropoffCoordinates] = useState<{ lat: number, lng: number }>(null);
     const navigate = useNavigate();
 
     interface Building {
@@ -95,29 +100,31 @@ function RequestRide({ riderid }: RequestRideProps) {
                     destination: dropoffLocation,
                     travelMode: window.google.maps.TravelMode.DRIVING,
                 },
-                handleDirectionsResponse
+                (response, status) => {
+                    if (status === 'OK') {
+                        setDirections(response);
+                        const route = response.routes[0];
+                        if (route) {
+                            const distance = route.legs.reduce((acc: number, leg: any) => acc + leg.distance.value, 0);
+                            const duration = route.legs.reduce((acc: number, leg: any) => acc + leg.duration.value, 0);
+
+                            setDistance((distance / 1609.34).toFixed(2)); // Convert meters to miles
+                            setDuration(Math.round(duration / 60)); // Round duration to nearest whole number of minutes
+
+                            setPickupCoordinates({ lat: route.legs[0].start_location.lat(), lng: route.legs[0].start_location.lng() });
+                            setDropoffCoordinates({ lat: route.legs[0].end_location.lat(), lng: route.legs[0].end_location.lng() });
+                        }
+                    } else {
+                        console.error('Error calculating directions:', status);
+                        alert('Error calculating directions. Please try again.');
+                    }
+                }
             );
         }
     };
 
-    const handleDirectionsResponse = (response: any) => {
-        if (response !== null && response.status === 'OK') {
-            setDirections(response);
-            const route = response.routes[0];
-            if (route) {
-                const distance = route.legs.reduce((acc: number, leg: any) => acc + leg.distance.value, 0);
-                const duration = route.legs.reduce((acc: number, leg: any) => acc + leg.duration.value, 0);
-
-                setDistance((distance / 1609.34).toFixed(2)); // Convert meters to miles
-                setDuration(Math.round(duration / 60)); // Round duration to nearest whole number of minutes
-            }
-        } else {
-            console.error('Error calculating directions:', response);
-        }
-    };
-
     const handleUseCurrentLocation = () => {
-        if(currentPosition === null) return;
+        if (currentPosition === null) return;
 
         setOrigin('');
         setSelectedOriginBuilding(null);
@@ -164,6 +171,8 @@ function RequestRide({ riderid }: RequestRideProps) {
         setDuration(null);
         setSelectedOriginBuilding(null);
         setSelectedDestinationBuilding(null);
+        setPickupCoordinates(null);
+        setDropoffCoordinates(null);
     };
 
     const handleSubmit = () => {
@@ -377,7 +386,7 @@ function RequestRide({ riderid }: RequestRideProps) {
                             </div>
                             {distance && duration && (
                                 <div className='request-results-container'>
-                                    <p><b>Ride Cost:</b> ${duration.toFixed(2)}</p>
+                                    <p><b>Ride Cost:</b> ${distance}</p>
                                     <p><b>Distance:</b> {distance} miles</p>
                                     <p><b>Duration:</b> {duration} minutes</p>
                                 </div>
@@ -391,9 +400,43 @@ function RequestRide({ riderid }: RequestRideProps) {
                             mapContainerStyle={{ height: '100%', width: '100%' }}
                             zoom={19}
                             center={currentPosition}
+                            options={{ streetViewControl: false }}
                         >
-                            <Marker position={currentPosition} />
-                            {directions && <DirectionsRenderer directions={directions} />}
+                            <Marker
+                                position={currentPosition}
+                                icon={{
+                                    url: CurrentLocationMarker,
+                                    scaledSize: new window.google.maps.Size(25, 25),
+                                }}
+                            />
+                            {directions && (
+                                <>
+                                    <Marker
+                                        position={pickupCoordinates}
+                                        icon={{
+                                            url: PickupLocationMarker,
+                                            scaledSize: new window.google.maps.Size(30, 40),
+                                        }}
+                                    />
+                                    <Marker
+                                        position={dropoffCoordinates}
+                                        icon={{
+                                            url: DropoffLocationMarker,
+                                            scaledSize: new window.google.maps.Size(30, 40),
+                                        }}
+                                    />
+                                    <DirectionsRenderer
+                                        directions={directions}
+                                        options={{
+                                            suppressMarkers: true,
+                                            polylineOptions: {
+                                                strokeColor: '#8C1D40',
+                                                strokeWeight: 5,
+                                            },
+                                        }}
+                                    />
+                                </>
+                            )}
                         </GoogleMap>
                     </div>
                 )}
