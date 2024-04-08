@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useJsApiLoader, GoogleMap, MarkerF } from '@react-google-maps/api';
+import CurrentLocationMarker from './CurrentLocationMarker.svg';
 import "./GoogleMaps.css"
 
 function MapContainer() {
     const { isLoaded } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
-    const [currentPosition, setCurrentPosition] = useState({ lat: 0, lng: 0 });
+    const [currentPosition, setCurrentPosition] = useState<{ lat: number, lng: number }>(null);
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -27,10 +28,17 @@ function MapContainer() {
             {isLoaded && (
                 <GoogleMap
                     mapContainerStyle={{ width: '100%', height: '100%' }}
-                    zoom={13}
+                    zoom={19}
                     center={currentPosition}
+                    options={{ streetViewControl: false }}
                 >
-                    {currentPosition && <MarkerF position={currentPosition} />}
+                    <MarkerF
+                        position={currentPosition}
+                        icon={{
+                            url: CurrentLocationMarker,
+                            scaledSize: new window.google.maps.Size(25, 25),
+                        }}
+                    />
                 </GoogleMap>
             )}
         </div>

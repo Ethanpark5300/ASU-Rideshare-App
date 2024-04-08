@@ -3,6 +3,8 @@ import { GoogleMap, useJsApiLoader, DirectionsRenderer, MarkerF } from '@react-g
 import PageTitle from '../components/PageTitle/PageTitle';
 import "../styles/RideinProgress.css";
 import { useNavigate } from 'react-router-dom';
+import CurrentLocationMarker from '../components/GoogleMaps/CurrentLocationMarker.svg';
+import DropoffLocationMarker from '../components/GoogleMaps/DropoffLocationMarker.svg';
 
 interface RideInProgressProps {
     userid: string;
@@ -172,14 +174,33 @@ function RideinProgress({ userid }: RideInProgressProps) {
                             mapContainerStyle={{ width: '100%', height: '100%' }}
                             center={currentLocation}
                             zoom={19}
+                            options={{ streetViewControl: false }}
                         >
-                            {currentLocation && <MarkerF position={currentLocation} />}
-                            {dropoffLocation && <MarkerF position={dropoffLocation} />}
-                            {showDirections && directionsResponse && (
+                            <MarkerF
+                                position={currentLocation}
+                                icon={{
+                                    url: CurrentLocationMarker,
+                                    scaledSize: new window.google.maps.Size(25, 25),
+                                }}
+                            />
+                            <MarkerF
+                                position={dropoffLocation}
+                                icon={{
+                                    url: DropoffLocationMarker,
+                                    scaledSize: new window.google.maps.Size(30, 40),
+                                }}
+                            />
+                            {showDirections && (
                                 <DirectionsRenderer
                                     key={directionsResponse.uniqueKey}
                                     directions={directionsResponse.response}
-                                    options={{ suppressMarkers: true }}
+                                    options={{
+                                        suppressMarkers: true,
+                                        polylineOptions: {
+                                            strokeColor: '#8C1D40',
+                                            strokeWeight: 5,
+                                        },
+                                    }}
                                 />
                             )}
                         </GoogleMap>
@@ -212,14 +233,17 @@ function RideinProgress({ userid }: RideInProgressProps) {
                             <p><b>Dropoff Point:</b> {driverRideInfo.Dropoff_Location} </p>
                             {(!arrivalTime) && (<p><b>Estimated Arrival Time:</b></p>)}
                             {(arrivalTime) && (<p><b>Estimated Arrival Time:</b> {arrivalTime} ({estimatedTimeArrival})</p>)}
-                            {(!estimatedRemainingDistance) && (<p><b>Distance Remaining:</b></p>)}
-                            {(estimatedRemainingDistance) && (<p><b>Distance Remaining:</b> {estimatedRemainingDistance} miles</p>)}
+                            {/* {(!estimatedRemainingDistance) && (<p><b>Distance Remaining:</b></p>)} */}
+                            {/* {(estimatedRemainingDistance) && (<p><b>Distance Remaining:</b> {estimatedRemainingDistance} miles</p>)} */}
+                            {(<p><b>Distance Remaining:</b> {estimatedRemainingDistance} miles</p>)}
                             <div className="ride-in-progress-btns-container">
                                 {(0 <= estimatedRemainingDistance && estimatedRemainingDistance <= 1) && (
                                     <button className='btn end-ride-btn' onClick={completeRide}>End Ride</button>
                                 )}
+                                {(estimatedRemainingDistance >= 1) && (
+                                    <button className='btn refresh-btn' onClick={calculateETA}>Refresh</button>
+                                )}
                                 <button className='btn emergency-btn'>Emergency Services</button>
-                                <button className='btn refresh-btn2' onClick={calculateETA}>Refresh</button>
                             </div>
                         </>
                     )}

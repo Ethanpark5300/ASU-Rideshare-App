@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { GoogleMap, useJsApiLoader, DirectionsRenderer, Autocomplete, Marker, Libraries } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, DirectionsRenderer, Autocomplete, Libraries, Marker } from '@react-google-maps/api';
 import '../styles/RequestRide.css';
 import PageTitle from '../components/PageTitle/PageTitle';
 import { FaMapMarkerAlt } from "react-icons/fa";

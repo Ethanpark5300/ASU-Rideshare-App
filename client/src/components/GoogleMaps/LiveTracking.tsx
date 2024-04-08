@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
 import { useJsApiLoader, GoogleMap, MarkerF } from '@react-google-maps/api';
+import CurrentLocationMarker from './CurrentLocationMarker.svg';
 import "./GoogleMaps.css"
 
 function LiveTracking() {
     const { isLoaded } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
-    const [currentLocation, setCurrentLocation] = useState({ lat: 0, lng: 0 });
+    const [currentPosition, setCurrentPosition] = useState<{ lat: number, lng: number }>(null);
 
     useEffect(() => {
         if (navigator.geolocation) {
             navigator.geolocation.watchPosition(
                 (position) => {
                     const { latitude, longitude } = position.coords;
-                    setCurrentLocation({ lat: latitude, lng: longitude });
+                    setCurrentPosition({ lat: latitude, lng: longitude });
                 },
                 (error) => {
                     if (error.code === error.PERMISSION_DENIED) {
@@ -31,10 +32,17 @@ function LiveTracking() {
             {isLoaded && (
                 <GoogleMap
                     mapContainerStyle={{ width: '100%', height: '100%' }}
-                    center={currentLocation}
+                    center={currentPosition}
                     zoom={19}
+                    options={{ streetViewControl: false }}
                 >
-                    {currentLocation && <MarkerF position={currentLocation} />}
+                    <MarkerF
+                        position={currentPosition}
+                        icon={{
+                            url: CurrentLocationMarker,
+                            scaledSize: new window.google.maps.Size(25, 25),
+                        }}
+                    />
                 </GoogleMap>
             )}
         </div>

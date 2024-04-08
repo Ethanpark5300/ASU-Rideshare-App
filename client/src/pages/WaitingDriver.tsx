@@ -5,6 +5,8 @@ import { useAppSelector } from '../store/hooks';
 import CancellationTimer from '../components/Timer/Timer';
 import { useNavigate } from 'react-router-dom';
 import { GoogleMap, MarkerF, useJsApiLoader } from '@react-google-maps/api';
+import CurrentLocationMarker from '../components/GoogleMaps/CurrentLocationMarker.svg';
+import PickupLocationMarker from '../components/GoogleMaps/PickupLocationMarker.svg';
 
 function WaitingDriver() {
     const account = useAppSelector((state) => state.account);
@@ -178,9 +180,22 @@ function WaitingDriver() {
                             mapContainerStyle={{ width: '100%', height: '100%' }}
                             center={currentLocation}
                             zoom={19}
+                            options={{ streetViewControl: false }}
                         >
-                            {currentLocation && <MarkerF position={currentLocation} />}
-                            {pickupLocation && <MarkerF position={pickupLocation} />}
+                            <MarkerF
+                                position={currentLocation}
+                                icon={{
+                                    url: CurrentLocationMarker,
+                                    scaledSize: new window.google.maps.Size(25, 25),
+                                }}
+                            />
+                            <MarkerF
+                                position={pickupLocation}
+                                icon={{
+                                    url: PickupLocationMarker,
+                                    scaledSize: new window.google.maps.Size(30, 40),
+                                }}
+                            />
                         </GoogleMap>
                     )}
                 </div>

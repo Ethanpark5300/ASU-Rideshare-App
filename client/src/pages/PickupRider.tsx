@@ -3,6 +3,8 @@ import { GoogleMap, useJsApiLoader, DirectionsRenderer, MarkerF } from '@react-g
 import PageTitle from '../components/PageTitle/PageTitle';
 import "../styles/PickupRider.css";
 import { useNavigate } from 'react-router-dom';
+import CurrentLocationMarker from '../components/GoogleMaps/CurrentLocationMarker.svg';
+import PickupLocationMarker from '../components/GoogleMaps/PickupLocationMarker.svg';
 
 interface PickupRiderProps {
     driverid: string;
@@ -184,14 +186,33 @@ function PickupRider({ driverid }: PickupRiderProps) {
                             mapContainerStyle={{ width: '100%', height: '100%' }}
                             center={currentLocation}
                             zoom={19}
+                            options={{ streetViewControl: false }}
                         >
-                            {currentLocation && <MarkerF position={currentLocation} />}
-                            {pickupLocation && <MarkerF position={pickupLocation} />}
-                            {showDirections && directionsResponse && (
+                            <MarkerF
+                                position={currentLocation}
+                                icon={{
+                                    url: CurrentLocationMarker,
+                                    scaledSize: new window.google.maps.Size(25, 25),
+                                }}
+                            />
+                            <MarkerF
+                                position={pickupLocation}
+                                icon={{
+                                    url: PickupLocationMarker,
+                                    scaledSize: new window.google.maps.Size(30, 40),
+                                }}
+                            />
+                            {showDirections && (
                                 <DirectionsRenderer
                                     key={directionsResponse.uniqueKey}
                                     directions={directionsResponse.response}
-                                    options={{ suppressMarkers: true }}
+                                    options={{
+                                        suppressMarkers: true,
+                                        polylineOptions: {
+                                            strokeColor: '#8C1D40',
+                                            strokeWeight: 5,
+                                        },
+                                    }}
                                 />
                             )}
                         </GoogleMap>
