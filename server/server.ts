@@ -592,6 +592,7 @@ app.post("/block-rider", async (req: Request, res: Response) => {
 });
 
 /**
+ * Retrieve blocked list on blocked list page
  * @param req.query.userid user email 
  * @returns blocked list for specific user 
  */
@@ -626,13 +627,18 @@ app.post("/unblock-user", async (req: Request, res: Response) => {
 	});
 });
 
-/** Retrieve ratings information to ratings page */
+/** 
+ * Retrieve ratings information to ratings page 
+ * @param req.query.userid user email
+ * @returns driverRatingInformation driver full name 
+ * @returns riderRatingInformation rider full name 
+*/
 app.get("/get-ratings-information", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let userid = req.query.userid;
 	let userType = await db.get(`SELECT Type_User FROM USER_INFO WHERE Email = '${userid}'`);
 
-	/** Return driver information if rider */
+	/** Returns driver information to rider */
 	if (userType.Type_User === 1) {
 		let getDriverInformation = await db.all(`SELECT rides.driver_id, user_info.first_name, user_info.last_name FROM user_info INNER JOIN rides ON rides.driver_id = user_info.email WHERE rider_id = '${userid}' AND status = "COMPLETED"`);
 		if(!getDriverInformation) return;
@@ -644,7 +650,7 @@ app.get("/get-ratings-information", async (req: Request, res: Response) => {
 		});
 	}
 
-	/** Return rider information if driver */
+	/** Returns rider information to driver */
 	else {
 		let getRiderInformation = await db.all(`SELECT rides.rider_id, user_info.first_name, user_info.last_name FROM user_info INNER JOIN rides ON rides.rider_id = user_info.email WHERE driver_id = '${userid}' AND status = "COMPLETED"`);
 		if(!getRiderInformation) return;
@@ -657,7 +663,11 @@ app.get("/get-ratings-information", async (req: Request, res: Response) => {
 	}
 });
 
-/** Check if rider already sent favorite request to driver or driver is already favorited */
+/** 
+ * Check if rider already sent favorite request to driver or driver is already favorited
+ * @param riderid rider email
+ * @returns currentDriverFavoriteStatus current favorite driver status
+*/
 app.get("/check-driver-favorite-status", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let riderid = req.query.riderid;
@@ -747,6 +757,7 @@ app.post("/send-driver-ratings", async (req: Request, res: Response) => {
 });
 
 /**
+ * Retrieve given rider's favorite list
  * @param req.query.userid user email to fetch favorites for
  * @returns getRidersFavoritesList rider's favorites and pending favorites list
  * @returns getDriversPendingFavoritesList driver's pending favorites list
@@ -903,8 +914,9 @@ app.post("/edit-payment-information", async (req: Request, res: Response) => {
 });
 
 /** 
- * @returns account information 
+ * Retrieve all account information
  * @param req.query.accountEmail user email to view account for
+ * @returns account information 
  */
 app.get("/view-account-info", async (req: Request, res: Response) => {
 	let db = await dbPromise;
@@ -1034,8 +1046,6 @@ app.get('/get-driver-average-rating', async (req: Request, res: Response) => {
 		driverAverageRating: getAverageDriverRating.Rating_Driver
 	});
 });
-
-/** Rider actions */
 
 /** 
  * Sends ride information to ride queue table 
@@ -1208,7 +1218,11 @@ app.get("/check-if-driver-arrived", async (req: Request, res: Response) => {
 	});
 });
 
-
+/**
+ * Check if driver started ride
+ * @param riderid rider email
+ * @returns getDriverStartedStatus ride status
+ */
 app.get("/check-if-driver-started-ride", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let riderid = req.query.riderid;
@@ -1223,7 +1237,11 @@ app.get("/check-if-driver-started-ride", async (req: Request, res: Response) => 
 	});
 });
 
-
+/**
+ * Check if driver ended ride
+ * @param riderid rider email
+ * @returns rideStatus ride status
+ */
 app.get("/check-if-ride-ended", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let userid = req.query.userid;
@@ -1251,8 +1269,6 @@ app.get("/check-if-ride-ended", async (req: Request, res: Response) => {
 		});
 	}
 });
-
-/** Driver actions */
 
 /** 
  * get rider queue
@@ -1301,6 +1317,7 @@ app.post("/accept-ride-request", async (req: Request, res: Response) => {
 });
 
 /** 
+ * Retrieve ride information
  * @param req.query.userid user email
  * @returns riderRideInfo, driverRideInfo
  */

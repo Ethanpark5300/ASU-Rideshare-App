@@ -375,14 +375,14 @@ function RequestRide({ riderid }: RequestRideProps) {
                                 <button className='preview-btn' onClick={handlePreview}>Preview</button>
                                 <button className='clear-btn' onClick={handleClear}>Clear</button>
                             </div>
+                            {distance && duration && (
+                                <div className='request-results-container'>
+                                    <p><b>Ride Cost:</b> ${duration.toFixed(2)}</p>
+                                    <p><b>Distance:</b> {distance} miles</p>
+                                    <p><b>Duration:</b> {duration} minutes</p>
+                                </div>
+                            )}
                         </>
-                    )}
-                    {distance && duration && (
-                        <div className='request-results-container'>
-                            <p><b>Ride Cost:</b> ${duration.toFixed(2)}</p>
-                            <p><b>Distance:</b> {distance} miles</p>
-                            <p><b>Duration:</b> {duration} minutes</p>
-                        </div>
                     )}
                 </aside>
                 {isLoaded && (
