@@ -9,12 +9,10 @@ import { GoogleMap, MarkerF, useJsApiLoader } from '@react-google-maps/api';
 function WaitingDriver() {
     const account = useAppSelector((state) => state.account);
     const navigate = useNavigate();
-    const [mapLoaded, setMapLoaded] = useState<boolean>(false);
-    const { isLoaded: mapsLoaded, loadError } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
+    const { isLoaded } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
     const [currentLocation, setCurrentLocation] = useState<{ lat: number, lng: number }>(null);
     const [pickupAddress, setPickupAddress] = useState<string>();
     const [pickupLocation, setPickupLocation] = useState<{ lat: number, lng: number }>(null);
-    const [errorMessage, setErrorMessage] = useState<any>();
     const [riderRideInfo, setRiderRideInfo] = useState<any>();
     const [passedCancellation, setPassedCancellation] = useState<boolean>(false);
     const [beforeCancellationPopup, setBeforeCancellationPopup] = useState<boolean>(false);
@@ -31,24 +29,22 @@ function WaitingDriver() {
                 (position) => {
                     const { latitude, longitude } = position.coords;
                     setCurrentLocation({ lat: latitude, lng: longitude });
-                    setErrorMessage('');
-                    setMapLoaded(true);
                 },
                 (error) => {
                     if (error.code === error.PERMISSION_DENIED) {
-                        setErrorMessage('User denied the request for Geolocation.');
+                        console.error('User denied the request for Geolocation.');
                     } else {
-                        setErrorMessage('An error occurred while retrieving location.');
+                        console.error('An error occurred while retrieving location.');
                     }
                 }
             );
         } else {
-            setErrorMessage('Geolocation is not supported by this browser.');
+            console.error('Geolocation is not supported by this browser.');
         }
     }, []);
 
     useEffect(() => {
-        if (!mapsLoaded || !pickupAddress) return;
+        if (!isLoaded || !pickupAddress) return;
 
         const geocoder = new window.google.maps.Geocoder();
         geocoder.geocode({ address: pickupAddress }, (results, status) => {
@@ -56,14 +52,10 @@ function WaitingDriver() {
                 const location = results[0].geometry.location;
                 setPickupLocation({ lat: location.lat(), lng: location.lng() });
             } else {
-                setErrorMessage('Geocode was not successful for the following reason: ' + status);
+                console.error('Geocode was not successful for the following reason: ' + status);
             }
         });
-    }, [mapsLoaded, pickupAddress]);
-
-    const handleMapLoad = () => {
-        setMapLoaded(true);
-    };
+    }, [isLoaded, pickupAddress]);
 
     useEffect(() => {
         const delay: number = 125;
@@ -88,7 +80,6 @@ function WaitingDriver() {
     };
 
     const handleCancelRequest = () => {
-        // console.log("Passed cancellation?", passedCancellation);
         if (!passedCancellation) return setBeforeCancellationPopup(true)
         else setPassedCancellationPopup(true)
     }
@@ -102,11 +93,7 @@ function WaitingDriver() {
                     userid: account?.account?.email,
                     passedCancellation: passedCancellation
                 }),
-            })
-                .then((res) => res.json())
-                .then((data) => {
-                    setErrorMessage(data.errorMessage);
-                });
+            });
         } catch (error: any) {
             console.log("Error cancelling ride:", error);
         }
@@ -186,19 +173,16 @@ function WaitingDriver() {
         <PageTitle title="Waiting Driver">
             <main id="waiting">
                 <div className="map-container">
-                    {errorMessage && (<div className='error-message'>{errorMessage}</div>)}
-                    {mapLoaded && mapsLoaded && (
+                    {isLoaded && (
                         <GoogleMap
                             mapContainerStyle={{ width: '100%', height: '100%' }}
                             center={currentLocation}
                             zoom={19}
-                            onLoad={handleMapLoad}
                         >
                             {currentLocation && <MarkerF position={currentLocation} />}
                             {pickupLocation && <MarkerF position={pickupLocation} />}
                         </GoogleMap>
                     )}
-                    {loadError && <div>Error loading Google Maps: {loadError.message}</div>}
                 </div>
                 <div className="waiting-container">
                     {(riderRideInfo) && (

@@ -9,10 +9,10 @@ interface PickupRiderProps {
 }
 
 function PickupRider({ driverid }: PickupRiderProps) {
+    const { isLoaded } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
     const [currentLocation, setCurrentLocation] = useState<{ lat: number, lng: number }>(null);
     const [pickupAddress, setPickupAddress] = useState<string>();
     const [pickupLocation, setPickupLocation] = useState<{ lat: number, lng: number }>(null);
-    const { isLoaded: mapsLoaded } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
     const [estimatedTimeArrival, setEstimatedTimeArrival] = useState<string>();
     const [estimatedRemainingDistance, setEstimatedRemainingDistance] = useState<number>();
     const [arrivalTime, setArrivalTime] = useState<string>();
@@ -38,7 +38,6 @@ function PickupRider({ driverid }: PickupRiderProps) {
             };
             getRideInformation();
         }, delay);
-
         return () => clearTimeout(timerId);
     }, [driverid]);
 
@@ -63,7 +62,7 @@ function PickupRider({ driverid }: PickupRiderProps) {
     }, []);
 
     useEffect(() => {
-        if (!mapsLoaded || !pickupAddress) return;
+        if (!isLoaded || !pickupAddress) return;
 
         const geocoder = new window.google.maps.Geocoder();
         geocoder.geocode({ address: pickupAddress }, (results, status) => {
@@ -74,7 +73,7 @@ function PickupRider({ driverid }: PickupRiderProps) {
                 console.error("Geocode was not successful for the following reason: " + status);
             }
         });
-    }, [mapsLoaded, pickupAddress]);
+    }, [isLoaded, pickupAddress]);
 
     const calculateETA = () => {
         setShowDirections(false);
@@ -121,7 +120,7 @@ function PickupRider({ driverid }: PickupRiderProps) {
             const data = await response.json();
             setCheckRiderCancellationStatus(data.getCancellationStatus);
         } catch (error) {
-            console.log("Error checking driver cancellation status:", error);
+            // console.log("Error checking driver cancellation status:", error);
         }
     }, [driverid]);
 
@@ -180,7 +179,7 @@ function PickupRider({ driverid }: PickupRiderProps) {
         <PageTitle title='Pickup Rider'>
             <main id='pickup-rider'>
                 <div className="map-container">
-                    {mapsLoaded && (
+                    {isLoaded && (
                         <GoogleMap
                             mapContainerStyle={{ width: '100%', height: '100%' }}
                             center={currentLocation}
@@ -208,14 +207,14 @@ function PickupRider({ driverid }: PickupRiderProps) {
                             {(arrivalTime) && (<p><b>Estimated Arrival Time:</b> {arrivalTime} ({estimatedTimeArrival})</p>)}
                             <p><b>Distance Remaining:</b> {estimatedRemainingDistance} miles</p>
                             <div className="pickup-rider-btns-container">
-                                {(estimatedRemainingDistance === 0.0) && (
+                                {(estimatedRemainingDistance === 0) && (
                                     <>
                                         <button className='btn start-ride-btn' onClick={handleStartRide}>Start Ride</button>
                                         <button className='btn refresh-btn'>Contact Rider</button>
                                         <button className='btn emergency-btn'>Emergency Services</button>
                                     </>
                                 )}
-                                {(estimatedRemainingDistance !== 0.0) && (
+                                {(estimatedRemainingDistance !== 0) && (
                                     <>
                                         <button className='btn start-ride-btn'>Contact Rider</button>
                                         <button className='btn emergency-btn'>Emergency Services</button>

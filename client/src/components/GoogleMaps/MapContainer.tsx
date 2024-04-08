@@ -3,8 +3,8 @@ import { useJsApiLoader, GoogleMap, MarkerF } from '@react-google-maps/api';
 import "./GoogleMaps.css"
 
 function MapContainer() {
+    const { isLoaded } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
     const [currentPosition, setCurrentPosition] = useState({ lat: 0, lng: 0 });
-    const { isLoaded: mapsLoaded } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -15,18 +15,16 @@ function MapContainer() {
                 },
                 (error) => {
                     console.error('Error getting user location:', error);
-                    console.warn('Error getting user location. Please enable location services.');
                 }
             );
         } else {
             console.error('Geolocation is not supported by this browser.');
-            console.warn('Geolocation is not supported by this browser.');
         }
     }, []);
 
     return (
         <div className="live-tracking-maps-container">
-            {mapsLoaded && (
+            {isLoaded && (
                 <GoogleMap
                     mapContainerStyle={{ width: '100%', height: '100%' }}
                     zoom={13}

@@ -6,7 +6,6 @@ import { FaMapMarkerAlt } from "react-icons/fa";
 import Select from 'react-select';
 import buildingsData from '../components/BuildingSearch/Buildings.json';
 import { useNavigate } from 'react-router-dom';
-
 const libraries: Libraries = ['places'];
 
 interface RequestRideProps {
@@ -14,13 +13,13 @@ interface RequestRideProps {
 }
 
 function RequestRide({ riderid }: RequestRideProps) {
-    const [currentPosition, setCurrentPosition] = useState({ lat: 0, lng: 0 });
-    const [mapCenter, setMapCenter] = useState({ lat: 0, lng: 0 });
+    const { isLoaded } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY, libraries: libraries });
+    const [currentPosition, setCurrentPosition] = useState<{ lat: number, lng: number }>(null);
     const [origin, setOrigin] = useState<string>('');
     const [destination, setDestination] = useState<string>('');
     const [directions, setDirections] = useState<any>(null);
     const [distance, setDistance] = useState<string>('');
-    const [duration, setDuration] = useState<string>('');
+    const [duration, setDuration] = useState<number>();
     const [searchOriginFilter, setSearchOriginFilter] = useState<'normal' | 'building'>('normal');
     const [searchDestinationFilter, setSearchDestinationFilter] = useState<'normal' | 'building'>('normal');
     const originAutocomplete = useRef<google.maps.places.Autocomplete>(null);
@@ -43,27 +42,19 @@ function RequestRide({ riderid }: RequestRideProps) {
         address: string;
     }
 
-    const { isLoaded } = useJsApiLoader({
-        googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
-        libraries: libraries,
-    });
-
     useEffect(() => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const { latitude, longitude } = position.coords;
                     setCurrentPosition({ lat: latitude, lng: longitude });
-                    setMapCenter({ lat: latitude, lng: longitude });
                 },
                 (error) => {
                     console.error('Error getting user location:', error);
-                    console.warn('Error getting user location. Please enable location services.');
                 }
             );
         } else {
             console.error('Geolocation is not supported by this browser.');
-            console.warn('Geolocation is not supported by this browser.');
         }
     }, []);
 
@@ -117,8 +108,8 @@ function RequestRide({ riderid }: RequestRideProps) {
                 const distance = route.legs.reduce((acc: number, leg: any) => acc + leg.distance.value, 0);
                 const duration = route.legs.reduce((acc: number, leg: any) => acc + leg.duration.value, 0);
 
-                setDistance((distance / 1609.34).toFixed(2) + ' miles'); // Convert meters to miles
-                setDuration(Math.round(duration / 60) + ' minutes'); // Round duration to nearest whole number of minutes
+                setDistance((distance / 1609.34).toFixed(2)); // Convert meters to miles
+                setDuration(Math.round(duration / 60)); // Round duration to nearest whole number of minutes
             }
         } else {
             console.error('Error calculating directions:', response);
@@ -126,23 +117,23 @@ function RequestRide({ riderid }: RequestRideProps) {
     };
 
     const handleUseCurrentLocation = () => {
-        if (currentPosition.lat !== 0 && currentPosition.lng !== 0) {
-            setOrigin('');
-            setSelectedOriginBuilding(null);
-            setSearchOriginFilter('normal');
+        if(currentPosition === null) return;
 
-            const geocoder = new window.google.maps.Geocoder();
-            const latlng = new window.google.maps.LatLng(currentPosition.lat, currentPosition.lng);
+        setOrigin('');
+        setSelectedOriginBuilding(null);
+        setSearchOriginFilter('normal');
 
-            geocoder.geocode({ location: latlng }, (results, status) => {
-                if (status === 'OK' && results && results.length > 0) {
-                    const formattedAddress = results[0].formatted_address;
-                    setOrigin(formattedAddress);
-                } else {
-                    console.error('Error getting address from coordinates:', status);
-                }
-            });
-        }
+        const geocoder = new window.google.maps.Geocoder();
+        const latlng = new window.google.maps.LatLng(currentPosition.lat, currentPosition.lng);
+
+        geocoder.geocode({ location: latlng }, (results, status) => {
+            if (status === 'OK' && results && results.length > 0) {
+                const formattedAddress = results[0].formatted_address;
+                setOrigin(formattedAddress);
+            } else {
+                console.error('Error getting address from coordinates:', status);
+            }
+        });
     };
 
     const handleOriginPlaceChanged = () => {
@@ -166,11 +157,11 @@ function RequestRide({ riderid }: RequestRideProps) {
     };
 
     const handleClear = () => {
-        setOrigin('');
-        setDestination('');
+        setOrigin(null);
+        setDestination(null);
         setDirections(null);
-        setDistance('');
-        setDuration('');
+        setDistance(null);
+        setDuration(null);
         setSelectedOriginBuilding(null);
         setSelectedDestinationBuilding(null);
     };
@@ -218,14 +209,15 @@ function RequestRide({ riderid }: RequestRideProps) {
                 alert('Please provide both pick-up and drop-off locations.');
             }
         } catch (error) {
-            console.log(error);
+            console.log("Error submitting request", error);
             alert('An error occurred. Please try again.');
         }
     };
 
     const buildingOptions: BuildingOption[] = buildingsData.buildings.map((building: Building) => ({
         value: building.code,
-        label: `${building.code} - ${building.name}`,
+        // label: `${building.code} - ${building.name}`,
+        label: `${building.code} - ${building.name} (${building.address})`,
         address: building.address,
     }));
 
@@ -245,13 +237,13 @@ function RequestRide({ riderid }: RequestRideProps) {
 
     const handleOriginSearchFilterChange = (filter: 'normal' | 'building') => {
         setSearchOriginFilter(filter);
-        setOrigin('');
+        setOrigin(null);
         setSelectedOriginBuilding(null);
     };
 
     const handleDestinationSearchFilterChange = (filter: 'normal' | 'building') => {
         setSearchDestinationFilter(filter);
-        setDestination('');
+        setDestination(null);
         setSelectedDestinationBuilding(null);
     };
 
@@ -259,9 +251,7 @@ function RequestRide({ riderid }: RequestRideProps) {
         <PageTitle title='Request Ride'>
             <main id='request-ride'>
                 <aside className="search-bar">
-                    <header>
-                        <h1>Request Ride</h1>
-                    </header>
+                    <header><h1>Request Ride</h1></header>
                     {isLoaded && (
                         <>
                             <div className="origin-container">
@@ -289,12 +279,7 @@ function RequestRide({ riderid }: RequestRideProps) {
                                             isSearchable
                                             placeholder="Building Search"
                                             components={{ Option: customOption }}
-                                            styles={{
-                                                control: (provided: any) => ({
-                                                    ...provided,
-                                                    maxWidth: '275px',
-                                                }),
-                                            }}
+                                            styles={{ control: (provided: any) => ({ ...provided, maxWidth: '275px' }) }}
                                         />
                                     )}
                                 </div>
@@ -357,12 +342,7 @@ function RequestRide({ riderid }: RequestRideProps) {
                                             isSearchable
                                             placeholder="Building Search"
                                             components={{ Option: customOption }}
-                                            styles={{
-                                                control: (provided: any) => ({
-                                                    ...provided,
-                                                    maxWidth: '275px',
-                                                }),
-                                            }}
+                                            styles={{ control: (provided: any) => ({ ...provided, maxWidth: '275px', }) }}
                                         />
                                     )}
                                 </div>
@@ -399,26 +379,24 @@ function RequestRide({ riderid }: RequestRideProps) {
                     )}
                     {distance && duration && (
                         <div className='request-results-container'>
-                            <p>Ride Cost: ${!isNaN(parseFloat(distance)) ? parseFloat(distance).toFixed(2) : 'N/A'}</p>
-                            <p>Distance: {distance}</p>
-                            <p>Duration: {duration}</p>
+                            <p><b>Ride Cost:</b> ${duration.toFixed(2)}</p>
+                            <p><b>Distance:</b> {distance} miles</p>
+                            <p><b>Duration:</b> {duration} minutes</p>
                         </div>
                     )}
                 </aside>
-                <div>
-                    {currentPosition.lat !== 0 && currentPosition.lng !== 0 && (
-                        <div className="map-container">
-                            <GoogleMap
-                                mapContainerStyle={{ height: '100%', width: '100%' }}
-                                zoom={19}
-                                center={mapCenter}
-                            >
-                                <Marker position={currentPosition} />
-                                {directions && <DirectionsRenderer directions={directions} />}
-                            </GoogleMap>
-                        </div>
-                    )}
-                </div>
+                {isLoaded && (
+                    <div className="map-container">
+                        <GoogleMap
+                            mapContainerStyle={{ height: '100%', width: '100%' }}
+                            zoom={19}
+                            center={currentPosition}
+                        >
+                            <Marker position={currentPosition} />
+                            {directions && <DirectionsRenderer directions={directions} />}
+                        </GoogleMap>
+                    </div>
+                )}
             </main>
         </PageTitle>
     );

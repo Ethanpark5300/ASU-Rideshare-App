@@ -9,11 +9,11 @@ interface RideInProgressProps {
 }
 
 function RideinProgress({ userid }: RideInProgressProps) {
+    const { isLoaded } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
     const [userType, setUserType] = useState<number>();
     const [currentLocation, setCurrentLocation] = useState<{ lat: number, lng: number }>(null);
     const [dropoffAddress, setDropoffAddress] = useState<string>();
     const [dropoffLocation, setPickupLocation] = useState<{ lat: number, lng: number }>(null);
-    const { isLoaded: mapsLoaded } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
     const [estimatedTimeArrival, setEstimatedTimeArrival] = useState<string>();
     const [estimatedRemainingDistance, setEstimatedRemainingDistance] = useState<number>();
     const [arrivalTime, setArrivalTime] = useState<string>();
@@ -74,7 +74,7 @@ function RideinProgress({ userid }: RideInProgressProps) {
     }, []);
 
     useEffect(() => {
-        if (!mapsLoaded || !dropoffAddress) return;
+        if (!isLoaded || !dropoffAddress) return;
 
         const geocoder = new window.google.maps.Geocoder();
         geocoder.geocode({ address: dropoffAddress }, (results, status) => {
@@ -85,7 +85,7 @@ function RideinProgress({ userid }: RideInProgressProps) {
                 console.error('Geocode was not successful for the following reason: ' + status);
             }
         });
-    }, [mapsLoaded, dropoffAddress]);
+    }, [isLoaded, dropoffAddress]);
 
     const calculateETA = () => {
         setShowDirections(null);
@@ -167,7 +167,7 @@ function RideinProgress({ userid }: RideInProgressProps) {
         <PageTitle title='Ride in Progress'>
             <main id='ride-in-progress'>
                 <div className="map-container">
-                    {mapsLoaded && (
+                    {isLoaded && (
                         <GoogleMap
                             mapContainerStyle={{ width: '100%', height: '100%' }}
                             center={currentLocation}
