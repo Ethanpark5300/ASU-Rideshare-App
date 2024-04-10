@@ -60,7 +60,7 @@ function BlockedList() {
                             <tr key={blockee.Blocked_ID}>
                                 <td>{blockee.First_Name} {blockee.Last_Name}</td>
                                 <td>{blockee.Date}</td>
-                                <td><button onClick={() => unblockUser(blockee)}>Remove</button></td>
+                                <td><button onClick={() => unblockUser(blockee)} className='unblock-btn'>Unblock</button></td>
                             </tr>
                         ))}
                     </table>

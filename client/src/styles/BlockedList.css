@@ -29,6 +29,31 @@
 
 #blocked-list table {
     margin-inline: auto;
+    width: 80%;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+#blocked-list tr {
+    border-bottom: 1px solid #ddd;
+}
+
+#blocked-list tr:nth-child(even) {
+    background-color: hsl(0, 0%, 99%);
+}
+
+#blocked-list tr:nth-child(odd) {
+    background-color: hsl(0, 0%, 100%);
+}
+
+#blocked-list th {
+    background-color: var(--brand-maroon);
+    color: white;
+}
+
+#blocked-list th,
+#blocked-list td {
+    padding: 8px;
 }
 
 #blocked-list button {
@@ -42,6 +67,11 @@
 
 #blocked-list button:hover {
     transform: scale(1.05);
+}
+
+#blocked-list .unblock-btn {
+    background-color: black;
+    color: white;
 }
 
 #blocked-list .blocked-list-refresh-btn {
