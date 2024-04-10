@@ -25,7 +25,7 @@ function Rating() {
     }, [account?.account?.email]);
 
     useEffect(() => {
-        const delay: number = 500;
+        const delay = 500;
         const timerId = setTimeout(() => {
             async function getRatingsInformation() {
                 try {

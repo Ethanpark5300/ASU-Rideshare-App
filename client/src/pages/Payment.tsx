@@ -30,7 +30,7 @@ function Payment() {
     };
 
     useEffect(() => {
-        const delay: number = 125;
+        const delay = 125;
         const timerId = setTimeout(() => {
             async function getRidePaymentInformation() {
                 try {

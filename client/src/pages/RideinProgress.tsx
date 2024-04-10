@@ -37,7 +37,7 @@ function RideinProgress({ userid }: RideInProgressProps) {
     }, [userid]);
 
     useEffect(() => {
-        const delay: number = 125;
+        const delay = 125;
         const timerId = setTimeout(() => {
             async function getRideInformation() {
                 try {
