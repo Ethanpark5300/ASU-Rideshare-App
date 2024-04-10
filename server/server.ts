@@ -16,6 +16,8 @@ const app = express();
 const PORT = process.env.PORT || 3001; //process.env is set outside
 const JWT_SECRET = process.env.JWT_SECRET || "DevelopmentSecretKey";
 const COOKIEPARSER_SECRET = process.env.COOKIEPARSER_SECRET || 'p3ufucaj55bi2kiy6lsktnm23z4c18xy';
+const ISPRODUCTION = process.env.PRODUCTION || false; //PRODUCTION=true to set it to true 
+
 
 let message: string | undefined;
 let hadError: boolean;
@@ -57,7 +59,7 @@ const makeTableExist = (tableName: string, createTableSQL: string, fillTableSQL?
 			//just in case we need again
 			database.exec(createTableSQL);
 
-			if (fillTableSQL) {
+			if (!ISPRODUCTION && fillTableSQL) {
 				console.log(`Adding dummy data to ${tableName}.`);
 				//inserting dummy data
 				database.exec(fillTableSQL);
