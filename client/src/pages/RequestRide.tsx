@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { GoogleMap, useJsApiLoader, DirectionsRenderer, Autocomplete, Libraries, Marker } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, DirectionsRenderer, Autocomplete, Libraries, Marker, MarkerF } from '@react-google-maps/api';
 import '../styles/RequestRide.css';
 import PageTitle from '../components/PageTitle/PageTitle';
 import { FaMapMarkerAlt } from "react-icons/fa";
@@ -270,6 +270,14 @@ function RequestRide({ riderid }: RequestRideProps) {
                                         <Autocomplete
                                             onLoad={(autocomplete) => (originAutocomplete.current = autocomplete)}
                                             onPlaceChanged={handleOriginPlaceChanged}
+                                            options={{
+                                                types: ['establishment'],
+                                                strictBounds: true,
+                                                bounds: new window.google.maps.LatLngBounds(
+                                                    new window.google.maps.LatLng(31.332177, -114.818268), // Southwest corner of Arizona
+                                                    new window.google.maps.LatLng(37.00426, -109.045223) // Northeast corner of Arizona
+                                                )
+                                            }}
                                         >
                                             <input
                                                 type="text"
@@ -331,6 +339,14 @@ function RequestRide({ riderid }: RequestRideProps) {
                                         <Autocomplete
                                             onLoad={(autocomplete) => (destinationAutocomplete.current = autocomplete)}
                                             onPlaceChanged={handleDestinationPlaceChanged}
+                                            options={{
+                                                types: ['establishment'],
+                                                strictBounds: true,
+                                                bounds: new window.google.maps.LatLngBounds(
+                                                    new window.google.maps.LatLng(31.332177, -114.818268), // Southwest corner of Arizona
+                                                    new window.google.maps.LatLng(37.00426, -109.045223) // Northeast corner of Arizona
+                                                )
+                                            }}
                                         >
                                             <input
                                                 type="text"
@@ -402,7 +418,7 @@ function RequestRide({ riderid }: RequestRideProps) {
                             center={currentPosition}
                             options={{ streetViewControl: false }}
                         >
-                            <Marker
+                            <MarkerF
                                 position={currentPosition}
                                 icon={{
                                     url: CurrentLocationMarker,
