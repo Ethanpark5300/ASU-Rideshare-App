@@ -334,7 +334,7 @@ app.post("/resend_verification", async (req: Request, res: Response) => {
 });
 
 /**
- * @param req.bbody.register_ID verify string inputted by user
+ * @param req.body.register_ID verify string inputted by user
  * @returns registrationSuccess:bool if the operation succeeded, message:string|undefined error message if one occurred
  */
 app.post("/registration_verification", (req: Request, res: Response) => {
@@ -680,7 +680,7 @@ app.get("/check-driver-favorite-status", async (req: Request, res: Response) => 
 	
 	let getCurrentDriverFavoriteStatus = await db.all(`SELECT status FROM favorites WHERE rider_id = '${riderid}' AND driver_id = '${latestDriverID}'`);
 	
-	if (getCurrentDriverFavoriteStatus.length <= 0) {
+	if (getCurrentDriverFavoriteStatus.Status === undefined) {
 		favoriteStatus = "Omitted";
 	} else {
 		favoriteStatus = getCurrentDriverFavoriteStatus[getCurrentDriverFavoriteStatus.length-1].Status;
@@ -1164,7 +1164,7 @@ app.get("/check-driver-accepted-status", async (req: Request, res: Response) => 
 	let riderid = req.query.riderid;
 
 	let checkDriverStatus = await db.all(`SELECT status FROM rides WHERE rider_id = '${riderid}'`);
-	if(!checkDriverStatus) return;
+	if(checkDriverStatus.Status === undefined) return;
 
 	let driverAccepted = checkDriverStatus[checkDriverStatus.length - 1].Status;
 	
@@ -1211,7 +1211,7 @@ app.get("/check-if-driver-arrived", async (req: Request, res: Response) => {
 	let riderid = req.query.riderid;
 
 	let driverArrivedStatus = await db.all(`SELECT status FROM rides WHERE rider_id='${riderid}'`);
-	if(!driverArrivedStatus) return;
+	if(driverArrivedStatus.Status === undefined) return;
 
 	let setDriverArrivedStatus = driverArrivedStatus[driverArrivedStatus.length - 1].Status;
 
@@ -1230,7 +1230,7 @@ app.get("/check-if-driver-started-ride", async (req: Request, res: Response) => 
 	let riderid = req.query.riderid;
 
 	let driverStartedStatus = await db.all(`SELECT status FROM rides WHERE rider_id = '${riderid}'`);
-	if(!driverStartedStatus) return;
+	if (driverStartedStatus.Status === undefined) return;
 
 	let setDriverStartedStatus = driverStartedStatus[driverStartedStatus.length-1].Status;
 
@@ -1247,12 +1247,12 @@ app.get("/check-if-driver-started-ride", async (req: Request, res: Response) => 
 app.get("/check-if-ride-ended", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let userid = req.query.userid;
-	let userType = req.query.usertype;
+	let userType = await db.get(`SELECT Type_User FROM user_info WHERE email = '${userid}'`);
 
 	/** Return latest ride status from rider */
-	if(userType === "1") {
+	if (userType.Type_User === "1") {
 		let riderRideStatus = await db.all(`SELECT status FROM rides WHERE rider_id = '${userid}'`);
-		if (!riderRideStatus) return;
+		if (riderRideStatus.Status === undefined) return;
 
 		let latestRiderRideStatus = riderRideStatus[riderRideStatus.length-1].Status;
 		
@@ -1262,7 +1262,7 @@ app.get("/check-if-ride-ended", async (req: Request, res: Response) => {
 	} 
 	else { /** Return latest ride status from driver */
 		let driverRideStatus = await db.all(`SELECT status FROM rides WHERE driver_id = '${userid}'`);
-		if (!driverRideStatus) return;
+		if (driverRideStatus.Status === undefined) return;
 
 		let latestDriverRideStatus = driverRideStatus[driverRideStatus.length - 1].Status;
 
@@ -1346,7 +1346,7 @@ app.get("/get-rider-payment-status", async (req: Request, res: Response) => {
 	let driverid = req.query.driverid;
 
 	let ridePaymentStatus = await db.all(`SELECT status FROM rides WHERE driver_id = '${driverid}'`);
-	if(!ridePaymentStatus) return;
+	if(ridePaymentStatus.Status === undefined) return;
 
 	let currentRideStatus = ridePaymentStatus[ridePaymentStatus.length - 1].Status;
 
@@ -1415,7 +1415,7 @@ app.get("/check-driver-cancellation-status", async (req: Request, res: Response)
 	let riderid = req.query.riderid;
 
 	let cancellationStatus = await db.all(`SELECT status FROM rides WHERE rider_id='${riderid}'`);
-	if(!cancellationStatus) return;
+	if(cancellationStatus.Status === undefined) return;
 
 	let setCheckCancellationStatus = cancellationStatus[cancellationStatus.length - 1].Status;
 
@@ -1434,7 +1434,7 @@ app.get("/check-rider-cancellation-status", async (req: Request, res: Response) 
 	let driverid = req.query.driverid;
 
 	let cancellationStatus = await db.all(`SELECT status FROM rides WHERE driver_id='${driverid}'`);
-	if(!cancellationStatus) return;
+	if(cancellationStatus.Status === undefined) return;
 
 	let setCheckCancellationStatus = cancellationStatus[cancellationStatus.length - 1].Status;
 

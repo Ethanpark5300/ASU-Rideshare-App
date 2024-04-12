@@ -263,6 +263,7 @@ function RequestRide({ riderid }: RequestRideProps) {
                     <header><h1>Request Ride</h1></header>
                     {isLoaded && (
                         <>
+                            {/* Pick-up location input */}
                             <div className="origin-container">
                                 <div className="input-container">
                                     <label htmlFor="origin" className='rr-label'>Pick-Up Location</label>
@@ -300,6 +301,8 @@ function RequestRide({ riderid }: RequestRideProps) {
                                         />
                                     )}
                                 </div>
+
+                                {/* Current location button */}
                                 <div className="current-location-tooltip">
                                     <button
                                         className='current-location-btn'
@@ -309,6 +312,8 @@ function RequestRide({ riderid }: RequestRideProps) {
                                     <span className='current-location-tooltip-text'>Use Current Location</span>
                                 </div>
                             </div>
+
+                            {/* Pick-up search radio buttons */}
                             <div className="search-filter-container">
                                 <div className="normal-search-container">
                                     <input
@@ -332,6 +337,7 @@ function RequestRide({ riderid }: RequestRideProps) {
                                 </div>
                             </div>
 
+                            {/* Drop-off location input */}
                             <div className="destination-container">
                                 <div className="input-container">
                                     <label htmlFor="destination" className='rr-label'>Drop-Off Location</label>
@@ -372,6 +378,8 @@ function RequestRide({ riderid }: RequestRideProps) {
                                     )}
                                 </div>
                             </div>
+
+                            {/* Drop-off search radio buttons */}
                             <div className={`search-filter-container ${searchDestinationFilter === 'building' ? 'search-filter-margin' : ''}`}>
                                 <div className="normal-search-container">
                                     <input
@@ -395,11 +403,14 @@ function RequestRide({ riderid }: RequestRideProps) {
                                 </div>
                             </div>
 
+                            {/* Submit, preview, and clear buttons */}
                             <div className="request-btns-container">
                                 <button className='request-btn' onClick={handleSubmit}>Submit</button>
                                 <button className='preview-btn' onClick={handlePreview}>Preview</button>
                                 <button className='clear-btn' onClick={handleClear}>Clear</button>
                             </div>
+
+                            {/* Preview output */}
                             {distance && duration && (
                                 <div className='request-results-container'>
                                     <p><b>Ride Cost:</b> ${distance}</p>
@@ -411,50 +422,48 @@ function RequestRide({ riderid }: RequestRideProps) {
                     )}
                 </aside>
                 {isLoaded && (
-                    <div className="map-container">
-                        <GoogleMap
-                            mapContainerStyle={{ height: '100%', width: '100%' }}
-                            zoom={19}
-                            center={currentPosition}
-                            options={{ streetViewControl: false }}
-                        >
-                            <MarkerF
-                                position={currentPosition}
-                                icon={{
-                                    url: CurrentLocationMarker,
-                                    scaledSize: new window.google.maps.Size(25, 25),
-                                }}
-                            />
-                            {directions && (
-                                <>
-                                    <Marker
-                                        position={pickupCoordinates}
-                                        icon={{
-                                            url: PickupLocationMarker,
-                                            scaledSize: new window.google.maps.Size(30, 40),
-                                        }}
-                                    />
-                                    <Marker
-                                        position={dropoffCoordinates}
-                                        icon={{
-                                            url: DropoffLocationMarker,
-                                            scaledSize: new window.google.maps.Size(30, 40),
-                                        }}
-                                    />
-                                    <DirectionsRenderer
-                                        directions={directions}
-                                        options={{
-                                            suppressMarkers: true,
-                                            polylineOptions: {
-                                                strokeColor: '#8C1D40',
-                                                strokeWeight: 5,
-                                            },
-                                        }}
-                                    />
-                                </>
-                            )}
-                        </GoogleMap>
-                    </div>
+                    <GoogleMap
+                        mapContainerStyle={{ height: '100vh', width: '100vw' }}
+                        zoom={19}
+                        center={currentPosition}
+                        options={{ disableDefaultUI: true }}
+                    >
+                        <MarkerF
+                            position={currentPosition}
+                            icon={{
+                                url: CurrentLocationMarker,
+                                scaledSize: new window.google.maps.Size(25, 25),
+                            }}
+                        />
+                        {directions && (
+                            <>
+                                <Marker
+                                    position={pickupCoordinates}
+                                    icon={{
+                                        url: PickupLocationMarker,
+                                        scaledSize: new window.google.maps.Size(30, 40),
+                                    }}
+                                />
+                                <Marker
+                                    position={dropoffCoordinates}
+                                    icon={{
+                                        url: DropoffLocationMarker,
+                                        scaledSize: new window.google.maps.Size(30, 40),
+                                    }}
+                                />
+                                <DirectionsRenderer
+                                    directions={directions}
+                                    options={{
+                                        suppressMarkers: true,
+                                        polylineOptions: {
+                                            strokeColor: '#8C1D40',
+                                            strokeWeight: 5,
+                                        },
+                                    }}
+                                />
+                            </>
+                        )}
+                    </GoogleMap>
                 )}
             </main>
         </PageTitle>

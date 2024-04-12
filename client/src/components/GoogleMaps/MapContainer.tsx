@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useJsApiLoader, GoogleMap, MarkerF } from '@react-google-maps/api';
+import { useJsApiLoader, GoogleMap, MarkerF, Libraries } from '@react-google-maps/api';
 import CurrentLocationMarker from './CurrentLocationMarker.svg';
-import "./GoogleMaps.css"
+const libraries: Libraries = ['places'];
 
 function MapContainer() {
-    const { isLoaded } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
+    const { isLoaded } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY, libraries: libraries });
     const [currentPosition, setCurrentPosition] = useState<{ lat: number, lng: number }>(null);
 
     useEffect(() => {
@@ -24,13 +24,13 @@ function MapContainer() {
     }, []);
 
     return (
-        <div className="live-tracking-maps-container">
+        <>
             {isLoaded && (
                 <GoogleMap
-                    mapContainerStyle={{ width: '100%', height: '100%' }}
+                    mapContainerStyle={{ width: '100vw', height: '100vh' }}
                     zoom={19}
                     center={currentPosition}
-                    options={{ streetViewControl: false }}
+                    options={{ disableDefaultUI: true }}
                 >
                     <MarkerF
                         position={currentPosition}
@@ -41,7 +41,7 @@ function MapContainer() {
                     />
                 </GoogleMap>
             )}
-        </div>
+        </>
     );
 };
 

@@ -1,17 +1,18 @@
 import { useCallback, useEffect, useState } from 'react';
-import { GoogleMap, useJsApiLoader, DirectionsRenderer, MarkerF } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, DirectionsRenderer, MarkerF, Libraries } from '@react-google-maps/api';
 import PageTitle from '../components/PageTitle/PageTitle';
 import "../styles/PickupRider.css";
 import { useNavigate } from 'react-router-dom';
 import CurrentLocationMarker from '../components/GoogleMaps/CurrentLocationMarker.svg';
 import PickupLocationMarker from '../components/GoogleMaps/PickupLocationMarker.svg';
+const libraries: Libraries = ['places'];
 
 interface PickupRiderProps {
     driverid: string;
 }
 
 function PickupRider({ driverid }: PickupRiderProps) {
-    const { isLoaded } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
+    const { isLoaded } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY, libraries: libraries });
     const [currentLocation, setCurrentLocation] = useState<{ lat: number, lng: number }>(null);
     const [pickupAddress, setPickupAddress] = useState<string>();
     const [pickupLocation, setPickupLocation] = useState<{ lat: number, lng: number }>(null);
@@ -180,44 +181,42 @@ function PickupRider({ driverid }: PickupRiderProps) {
     return (
         <PageTitle title='Pickup Rider'>
             <main id='pickup-rider'>
-                <div className="map-container">
-                    {isLoaded && (
-                        <GoogleMap
-                            mapContainerStyle={{ width: '100%', height: '100%' }}
-                            center={currentLocation}
-                            zoom={19}
-                            options={{ streetViewControl: false }}
-                        >
-                            <MarkerF
-                                position={currentLocation}
-                                icon={{
-                                    url: CurrentLocationMarker,
-                                    scaledSize: new window.google.maps.Size(25, 25),
+                {isLoaded && (
+                    <GoogleMap
+                        mapContainerStyle={{ width: '100vw', height: '100vh' }}
+                        center={currentLocation}
+                        zoom={19}
+                        options={{ disableDefaultUI: true }}
+                    >
+                        <MarkerF
+                            position={currentLocation}
+                            icon={{
+                                url: CurrentLocationMarker,
+                                scaledSize: new window.google.maps.Size(25, 25),
+                            }}
+                        />
+                        <MarkerF
+                            position={pickupLocation}
+                            icon={{
+                                url: PickupLocationMarker,
+                                scaledSize: new window.google.maps.Size(30, 40),
+                            }}
+                        />
+                        {showDirections && (
+                            <DirectionsRenderer
+                                key={directionsResponse.uniqueKey}
+                                directions={directionsResponse.response}
+                                options={{
+                                    suppressMarkers: true,
+                                    polylineOptions: {
+                                        strokeColor: '#8C1D40',
+                                        strokeWeight: 5,
+                                    },
                                 }}
                             />
-                            <MarkerF
-                                position={pickupLocation}
-                                icon={{
-                                    url: PickupLocationMarker,
-                                    scaledSize: new window.google.maps.Size(30, 40),
-                                }}
-                            />
-                            {showDirections && (
-                                <DirectionsRenderer
-                                    key={directionsResponse.uniqueKey}
-                                    directions={directionsResponse.response}
-                                    options={{
-                                        suppressMarkers: true,
-                                        polylineOptions: {
-                                            strokeColor: '#8C1D40',
-                                            strokeWeight: 5,
-                                        },
-                                    }}
-                                />
-                            )}
-                        </GoogleMap>
-                    )}
-                </div>
+                        )}
+                    </GoogleMap>
+                )}
                 <aside className="pickup-rider-info-container">
                     {(rideInfo) && (
                         <>

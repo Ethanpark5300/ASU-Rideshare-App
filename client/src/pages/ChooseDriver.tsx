@@ -95,15 +95,13 @@ function ChooseDriver() {
         <PageTitle title="Choose Driver">
             <main id="choose-driver">
                 <aside className="choosedriver-panel">
-                    <header>
-                        <h1>Choose Driver</h1>
-                    </header>
-
+                    <header><h1>Choose Driver</h1></header>
+                    
                     {/* List of available riders favorite drivers */}
                     <section id="available-favorite-drivers-container">
                         <h2>Available Favorite Drivers</h2>
                         {favoriteDriversAvailableList.length > 0 ? (
-                            <div>
+                            <>
                                 {favoriteDriversAvailableList.map((driver) => (
                                     <div className="driver-item" key={driver.Email}>
                                         <p>{driver.First_Name} {driver.Last_Name}</p>
@@ -118,7 +116,7 @@ function ChooseDriver() {
                                         )}
                                     </div>
                                 ))}
-                            </div>
+                            </>
                         ) : (
                             <p className="none-error">No favorite drivers are available.</p>
                         )}
@@ -128,7 +126,7 @@ function ChooseDriver() {
                     <section id="other-available-drivers-container">
                         <h2>Available Drivers</h2>
                         {driversAvailableList.length > 0 ? (
-                            <div>
+                            <>
                                 {driversAvailableList.map((driver) => (
                                     <div className="driver-item" key={driver.Email}>
                                         <p>{driver.First_Name} {driver.Last_Name}</p>
@@ -143,7 +141,7 @@ function ChooseDriver() {
                                         )}
                                     </div>
                                 ))}
-                            </div>
+                            </>
                         ) : (
                             <p className="none-error">No drivers are available.</p>
                         )}

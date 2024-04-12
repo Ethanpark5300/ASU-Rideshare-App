@@ -1,17 +1,18 @@
 import { useCallback, useEffect, useState } from 'react';
-import { GoogleMap, useJsApiLoader, DirectionsRenderer, MarkerF } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, DirectionsRenderer, MarkerF, Libraries } from '@react-google-maps/api';
 import PageTitle from '../components/PageTitle/PageTitle';
 import "../styles/RideinProgress.css";
 import { useNavigate } from 'react-router-dom';
 import CurrentLocationMarker from '../components/GoogleMaps/CurrentLocationMarker.svg';
 import DropoffLocationMarker from '../components/GoogleMaps/DropoffLocationMarker.svg';
+const libraries: Libraries = ['places'];
 
 interface RideInProgressProps {
     userid: string;
 }
 
 function RideinProgress({ userid }: RideInProgressProps) {
-    const { isLoaded } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
+    const { isLoaded } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY, libraries: libraries });
     const [userType, setUserType] = useState<number>();
     const [currentLocation, setCurrentLocation] = useState<{ lat: number, lng: number }>(null);
     const [dropoffAddress, setDropoffAddress] = useState<string>();
@@ -168,44 +169,42 @@ function RideinProgress({ userid }: RideInProgressProps) {
     return (
         <PageTitle title='Ride in Progress'>
             <main id='ride-in-progress'>
-                <div className="map-container">
-                    {isLoaded && (
-                        <GoogleMap
-                            mapContainerStyle={{ width: '100%', height: '100%' }}
-                            center={currentLocation}
-                            zoom={19}
-                            options={{ streetViewControl: false }}
-                        >
-                            <MarkerF
-                                position={currentLocation}
-                                icon={{
-                                    url: CurrentLocationMarker,
-                                    scaledSize: new window.google.maps.Size(25, 25),
+                {isLoaded && (
+                    <GoogleMap
+                        mapContainerStyle={{ width: '100vw', height: '100vh' }}
+                        center={currentLocation}
+                        zoom={19}
+                        options={{ disableDefaultUI: true }}
+                    >
+                        <MarkerF
+                            position={currentLocation}
+                            icon={{
+                                url: CurrentLocationMarker,
+                                scaledSize: new window.google.maps.Size(25, 25),
+                            }}
+                        />
+                        <MarkerF
+                            position={dropoffLocation}
+                            icon={{
+                                url: DropoffLocationMarker,
+                                scaledSize: new window.google.maps.Size(30, 40),
+                            }}
+                        />
+                        {showDirections && (
+                            <DirectionsRenderer
+                                key={directionsResponse.uniqueKey}
+                                directions={directionsResponse.response}
+                                options={{
+                                    suppressMarkers: true,
+                                    polylineOptions: {
+                                        strokeColor: '#8C1D40',
+                                        strokeWeight: 5,
+                                    },
                                 }}
                             />
-                            <MarkerF
-                                position={dropoffLocation}
-                                icon={{
-                                    url: DropoffLocationMarker,
-                                    scaledSize: new window.google.maps.Size(30, 40),
-                                }}
-                            />
-                            {showDirections && (
-                                <DirectionsRenderer
-                                    key={directionsResponse.uniqueKey}
-                                    directions={directionsResponse.response}
-                                    options={{
-                                        suppressMarkers: true,
-                                        polylineOptions: {
-                                            strokeColor: '#8C1D40',
-                                            strokeWeight: 5,
-                                        },
-                                    }}
-                                />
-                            )}
-                        </GoogleMap>
-                    )}
-                </div>
+                        )}
+                    </GoogleMap>
+                )}
 
                 <aside className="ride-in-progress-container">
                     {/** @returns Rider information */}

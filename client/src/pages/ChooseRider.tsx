@@ -44,9 +44,7 @@ function ChooseRider() {
     return (
         <PageTitle title="Choose Rider">
             <main id="choose-rider">
-                <header>
-                    <h1>Choose Rider</h1>
-                </header>
+                <header><h1>Choose Rider</h1></header>
                 <section className="pending-rider-requests-container">
                     <h2>Pending Rider Requests</h2>
                     {pendingRequestsList.length > 0 ? (

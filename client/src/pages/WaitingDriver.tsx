@@ -4,14 +4,15 @@ import { useCallback, useEffect, useState } from 'react';
 import { useAppSelector } from '../store/hooks';
 import CancellationTimer from '../components/Timer/Timer';
 import { useNavigate } from 'react-router-dom';
-import { GoogleMap, MarkerF, useJsApiLoader } from '@react-google-maps/api';
+import { GoogleMap, Libraries, MarkerF, useJsApiLoader } from '@react-google-maps/api';
 import CurrentLocationMarker from '../components/GoogleMaps/CurrentLocationMarker.svg';
 import PickupLocationMarker from '../components/GoogleMaps/PickupLocationMarker.svg';
+const libraries: Libraries = ['places'];
 
 function WaitingDriver() {
     const account = useAppSelector((state) => state.account);
     const navigate = useNavigate();
-    const { isLoaded } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY });
+    const { isLoaded } = useJsApiLoader({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY, libraries: libraries });
     const [currentLocation, setCurrentLocation] = useState<{ lat: number, lng: number }>(null);
     const [pickupAddress, setPickupAddress] = useState<string>();
     const [pickupLocation, setPickupLocation] = useState<{ lat: number, lng: number }>(null);
@@ -174,31 +175,29 @@ function WaitingDriver() {
     return (
         <PageTitle title="Waiting Driver">
             <main id="waiting">
-                <div className="map-container">
-                    {isLoaded && (
-                        <GoogleMap
-                            mapContainerStyle={{ width: '100%', height: '100%' }}
-                            center={currentLocation}
-                            zoom={19}
-                            options={{ streetViewControl: false }}
-                        >
-                            <MarkerF
-                                position={currentLocation}
-                                icon={{
-                                    url: CurrentLocationMarker,
-                                    scaledSize: new window.google.maps.Size(25, 25),
-                                }}
-                            />
-                            <MarkerF
-                                position={pickupLocation}
-                                icon={{
-                                    url: PickupLocationMarker,
-                                    scaledSize: new window.google.maps.Size(30, 40),
-                                }}
-                            />
-                        </GoogleMap>
-                    )}
-                </div>
+                {isLoaded && (
+                    <GoogleMap
+                        mapContainerStyle={{ height: '100vh', width: '100vw'}}
+                        center={currentLocation}
+                        zoom={19}
+                        options={{ disableDefaultUI: true }}
+                    >
+                        <MarkerF
+                            position={currentLocation}
+                            icon={{
+                                url: CurrentLocationMarker,
+                                scaledSize: new window.google.maps.Size(25, 25),
+                            }}
+                        />
+                        <MarkerF
+                            position={pickupLocation}
+                            icon={{
+                                url: PickupLocationMarker,
+                                scaledSize: new window.google.maps.Size(30, 40),
+                            }}
+                        />
+                    </GoogleMap>
+                )}
                 <div className="waiting-container">
                     {(riderRideInfo) && (
                         <>
