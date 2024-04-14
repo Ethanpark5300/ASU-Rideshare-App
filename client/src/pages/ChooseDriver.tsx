@@ -58,14 +58,24 @@ function ChooseDriver() {
         }
     };
 
-    const cancelRideRequest = useCallback(async () => {
+    const removeRideEntry = async () => {
         try {
-            await fetch(`/cancel-request?riderid=${account?.account?.email}`);
-            navigate("/Payment");
+            await fetch(`/cancel-request`, {
+                method: "POST",
+                headers: { "Content-type": "application/json" },
+                body: JSON.stringify({
+                    riderid: account?.account?.email,
+                }),
+            });
         } catch (error) {
-            console.error("Error cancelling ride request:", error);
+            console.error("Error cancelling request:", error);
         }
-    }, [account?.account?.email, navigate]);
+    };
+
+    function cancelRideRequest() { 
+        removeRideEntry();
+        navigate("/");
+    }
 
     const checkRideStatus = useCallback(async () => {
         try {
@@ -149,8 +159,8 @@ function ChooseDriver() {
 
                     <section className="choose-driver-btns-container">
                         <button className="btn check-status-btn" onClick={checkRideStatus}>Check Status</button>
-                        <button className="btn refresh-list-btn" onClick={refreshDriversList}>Refresh</button>
-                        <button className="btn cancel-ride-btn" onClick={cancelRideRequest}>Cancel</button>
+                        <button className="btn refresh-list-btn" onClick={refreshDriversList}>Refresh List</button>
+                        <button className="btn cancel-ride-btn" onClick={cancelRideRequest}>Cancel Ride</button>
                     </section>
                 </aside>
                 <LiveTracking />

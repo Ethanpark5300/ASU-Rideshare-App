@@ -16,7 +16,7 @@ const app = express();
 const PORT = process.env.PORT || 3001; //process.env is set outside
 const JWT_SECRET = process.env.JWT_SECRET || "DevelopmentSecretKey";
 const COOKIEPARSER_SECRET = process.env.COOKIEPARSER_SECRET || 'p3ufucaj55bi2kiy6lsktnm23z4c18xy';
-const ISPRODUCTION = false; //PRODUCTION=true to set it to true 
+const ISPRODUCTION = process.env.PRODUCTION || false; //PRODUCTION=true to set it to true 
 
 
 let message: string | undefined;
@@ -70,12 +70,12 @@ const makeTableExist = (tableName: string, createTableSQL: string, fillTableSQL?
 }
 
 makeTableExist("USER_INFO", fs.readFileSync(__dirname + '/Tables/CREATE_USERINFO_TABLE.sql').toString(), fs.readFileSync(__dirname + '/Tables/INSERT_USERINFO_TABLE.sql').toString());
-makeTableExist("BLOCKED", fs.readFileSync(__dirname + '/Tables/CREATE_BLOCKED_TABLE.sql').toString());
+makeTableExist("BLOCKED", fs.readFileSync(__dirname + '/Tables/CREATE_BLOCKED_TABLE.sql').toString(), fs.readFileSync(__dirname + '/Tables/INSERT_BLOCKED_TABLE.sql').toString());
 makeTableExist("FAVORITES", fs.readFileSync(__dirname + '/Tables/CREATE_FAVORITES_TABLE.sql').toString(), fs.readFileSync(__dirname + '/Tables/INSERT_FAVORITES_TABLE.sql').toString());
 makeTableExist("PAYMENTS", fs.readFileSync(__dirname + '/Tables/CREATE_PAYMENTS_TABLE.sql').toString(), fs.readFileSync(__dirname  + '/Tables/INSERT_PAYMENTS_TABLE.sql').toString());
 makeTableExist("RATINGS", fs.readFileSync(__dirname + '/Tables/CREATE_RATINGS_TABLE.sql').toString(), fs.readFileSync(__dirname + '/Tables/INSERT_RATINGS_TABLE.sql').toString());
 makeTableExist("REPORTS", fs.readFileSync(__dirname + '/Tables/CREATE_REPORTS_TABLE.sql').toString(), fs.readFileSync(__dirname + '/Tables/INSERT_REPORTS_TABLE.sql').toString());
-makeTableExist("PENDING_DRIVERS", fs.readFileSync(__dirname + '/Tables/CREATE_PENDINGDRIVERS_TABLE.sql').toString());
+makeTableExist("PENDING_DRIVERS", fs.readFileSync(__dirname + '/Tables/CREATE_PENDINGDRIVERS_TABLE.sql').toString(), fs.readFileSync(__dirname + '/Tables/INSERT_PENDINGDRIVERS_TABLE.sql').toString());
 makeTableExist("RIDES", fs.readFileSync(__dirname + '/Tables/CREATE_RIDES_TABLE.sql').toString(), fs.readFileSync(__dirname + '/Tables/INSERT_RIDES_TABLE.sql').toString());
 makeTableExist("REGISTER", fs.readFileSync(__dirname + '/Tables/CREATE_REGISTER_TABLE.sql').toString()); //No fake data neccessary
 
@@ -1069,14 +1069,14 @@ app.post("/ride-queue", async (req: Request, res: Response) => {
 
 /** 
  * Riders cancelling from choose drivers page 
- * @param req.query.riderid rider email
+ * @param req.body.riderid rider email
  */
-app.get("/cancel-request", async (req: Request, res: Response) => {
+app.post("/cancel-request", async (req: Request, res: Response) => {
 	let db = await dbPromise;
-	let rider_id = req.query.riderid;
+	let riderid = req.body.riderid;
 
-	await db.run(`DELETE FROM RIDES WHERE Rider_ID = '${rider_id}' AND Status = "QUEUED"`);
-	await db.run(`DELETE FROM PENDING_DRIVERS WHERE Rider_ID = '${rider_id}'`);
+	await db.run(`DELETE FROM RIDES WHERE Rider_ID = '${riderid}' AND Status = "QUEUED"`);
+	await db.run(`DELETE FROM PENDING_DRIVERS WHERE Rider_ID = '${riderid}'`);
 });
 
 /** 
@@ -1180,7 +1180,7 @@ app.get("/get-ride-payment-information", async (req: Request, res: Response) => 
 	let db = await dbPromise;
 	let riderid = req.query.riderid;
 
-	let ridePaymentInformation = await db.get(`SELECT rides.driver_id, user_info.first_name, user_info.last_name, user_info.pay_pal, rides.ride_cost FROM user_info INNER JOIN rides WHERE rider_id = '${riderid}' AND status = "PAYMENT"`);
+	let ridePaymentInformation = await db.get(`SELECT rides.driver_id, user_info.first_name, user_info.last_name, user_info.pay_pal, rides.ride_cost FROM user_info INNER JOIN rides ON rides.driver_id = user_info.email WHERE rider_id = '${riderid}' AND status = "PAYMENT"`);
 	if(!ridePaymentInformation) return;
 
 	res.json({

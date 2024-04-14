@@ -202,7 +202,7 @@ function WaitingDriver() {
                     {(riderRideInfo) && (
                         <>
                             <h1>Waiting for Driver</h1>
-                            <CancellationTimer initialMinutes={0} initialSeconds={15} onTimerEnd={handleTimerEnd} />
+                            <CancellationTimer initialMinutes={3} initialSeconds={0} onTimerEnd={handleTimerEnd} />
                             <p><b>Driver Name:</b> {riderRideInfo.First_Name} {riderRideInfo.Last_Name}</p>
                             <p><b>Pick-up Location:</b> {riderRideInfo.Pickup_Location}</p>
                             <p><b>Drop-off Location:</b> {riderRideInfo.Dropoff_Location}</p>
