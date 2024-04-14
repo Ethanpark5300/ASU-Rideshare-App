@@ -31,7 +31,6 @@ function WaitingRider() {
             };
             getRideInformation();
         }, delay);
-
         return () => clearTimeout(timerId);
     }, [account?.account?.email]);
 
@@ -52,16 +51,15 @@ function WaitingRider() {
             navigate("/PickupRider");
         }, 1000);
         return () => clearInterval(interval);
-        // eslint-disable-next-line
-    }, [navigate, paymentStatus]);
+    }, [navigate, paymentStatus, checkPaymentStatus]);
 
     const handleTimerEnd = () => {
         setPassedCancellation(true);
     };
 
     const handleCancelRequest = () => {
-        if (!passedCancellation) return setBeforeCancellationPopup(true)
-        else setPassedCancellationPopup(true)
+        if (!passedCancellation) return setBeforeCancellationPopup(true);
+        else setPassedCancellationPopup(true);
     }
 
     const confirmCancel = async () => {

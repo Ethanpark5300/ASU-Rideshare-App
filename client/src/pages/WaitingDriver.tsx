@@ -177,7 +177,7 @@ function WaitingDriver() {
             <main id="waiting">
                 {isLoaded && (
                     <GoogleMap
-                        mapContainerStyle={{ height: '100vh', width: '100vw'}}
+                        mapContainerStyle={{ height: '100vh', width: '100vw' }}
                         center={currentLocation}
                         zoom={19}
                         options={{ disableDefaultUI: true }}

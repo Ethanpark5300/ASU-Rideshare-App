@@ -232,14 +232,13 @@ function RideinProgress({ userid }: RideInProgressProps) {
                             <p><b>Dropoff Point:</b> {driverRideInfo.Dropoff_Location} </p>
                             {(!arrivalTime) && (<p><b>Estimated Arrival Time:</b></p>)}
                             {(arrivalTime) && (<p><b>Estimated Arrival Time:</b> {arrivalTime} ({estimatedTimeArrival})</p>)}
-                            {/* {(!estimatedRemainingDistance) && (<p><b>Distance Remaining:</b></p>)} */}
-                            {/* {(estimatedRemainingDistance) && (<p><b>Distance Remaining:</b> {estimatedRemainingDistance} miles</p>)} */}
-                            {(<p><b>Distance Remaining:</b> {estimatedRemainingDistance} miles</p>)}
+                            {(estimatedRemainingDistance === undefined) && (<p><b>Distance Remaining:</b></p>)}
+                            {(estimatedRemainingDistance > 1 || estimatedRemainingDistance === 0) && (<p><b>Distance Remaining:</b> {estimatedRemainingDistance} miles</p>)}
                             <div className="ride-in-progress-btns-container">
                                 {(0 <= estimatedRemainingDistance && estimatedRemainingDistance <= 1) && (
                                     <button className='btn end-ride-btn' onClick={completeRide}>End Ride</button>
                                 )}
-                                {(estimatedRemainingDistance >= 1) && (
+                                {(estimatedRemainingDistance >= 1 || estimatedRemainingDistance === undefined) && (
                                     <button className='btn refresh-btn' onClick={calculateETA}>Refresh</button>
                                 )}
                                 <button className='btn emergency-btn'>Emergency Services</button>

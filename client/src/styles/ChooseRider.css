@@ -1,7 +1,7 @@
 #choose-rider {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 100%;
     background-color: #f1f1f1;
 }
 
@@ -91,4 +91,5 @@
     margin-top: 1rem;
     background-color: var(--brand-maroon);
     color: white;
+    margin-bottom: 4rem;
 }

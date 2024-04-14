@@ -123,7 +123,7 @@ function PickupRider({ driverid }: PickupRiderProps) {
             const data = await response.json();
             setCheckRiderCancellationStatus(data.getCancellationStatus);
         } catch (error) {
-            // console.log("Error checking driver cancellation status:", error);
+            // console.log("Error checking rider cancellation status:", error);
         }
     }, [driverid]);
 
@@ -139,8 +139,7 @@ function PickupRider({ driverid }: PickupRiderProps) {
     /** Handling when driver arrives to pick-up point */
     useEffect(() => {
         const interval = setInterval(() => {
-            if (estimatedRemainingDistance !== 0.0) return;
-            async function updateDriverArrivedStatus() {
+            if (0 <= estimatedRemainingDistance && estimatedRemainingDistance < 1) {
                 try {
                     fetch(`/driver-arrived-pickup`, {
                         method: "POST",
@@ -153,7 +152,6 @@ function PickupRider({ driverid }: PickupRiderProps) {
                     console.log("Error updating arrived ride status:", error);
                 }
             }
-            updateDriverArrivedStatus();
         }, 1000);
         return () => clearInterval(interval);
     }, [estimatedRemainingDistance, driverid]);
@@ -227,14 +225,14 @@ function PickupRider({ driverid }: PickupRiderProps) {
                             {(arrivalTime) && (<p><b>Estimated Arrival Time:</b> {arrivalTime} ({estimatedTimeArrival})</p>)}
                             <p><b>Distance Remaining:</b> {estimatedRemainingDistance} miles</p>
                             <div className="pickup-rider-btns-container">
-                                {(estimatedRemainingDistance === 0) && (
+                                {(0 <= estimatedRemainingDistance && estimatedRemainingDistance <= 1) && (
                                     <>
                                         <button className='btn start-ride-btn' onClick={handleStartRide}>Start Ride</button>
                                         <button className='btn refresh-btn'>Contact Rider</button>
                                         <button className='btn emergency-btn'>Emergency Services</button>
                                     </>
                                 )}
-                                {(estimatedRemainingDistance !== 0) && (
+                                {(estimatedRemainingDistance >= 1 || estimatedRemainingDistance === undefined) && (
                                     <>
                                         <button className='btn start-ride-btn'>Contact Rider</button>
                                         <button className='btn emergency-btn'>Emergency Services</button>

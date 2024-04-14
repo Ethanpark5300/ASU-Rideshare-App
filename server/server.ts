@@ -16,7 +16,7 @@ const app = express();
 const PORT = process.env.PORT || 3001; //process.env is set outside
 const JWT_SECRET = process.env.JWT_SECRET || "DevelopmentSecretKey";
 const COOKIEPARSER_SECRET = process.env.COOKIEPARSER_SECRET || 'p3ufucaj55bi2kiy6lsktnm23z4c18xy';
-const ISPRODUCTION = process.env.PRODUCTION || false; //PRODUCTION=true to set it to true 
+const ISPRODUCTION = false; //PRODUCTION=true to set it to true 
 
 
 let message: string | undefined;
@@ -70,12 +70,12 @@ const makeTableExist = (tableName: string, createTableSQL: string, fillTableSQL?
 }
 
 makeTableExist("USER_INFO", fs.readFileSync(__dirname + '/Tables/CREATE_USERINFO_TABLE.sql').toString(), fs.readFileSync(__dirname + '/Tables/INSERT_USERINFO_TABLE.sql').toString());
-makeTableExist("BLOCKED", fs.readFileSync(__dirname + '/Tables/CREATE_BLOCKED_TABLE.sql').toString(), fs.readFileSync(__dirname + '/Tables/INSERT_BLOCKED_TABLE.sql').toString());
+makeTableExist("BLOCKED", fs.readFileSync(__dirname + '/Tables/CREATE_BLOCKED_TABLE.sql').toString());
 makeTableExist("FAVORITES", fs.readFileSync(__dirname + '/Tables/CREATE_FAVORITES_TABLE.sql').toString(), fs.readFileSync(__dirname + '/Tables/INSERT_FAVORITES_TABLE.sql').toString());
 makeTableExist("PAYMENTS", fs.readFileSync(__dirname + '/Tables/CREATE_PAYMENTS_TABLE.sql').toString(), fs.readFileSync(__dirname  + '/Tables/INSERT_PAYMENTS_TABLE.sql').toString());
 makeTableExist("RATINGS", fs.readFileSync(__dirname + '/Tables/CREATE_RATINGS_TABLE.sql').toString(), fs.readFileSync(__dirname + '/Tables/INSERT_RATINGS_TABLE.sql').toString());
 makeTableExist("REPORTS", fs.readFileSync(__dirname + '/Tables/CREATE_REPORTS_TABLE.sql').toString(), fs.readFileSync(__dirname + '/Tables/INSERT_REPORTS_TABLE.sql').toString());
-makeTableExist("PENDING_DRIVERS", fs.readFileSync(__dirname + '/Tables/CREATE_PENDINGDRIVERS_TABLE.sql').toString(), fs.readFileSync(__dirname + '/Tables/INSERT_PENDINGDRIVERS_TABLE.sql').toString());
+makeTableExist("PENDING_DRIVERS", fs.readFileSync(__dirname + '/Tables/CREATE_PENDINGDRIVERS_TABLE.sql').toString());
 makeTableExist("RIDES", fs.readFileSync(__dirname + '/Tables/CREATE_RIDES_TABLE.sql').toString(), fs.readFileSync(__dirname + '/Tables/INSERT_RIDES_TABLE.sql').toString());
 makeTableExist("REGISTER", fs.readFileSync(__dirname + '/Tables/CREATE_REGISTER_TABLE.sql').toString()); //No fake data neccessary
 
@@ -680,7 +680,7 @@ app.get("/check-driver-favorite-status", async (req: Request, res: Response) => 
 	
 	let getCurrentDriverFavoriteStatus = await db.all(`SELECT status FROM favorites WHERE rider_id = '${riderid}' AND driver_id = '${latestDriverID}'`);
 	
-	if (getCurrentDriverFavoriteStatus.Status === undefined) {
+	if (getCurrentDriverFavoriteStatus[getCurrentDriverFavoriteStatus.length - 1].Status === undefined) {
 		favoriteStatus = "Omitted";
 	} else {
 		favoriteStatus = getCurrentDriverFavoriteStatus[getCurrentDriverFavoriteStatus.length-1].Status;
@@ -1162,14 +1162,12 @@ app.post("/cancel-request-driver", async (req: Request, res: Response) => {
 app.get("/check-driver-accepted-status", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let riderid = req.query.riderid;
-
-	let checkDriverStatus = await db.all(`SELECT status FROM rides WHERE rider_id = '${riderid}'`);
-	if(checkDriverStatus.Status === undefined) return;
-
-	let driverAccepted = checkDriverStatus[checkDriverStatus.length - 1].Status;
 	
+	let checkDriverStatus = await db.all(`SELECT status FROM rides WHERE rider_id = '${riderid}'`);
+	if (checkDriverStatus[checkDriverStatus.length - 1].Status === undefined) return;
+
 	res.json({
-		recievedDriver: driverAccepted,
+		recievedDriver: checkDriverStatus[checkDriverStatus.length - 1].Status,
 	});
 });
 
@@ -1211,12 +1209,10 @@ app.get("/check-if-driver-arrived", async (req: Request, res: Response) => {
 	let riderid = req.query.riderid;
 
 	let driverArrivedStatus = await db.all(`SELECT status FROM rides WHERE rider_id='${riderid}'`);
-	if(driverArrivedStatus.Status === undefined) return;
-
-	let setDriverArrivedStatus = driverArrivedStatus[driverArrivedStatus.length - 1].Status;
+	if (driverArrivedStatus[driverArrivedStatus.length - 1].Status === undefined) return;
 
 	res.json({
-		getDriverArrivedStatus: setDriverArrivedStatus
+		getDriverArrivedStatus: driverArrivedStatus[driverArrivedStatus.length - 1].Status
 	});
 });
 
@@ -1230,12 +1226,10 @@ app.get("/check-if-driver-started-ride", async (req: Request, res: Response) => 
 	let riderid = req.query.riderid;
 
 	let driverStartedStatus = await db.all(`SELECT status FROM rides WHERE rider_id = '${riderid}'`);
-	if (driverStartedStatus.Status === undefined) return;
-
-	let setDriverStartedStatus = driverStartedStatus[driverStartedStatus.length-1].Status;
+	if (driverStartedStatus[driverStartedStatus.length - 1].Status === undefined) return;
 
 	res.json({
-		getDriverStartedStatus : setDriverStartedStatus
+		getDriverStartedStatus: driverStartedStatus[driverStartedStatus.length - 1].Status
 	});
 });
 
@@ -1248,28 +1242,27 @@ app.get("/check-if-ride-ended", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let userid = req.query.userid;
 	let userType = await db.get(`SELECT Type_User FROM user_info WHERE email = '${userid}'`);
-
+	
 	/** Return latest ride status from rider */
-	if (userType.Type_User === "1") {
+	if (userType.Type_User === 1) {
 		let riderRideStatus = await db.all(`SELECT status FROM rides WHERE rider_id = '${userid}'`);
-		if (riderRideStatus.Status === undefined) return;
+		if (riderRideStatus[riderRideStatus.length - 1].Status === undefined) return;
 
-		let latestRiderRideStatus = riderRideStatus[riderRideStatus.length-1].Status;
-		
 		res.json({
-			rideStatus: latestRiderRideStatus
+			rideStatus: riderRideStatus[riderRideStatus.length - 1].Status
 		});
 	} 
-	else { /** Return latest ride status from driver */
+	
+	/** Return latest ride status from driver */
+	else if (userType.Type_User === 2) { 
 		let driverRideStatus = await db.all(`SELECT status FROM rides WHERE driver_id = '${userid}'`);
-		if (driverRideStatus.Status === undefined) return;
-
-		let latestDriverRideStatus = driverRideStatus[driverRideStatus.length - 1].Status;
+		if (driverRideStatus[driverRideStatus.length - 1].Status === undefined) return;
 
 		res.json({
-			rideStatus: latestDriverRideStatus
+			rideStatus: driverRideStatus[driverRideStatus.length - 1].Status
 		});
 	}
+	else return;
 });
 
 /** 
@@ -1346,12 +1339,10 @@ app.get("/get-rider-payment-status", async (req: Request, res: Response) => {
 	let driverid = req.query.driverid;
 
 	let ridePaymentStatus = await db.all(`SELECT status FROM rides WHERE driver_id = '${driverid}'`);
-	if(ridePaymentStatus.Status === undefined) return;
-
-	let currentRideStatus = ridePaymentStatus[ridePaymentStatus.length - 1].Status;
+	if (ridePaymentStatus[ridePaymentStatus.length - 1].Status === undefined) return;
 
 	res.json({
-		rideStatus: currentRideStatus,
+		rideStatus: ridePaymentStatus[ridePaymentStatus.length - 1].Status,
 	});
 });
 
@@ -1370,12 +1361,12 @@ app.post("/cancel-ride", async (req: Request, res: Response) => {
 
 		/** Rider cancelling before deadline */
 		if (userType.Type_User === 1 && passedCancellation === false) {
-			await db.run(`UPDATE rides SET status = "CANCELLED(RIDER)" WHERE rider_id = '${userid}' AND status = "PAID"`);
+			await db.run(`UPDATE rides SET status = "CANCELLED(RIDER)" WHERE rider_id = '${userid}' AND status = "PAID" OR status = "WAITING(DRIVER)"`);
 		}
 
 		/** Rider cancelling after deadline */
 		else if (userType.Type_User === 1 && passedCancellation === true) {
-			await db.run(`UPDATE rides SET status = "CANCELLED(RIDER)" WHERE rider_id = '${userid}' AND status = "PAID" || status = "PAYMENT"`);
+			await db.run(`UPDATE rides SET status = "CANCELLED(RIDER)" WHERE rider_id = '${userid}' AND status = "PAID" OR status = "WAITING(DRIVER)"`);
 
 			let currentWarnings = await db.get(`SELECT warnings FROM user_info WHERE email = '${userid}'`);
 			let newWarningsCount = currentWarnings.Warnings + 1;
@@ -1385,13 +1376,13 @@ app.post("/cancel-ride", async (req: Request, res: Response) => {
 
 		/** Driver cancelling before deadline */
 		else if (userType.Type_User === 2 && passedCancellation === false) {
-			await db.run(`UPDATE rides SET status = "CANCELLED(DRIVER)" WHERE driver_id = '${userid}' AND status = "PAID" OR status = "PAYMENT"`);
+			await db.run(`UPDATE rides SET status = "CANCELLED(DRIVER)" WHERE driver_id = '${userid}' AND status = "PAID" OR status = "PAYMENT" OR status = "WAITING(DRIVER)`);
 		}
 
 		/** Driver cancelling after deadline */
 		// else if (userType.Type_User === 2 && passedCancellation === true) {
 		else {
-			await db.run(`UPDATE rides SET status = "CANCELLED(DRIVER)" WHERE driver_id = '${userid}' AND status = "PAID" OR status = "PAYMENT"`);
+			await db.run(`UPDATE rides SET status = "CANCELLED(DRIVER)" WHERE driver_id = '${userid}' AND status = "PAID" OR status = "PAYMENT" OR status = "WAITING(DRIVER)`);
 
 			let currentWarnings = await db.get(`SELECT warnings FROM user_info WHERE email = '${userid}'`);
 			let newWarningsCount = currentWarnings.Warnings + 1;
@@ -1415,12 +1406,10 @@ app.get("/check-driver-cancellation-status", async (req: Request, res: Response)
 	let riderid = req.query.riderid;
 
 	let cancellationStatus = await db.all(`SELECT status FROM rides WHERE rider_id='${riderid}'`);
-	if(cancellationStatus.Status === undefined) return;
-
-	let setCheckCancellationStatus = cancellationStatus[cancellationStatus.length - 1].Status;
+	if (cancellationStatus[cancellationStatus.length - 1].Status === undefined) return;
 
 	res.json({
-		getCancellationStatus : setCheckCancellationStatus
+		getCancellationStatus: cancellationStatus[cancellationStatus.length - 1].Status
 	});
 });
 
@@ -1433,13 +1422,11 @@ app.get("/check-rider-cancellation-status", async (req: Request, res: Response) 
 	let db = await dbPromise;
 	let driverid = req.query.driverid;
 
-	let cancellationStatus = await db.all(`SELECT status FROM rides WHERE driver_id='${driverid}'`);
-	if(cancellationStatus.Status === undefined) return;
-
-	let setCheckCancellationStatus = cancellationStatus[cancellationStatus.length - 1].Status;
+	let cancellationStatus = await db.all(`SELECT status FROM rides WHERE driver_id = '${driverid}'`);
+	if (cancellationStatus[cancellationStatus.length - 1].Status === undefined) return;
 
 	res.json({
-		getCancellationStatus : setCheckCancellationStatus
+		getCancellationStatus: cancellationStatus[cancellationStatus.length - 1].Status
 	});
 });
 
