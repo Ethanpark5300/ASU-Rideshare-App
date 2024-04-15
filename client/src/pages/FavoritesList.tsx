@@ -41,11 +41,7 @@ function FavoritesList() {
                     riderid: account?.account?.email,
                     selectedDriver: selectedDriver?.Driver_ID
                 }),
-            })
-                .then((res) => res.json())
-                .then((data) => {
-                    setRidersFavoritesList(data.getRidersFavoritesList);
-                });
+            });
         } catch (error) {
             console.error("Error unfavoriting request:", error);
         }
@@ -60,11 +56,7 @@ function FavoritesList() {
                     driverid: account?.account?.email,
                     riderid: selectedRider?.Rider_ID
                 }),
-            })
-                .then((res) => res.json())
-                .then((data) => {
-                    setRidersFavoritesList(data.getDriversPendingFavoritesList);
-                });
+            });
         } catch (error) {
             console.error("Error unfavoriting request:", error);
         }
@@ -79,20 +71,17 @@ function FavoritesList() {
                     driverid: account?.account?.email,
                     riderid: selectedRider?.Rider_ID
                 }),
-            })
-                .then((res) => res.json())
-                .then((data) => {
-                    setRidersFavoritesList(data.getDriversPendingFavoritesList);
-                });
+            });
         } catch (error) {
             console.error("Error unfavoriting request:", error);
         }
     };
 
     useEffect(() => {
-        getFavoritesList();
         getAccountInformation();
-    }, [getFavoritesList, getAccountInformation]);
+        getFavoritesList();
+        // eslint-disable-next-line
+    }, [ridersFavoritesList, driversPendingFavoritesList, getFavoritesList]);
 
     return (
         <PageTitle title="Favorites List">

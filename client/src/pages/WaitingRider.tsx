@@ -71,11 +71,7 @@ function WaitingRider() {
                     userid: account?.account?.email,
                     passedCancellation: passedCancellation
                 }),
-            })
-                .then((res) => res.json())
-                .then((data) => {
-                    console.error(data.errorMessage);
-                });
+            });
         } catch (error: any) {
             console.log("Error cancelling ride:", error);
         }

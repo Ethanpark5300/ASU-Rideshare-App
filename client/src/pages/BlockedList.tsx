@@ -26,11 +26,7 @@ function BlockedList() {
                     userid: account?.account?.email,
                     selectedUser: selectedUser?.Blockee_ID
                 }),
-            })
-                .then((res) => res.json())
-                .then((data) => {
-                    setBlockedList(data.blockedList);
-                });
+            });
         } catch (error) {
             console.error("Error unblocking request:", error);
         }
@@ -38,7 +34,7 @@ function BlockedList() {
 
     useEffect(() => {
         getBlockedList();
-    }, [getBlockedList]);
+    }, [blockedList, getBlockedList]);
 
     return (
         <PageTitle title="Blocked List">

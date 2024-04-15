@@ -1,12 +1,10 @@
 import 'dotenv/config'; //THIS GOES FIRST
 import nodemailer from 'nodemailer';
 import fs from 'fs';
-import { Database } from 'sqlite3';
-import express from 'express';
-import { Request, Response } from "express";
+import sqlite3, { Database } from 'sqlite3';
+import express, { Request, Response } from 'express';
 import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken';
-import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import cors from "cors";
@@ -16,7 +14,7 @@ const app = express();
 const PORT = process.env.PORT || 3001; //process.env is set outside
 const JWT_SECRET = process.env.JWT_SECRET || "DevelopmentSecretKey";
 const COOKIEPARSER_SECRET = process.env.COOKIEPARSER_SECRET || 'p3ufucaj55bi2kiy6lsktnm23z4c18xy';
-const ISPRODUCTION = process.env.PRODUCTION || false; //PRODUCTION=true to set it to true 
+const ISPRODUCTION = false; //PRODUCTION=true to set it to true 
 
 
 let message: string | undefined;
@@ -64,7 +62,6 @@ const makeTableExist = (tableName: string, createTableSQL: string, fillTableSQL?
 				//inserting dummy data
 				database.exec(fillTableSQL);
 			}
-
 		}
 	});
 }
@@ -91,7 +88,7 @@ const transporter = nodemailer.createTransport({
 });
 
 /**
- * 
+ * Send registeration verification code to given email
  * @param email email to send to
  * @param verifyID unique generated ID that is sent in the content of the email
  * @returns string error message, if one occurred, and undefined otherwise
@@ -116,7 +113,7 @@ const sendRegisterVerifyEmail = (email: string, verifyID: string): string|undefi
 }
 
 /**
- * 
+ * Send temporary password to given email
  * @param email email to send to
  * @param verifyID unique generated ID that is sent in the content of the email
  * @param newPassword new randomly generated password given to the user
@@ -142,7 +139,7 @@ const sendPasswordVerifyEmail = (email: string,  newPassword: string): string | 
 }
 
 /**
- * 
+ * Generate temporary password
  * @param length length of the generated password
  * @returns new random password for user to use
  */
@@ -156,7 +153,7 @@ function createNewPassword(length: number): string {
 }
 
 /**
- * this generates a new password and emails the account with it
+ * Generates a new password and emails the account with it
  * @param req.body.email account email
  * @returns passwordSuccess: bool if the operation succeeded, message:string|undefined error message if one occurred
  */
@@ -192,7 +189,7 @@ app.post("/password_request", async (req: Request, res: Response) => {
 });
 
 /**
- * this adds prospective user to register table and sends prospective user a verification string by email
+ * Adds prospective user to register table and sends prospective user a verification string by email
  * @param req.body.email prospective user email
  * @param req.body.firstName first name given
  * @param req.body.lastName last name given
@@ -262,7 +259,6 @@ app.post("/change_password", async (req: Request, res: Response) => {
 			message = undefined;
 		}
 
-
 		if (!hadError) {
 
 			bcrypt
@@ -287,28 +283,22 @@ app.post("/change_password", async (req: Request, res: Response) => {
 						message = emailPassWrong;
 					}
 					res.json({
-
 						passwordSuccess: !hadError,
 						message: message,
-						
 					});
-
 				})
 				.catch(err => { hadError = true; message = err.message; });
 		} else {
 			res.json({
-
 				passwordSuccess: !hadError,
 				message: message,
-				
 			});
 		}
-		
 	});
 });
 
 /**
- * this sends a new email with a new verify string
+ * Sends a new email with a new verify string
  * @param req.body.email email to resend verify string to
  * @returns registrationSuccess: bool if the operation succeeded, message: string|undefined error message if one occurred
  */
@@ -334,6 +324,7 @@ app.post("/resend_verification", async (req: Request, res: Response) => {
 });
 
 /**
+ * Verify registeration verification code from user
  * @param req.body.register_ID verify string inputted by user
  * @returns registrationSuccess:bool if the operation succeeded, message:string|undefined error message if one occurred
  */
@@ -416,7 +407,6 @@ app.post("/login", (req: Request, res: Response) => {
 			message = undefined;
 		}
 
-
 		if (!hadError) {
 			bcrypt
 				.compare(req.body.password, rows.Password_User)
@@ -429,23 +419,19 @@ app.post("/login", (req: Request, res: Response) => {
 						message = emailPassWrong;
 					}
 					res.json({
-
 						loginSuccess: !hadError,
 						message: message,
 						account: accObj,
 					});
-
 				})
 				.catch(err => { hadError = true; message = err.message; });
 		} else {
 			res.json({
-
 				loginSuccess: !hadError,
 				message: message,
 				account: undefined
 			});
 		}
-
 	});
 });
 
@@ -464,6 +450,7 @@ app.get('/read-cookie', (req: Request, res: Response) => {
 
 /**
  * logout and clear session token
+ * @param user user email
  */
 app.get('/clear-cookie', async (req: Request, res: Response) => {
 	let db = await dbPromise;
@@ -515,7 +502,6 @@ function setTokenCookie(res: Response, accObj: any) {
 		sessionTokenOptions //options
 	);
 
-
 	//cookie(name of cookie, value of cookie, options of cookie)
 	res.cookie('sessionToken', sessionToken, options);
 }
@@ -560,7 +546,6 @@ const verifyToken = function (token: string): Object | undefined {
 	} catch (e) {
 		return undefined;
 	}
-
 }
 
 /**
@@ -602,18 +587,15 @@ app.get("/get-blocked-list", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let userid = req.query.userid;
 
-	let getBlockedList = await db.all(`SELECT blocked.blocked_id, blocked.blockee_id, user_info.first_name, user_info.last_name, blocked.date FROM user_info INNER JOIN blocked ON user_info.email = blocked.blockee_id WHERE blocked.blocker_id = '${userid}'`);
-
 	res.json({
-		blockedList: getBlockedList,
+		blockedList: await db.all(`SELECT blocked.blocked_id, blocked.blockee_id, user_info.first_name, user_info.last_name, blocked.date FROM user_info INNER JOIN blocked ON user_info.email = blocked.blockee_id WHERE blocked.blocker_id = '${userid}'`)
 	});
 });
 
 /** 
  * Unblocking users for specific user 
- * @param req.body.userid email
- * @param req.body.selectedUser email of blockee
- * @returns updated blocked list for user
+ * @param req.body.userid user email
+ * @param req.body.selectedUser blockee email
  */
 app.post("/unblock-user", async (req: Request, res: Response) => {
 	let db = await dbPromise;
@@ -621,12 +603,6 @@ app.post("/unblock-user", async (req: Request, res: Response) => {
 	let selectedUser = req.body.selectedUser;
 
 	await db.run(`DELETE FROM blocked WHERE blocker_id = '${userid}' AND blockee_id = '${selectedUser}'`);
-
-	let getBlockedList = await db.all(`SELECT blocked.blocked_id, blocked.blockee_id, user_info.first_name, user_info.last_name, blocked.date FROM user_info INNER JOIN blocked ON user_info.email = blocked.blockee_id WHERE blocked.blocker_id = '${userid}'`);
-
-	res.json({
-		blockedList: getBlockedList,
-	});
 });
 
 /** 
@@ -645,30 +621,27 @@ app.get("/get-ratings-information", async (req: Request, res: Response) => {
 		let getDriverInformation = await db.all(`SELECT rides.driver_id, user_info.first_name, user_info.last_name FROM user_info INNER JOIN rides ON rides.driver_id = user_info.email WHERE rider_id = '${userid}' AND status = "COMPLETED"`);
 		if(!getDriverInformation) return;
 
-		let driverInformation = getDriverInformation[getDriverInformation.length-1];
-
 		res.json({
-			driverRatingInformation: driverInformation
+			driverRatingInformation: getDriverInformation[getDriverInformation.length - 1]
 		});
 	}
 
 	/** Returns rider information to driver */
-	else {
+	else if (userType.Type_User === 2) {
 		let getRiderInformation = await db.all(`SELECT rides.rider_id, user_info.first_name, user_info.last_name FROM user_info INNER JOIN rides ON rides.rider_id = user_info.email WHERE driver_id = '${userid}' AND status = "COMPLETED"`);
 		if(!getRiderInformation) return;
 
-		let riderInformation = getRiderInformation[getRiderInformation.length-1];
-
 		res.json({
-			riderRatingInformation: riderInformation
+			riderRatingInformation: getRiderInformation[getRiderInformation.length - 1]
 		});
 	}
+	else return;
 });
 
 /** 
  * Check if rider already sent favorite request to driver or driver is already favorited
  * @param riderid rider email
- * @returns currentDriverFavoriteStatus current favorite driver status
+ * @returns currentDriverFavoriteStatus current driver's favorite status
 */
 app.get("/check-driver-favorite-status", async (req: Request, res: Response) => {
 	let db = await dbPromise;
@@ -692,7 +665,7 @@ app.get("/check-driver-favorite-status", async (req: Request, res: Response) => 
 });
 
 /** 
- * Insert rider ratings to ratings table and calculate/update average driver ratings 
+ * Insert rider ratings to ratings/rides table and calculate/update average driver ratings 
  * @param req.body.riderid rider (rater) email
  * @param req.body.driverid driver (ratee) email
  * @param req.body.star_rating five-star rating
@@ -768,12 +741,9 @@ app.get("/get-favorites-list", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let userid = req.query.userid;
 
-	let setRidersFavoritesList = await db.all(`SELECT favorites.favorite_id, favorites.driver_id, user_info.first_name, user_info.last_name, favorites.status, favorites.date FROM user_info INNER JOIN favorites ON user_info.email = favorites.driver_id WHERE favorites.rider_id = '${userid}'`);
-	let setDriversPendingFavoritesList = await db.all(`SELECT favorites.favorite_id, favorites.rider_id, user_info.first_name, user_info.last_name, favorites.date FROM user_info INNER JOIN favorites ON user_info.email = favorites.rider_id WHERE status = "Pending" AND favorites.driver_id = '${userid}'`);
-
 	res.json ({
-		getRidersFavoritesList: setRidersFavoritesList,
-		getDriversPendingFavoritesList: setDriversPendingFavoritesList
+		getRidersFavoritesList: await db.all(`SELECT favorites.favorite_id, favorites.driver_id, user_info.first_name, user_info.last_name, favorites.status, favorites.date FROM user_info INNER JOIN favorites ON user_info.email = favorites.driver_id WHERE favorites.rider_id = '${userid}'`),
+		getDriversPendingFavoritesList: await db.all(`SELECT favorites.favorite_id, favorites.rider_id, user_info.first_name, user_info.last_name, favorites.date FROM user_info INNER JOIN favorites ON user_info.email = favorites.rider_id WHERE status = "Pending" AND favorites.driver_id = '${userid}'`)
 	});
 });
 
@@ -781,7 +751,6 @@ app.get("/get-favorites-list", async (req: Request, res: Response) => {
  * Unfavorite driver 
  * @param req.body.riderid rider email
  * @param req.body.selectedDriver driver email
- * @returns getRidersFavoritesList updated list of favorites
  */
 app.post("/unfavorite-driver", async (req: Request, res: Response) => {
 	let db = await dbPromise;
@@ -789,19 +758,12 @@ app.post("/unfavorite-driver", async (req: Request, res: Response) => {
 	let driverid = req.body.selectedDriver;
 	
 	await db.run(`DELETE FROM favorites WHERE rider_id = '${riderid}' AND driver_id = '${driverid}'`);
-
-	let setRidersFavoritesList = await db.all(`SELECT favorites.favorite_id, favorites.driver_id, user_info.first_name, user_info.last_name, favorites.status, favorites.date FROM user_info INNER JOIN favorites ON user_info.email = favorites.driver_id WHERE favorites.rider_id = '${riderid}'`);
-
-	res.json ({
-		getRidersFavoritesList: setRidersFavoritesList,
-	});
 });
 
 /** 
  * Accept rider favorite request 
  * @param req.body.driverid driver email
  * @param req.body.riderid rider email
- * @returns getDriversPendingFavoritesList
  */
 app.post("/accept-favorite-request", async (req: Request, res: Response) => {
 	let db = await dbPromise;
@@ -809,12 +771,6 @@ app.post("/accept-favorite-request", async (req: Request, res: Response) => {
 	let riderid = req.body.riderid;
 
 	await db.run(`UPDATE favorites SET status = "Favorited" WHERE driver_id = '${driverid}' AND rider_id = '${riderid}'`);
-
-	let setDriversPendingFavoritesList = await db.all(`SELECT favorites.favorite_id, favorites.rider_id, user_info.first_name, user_info.last_name, favorites.date FROM user_info INNER JOIN favorites ON user_info.email = favorites.rider_id WHERE status = "Pending" AND favorites.driver_id = '${driverid}'`);
-
-	res.json({
-		getDriversPendingFavoritesList: setDriversPendingFavoritesList
-	});
 });
 
 /** 
@@ -829,12 +785,6 @@ app.post("/decline-favorite-request", async (req: Request, res: Response) => {
 	let riderid = req.body.riderid;
 
 	await db.run(`DELETE FROM favorites WHERE driver_id = '${driverid}' AND rider_id = '${riderid}'`);
-
-	let setDriversPendingFavoritesList = await db.all(`SELECT favorites.favorite_id, favorites.rider_id, user_info.first_name, user_info.last_name, favorites.date FROM user_info INNER JOIN favorites ON user_info.email = favorites.rider_id WHERE status = "Pending" AND favorites.driver_id = '${driverid}'`);
-
-	res.json({
-		getDriversPendingFavoritesList: setDriversPendingFavoritesList
-	});
 });
 
 /** 
@@ -857,7 +807,7 @@ app.post("/report-user", async (req: Request, res: Response) => {
 });
 
 /** 
- * Send payment to payments database 
+ * Send payment to payments database and update ride status
  * @param req.body.Rider_ID rider email
  * @param req.body.Driver_ID driver email
  * @param req.body.rideCost ride cost
@@ -878,7 +828,7 @@ app.post("/send-payment", async (req: Request, res: Response) => {
 });
 
 /** 
- * Update account information, but not payment information and update session token
+ * Update account information (not payment information) and update session token
  * @param req.body.userEmail user email
  * @param req.body.newFirstName updated first name
  * @param req.body.newLastName updated last name
@@ -902,7 +852,7 @@ app.post("/edit-account", async (req: Request, res: Response) => {
 /** 
  * Update payment information and update session token
  * @param req.body.userEmail user email
- * @param req.body.newPayPalEmail new payment email
+ * @param req.body.newPayPalEmail updated payment email
  */
 app.post("/edit-payment-information", async (req: Request, res: Response) => {
 	let db = await dbPromise;
@@ -924,10 +874,8 @@ app.get("/view-account-info", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let userEmail = req.query.accountEmail;
 
-	let account = await db.all(`SELECT * FROM USER_INFO WHERE Email = ?`, [userEmail]);
-
 	res.json({
-		account: account[0]
+		account: await db.get(`SELECT * FROM USER_INFO WHERE Email = ?`, [userEmail])
 	});
 });
 
@@ -951,7 +899,7 @@ app.post("/change-status", async (req: Request, res: Response) => {
 });
 
 /** 
- * Returns rider and driver ride history list
+ * Retrieve rider and driver ride history list
  * @param req.query.userid user email
  * @returns ridersHistoryList rider ride history
  * @returns driversHistoryList driver ride history
@@ -960,17 +908,14 @@ app.get("/ride-history", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let userid = req.query.userid;
 
-	let getRiderRideHistory = await db.all(`SELECT rides.ride_id, rides.driver_id, user_info.first_name, user_info.last_name, rides.pickup_location, rides.pickup_time, rides.dropoff_location, rides.dropoff_time, rides.ride_cost, rides.given_rider_rating, rides.given_driver_rating, rides.ride_date FROM rides INNER JOIN user_info ON rides.driver_id = user_info.email WHERE rides.rider_id = '${userid}' AND rides.status = "COMPLETED"`);
-	let getDriverRideHistory = await db.all(`SELECT rides.ride_id, rides.rider_id, user_info.first_name, user_info.last_name, rides.pickup_location, rides.pickup_time, rides.dropoff_location, rides.dropoff_time, rides.ride_cost, rides.given_rider_rating, rides.given_driver_rating, rides.ride_date FROM rides INNER JOIN user_info ON rides.rider_id = user_info.email WHERE rides.driver_id = '${userid}' AND rides.status = "COMPLETED"`);
-
 	res.json({
-		ridersHistoryList: getRiderRideHistory,
-		driversHistoryList: getDriverRideHistory
+		ridersHistoryList: await db.all(`SELECT rides.ride_id, rides.driver_id, user_info.first_name, user_info.last_name, rides.pickup_location, rides.pickup_time, rides.dropoff_location, rides.dropoff_time, rides.ride_cost, rides.given_rider_rating, rides.given_driver_rating, rides.ride_date FROM rides INNER JOIN user_info ON rides.driver_id = user_info.email WHERE rides.rider_id = '${userid}' AND rides.status = "COMPLETED"`),
+		driversHistoryList: await db.all(`SELECT rides.ride_id, rides.rider_id, user_info.first_name, user_info.last_name, rides.pickup_location, rides.pickup_time, rides.dropoff_location, rides.dropoff_time, rides.ride_cost, rides.given_rider_rating, rides.given_driver_rating, rides.ride_date FROM rides INNER JOIN user_info ON rides.rider_id = user_info.email WHERE rides.driver_id = '${userid}' AND rides.status = "COMPLETED"`)
 	});
 });
 
 /** 
- * Returns rider total spendings
+ * Retrieve rider total spendings
  * @param req.query.riderid rider email
  * @returns ridersTotalSpendings rider total spendings
 */
@@ -993,7 +938,7 @@ app.get('/get-total-spendings', async (req: Request, res: Response) => {
 });
 
 /** 
- * Returns driver total earnings
+ * Retrieve driver total earnings
  * @param req.query.driverid driver email
  * @returns driversTotalEarnings driver total earnings
 */
@@ -1080,9 +1025,10 @@ app.post("/cancel-request", async (req: Request, res: Response) => {
 });
 
 /** 
- * gets available drivers
+ * Retrieves available favorite and other available drivers
  * @param req.query.riderid rider email
- * @returns availableFavoriteDrivers and otherAvailableDrivers
+ * @returns availableFavoriteDrivers online favorited drivers
+ * @returns otherAvailableDrivers other online drivers
  */
 app.get("/available-drivers", async (req: Request, res: Response) => {
 	let db = await dbPromise;
@@ -1117,7 +1063,7 @@ app.get("/available-drivers", async (req: Request, res: Response) => {
  * Request specific driver 
  * @param req.body.riderid rider email
  * @param req.body.driverid driver email
- * @returns pendingDriversList
+ * @returns pendingDriversList pending drivers list
  */
 app.post("/request-driver", async (req: Request, res: Response) => {
 	let db = await dbPromise;
@@ -1128,10 +1074,8 @@ app.post("/request-driver", async (req: Request, res: Response) => {
 	await db.run(`INSERT INTO PENDING_DRIVERS (Rider_ID, Driver_ID) VALUES (?,?)`, riderid, driverid);
 
 	// Retrieve the updated list of pending drivers
-	let pendingDriversList = await db.all(`SELECT pending_drivers.driver_id, user_info.first_name, user_info.last_name FROM user_info INNER JOIN pending_drivers ON user_info.email = pending_drivers.driver_id`);
-
 	res.json({
-		pendingDriversList: pendingDriversList,
+		pendingDriversList: await db.all(`SELECT pending_drivers.driver_id, user_info.first_name, user_info.last_name FROM user_info INNER JOIN pending_drivers ON user_info.email = pending_drivers.driver_id`)
 	});
 });
 
@@ -1202,7 +1146,7 @@ app.post("/cancel-ride-from-payment", async (req: Request, res: Response) => {
 /** 
  * Check if driver has arrived 
  * @param req.query.riderid rider email
- * @returns getDriverArrivedStatus
+ * @returns getDriverArrivedStatus latest ride status
  */
 app.get("/check-if-driver-arrived", async (req: Request, res: Response) => {
 	let db = await dbPromise;
@@ -1219,7 +1163,7 @@ app.get("/check-if-driver-arrived", async (req: Request, res: Response) => {
 /**
  * Check if driver started ride
  * @param riderid rider email
- * @returns getDriverStartedStatus ride status
+ * @returns getDriverStartedStatus latest ride status
  */
 app.get("/check-if-driver-started-ride", async (req: Request, res: Response) => {
 	let db = await dbPromise;
@@ -1236,7 +1180,7 @@ app.get("/check-if-driver-started-ride", async (req: Request, res: Response) => 
 /**
  * Check if driver ended ride
  * @param riderid rider email
- * @returns rideStatus ride status
+ * @returns rideStatus latest ride status
  */
 app.get("/check-if-ride-ended", async (req: Request, res: Response) => {
 	let db = await dbPromise;
@@ -1266,9 +1210,10 @@ app.get("/check-if-ride-ended", async (req: Request, res: Response) => {
 });
 
 /** 
- * get rider queue
+ * Retrieves rider queue
  * @param req.query.driveremail driver email
- * @returns pendingRiderRequestsList, allRequestsList 
+ * @returns pendingRiderRequestsList all riders who requested driver 
+ * @retuarns allRequestsList all ride requests
  */
 app.get("/ride-queue", async (req: Request, res: Response) => {
 	let db = await dbPromise;
@@ -1314,18 +1259,16 @@ app.post("/accept-ride-request", async (req: Request, res: Response) => {
 /** 
  * Retrieve ride information
  * @param req.query.userid user email
- * @returns riderRideInfo, driverRideInfo
+ * @returns riderRideInfo rider ride information
+ * @returns driverRideInfo driver ride information
  */
 app.get("/get-ride-information", async (req: Request, res: Response) => {
 	let db = await dbPromise;
 	let userid = req.query.userid;
 
-	let getRiderRideInfo = await db.get(`SELECT user_info.first_name, user_info.last_name, rides.pickup_location, rides.dropoff_location FROM rides INNER JOIN user_info ON rides.driver_id = user_info.email WHERE rides.rider_id = '${userid}' AND status = "PAID" OR status = "WAITING(DRIVER)" OR status = "ONGOING"`);
-	let getDriverRideInfo = await db.get(`SELECT user_info.first_name, user_info.last_name, rides.pickup_location, rides.dropoff_location FROM rides INNER JOIN user_info ON rides.rider_id = user_info.email WHERE driver_id = '${userid}' AND status = "PAYMENT" OR status = "PAID" OR status = "WAITING(DRIVER)" OR status = "ONGOING"`);
-
 	res.json({
-		riderRideInfo: getRiderRideInfo,
-		driverRideInfo: getDriverRideInfo,
+		riderRideInfo: await db.get(`SELECT user_info.first_name, user_info.last_name, rides.pickup_location, rides.dropoff_location FROM rides INNER JOIN user_info ON rides.driver_id = user_info.email WHERE rides.rider_id = '${userid}' AND status = "PAID" OR status = "WAITING(DRIVER)" OR status = "ONGOING"`),
+		driverRideInfo: await db.get(`SELECT user_info.first_name, user_info.last_name, rides.pickup_location, rides.dropoff_location FROM rides INNER JOIN user_info ON rides.rider_id = user_info.email WHERE driver_id = '${userid}' AND status = "PAYMENT" OR status = "PAID" OR status = "WAITING(DRIVER)" OR status = "ONGOING"`)
 	});
 });
 
@@ -1356,50 +1299,46 @@ app.post("/cancel-ride", async (req: Request, res: Response) => {
 	let userid = req.body.userid;
 	let passedCancellation: boolean = req.body.passedCancellation;
 	
-	try {
-		let userType = await db.get(`SELECT type_user FROM user_info WHERE email = '${userid}'`);
+	/** Get user type from user email */
+	let userType = await db.get(`SELECT type_user FROM user_info WHERE email = '${userid}'`);
 
-		/** Rider cancelling before deadline */
-		if (userType.Type_User === 1 && passedCancellation === false) {
-			await db.run(`UPDATE rides SET status = "CANCELLED(RIDER)" WHERE rider_id = '${userid}' AND status = "PAID" OR status = "WAITING(DRIVER)"`);
-		}
-
-		/** Rider cancelling after deadline */
-		else if (userType.Type_User === 1 && passedCancellation === true) {
-			await db.run(`UPDATE rides SET status = "CANCELLED(RIDER)" WHERE rider_id = '${userid}' AND status = "PAID" OR status = "WAITING(DRIVER)"`);
-
-			let currentWarnings = await db.get(`SELECT warnings FROM user_info WHERE email = '${userid}'`);
-			let newWarningsCount = currentWarnings.Warnings + 1;
-
-			await db.get(`UPDATE user_info SET warnings = '${newWarningsCount}' WHERE email = '${userid}'`);
-		}
-
-		/** Driver cancelling before deadline */
-		else if (userType.Type_User === 2 && passedCancellation === false) {
-			await db.run(`UPDATE rides SET status = "CANCELLED(DRIVER)" WHERE driver_id = '${userid}' AND status = "PAID" OR status = "PAYMENT" OR status = "WAITING(DRIVER)`);
-		}
-
-		/** Driver cancelling after deadline */
-		// else if (userType.Type_User === 2 && passedCancellation === true) {
-		else {
-			await db.run(`UPDATE rides SET status = "CANCELLED(DRIVER)" WHERE driver_id = '${userid}' AND status = "PAID" OR status = "PAYMENT" OR status = "WAITING(DRIVER)`);
-
-			let currentWarnings = await db.get(`SELECT warnings FROM user_info WHERE email = '${userid}'`);
-			let newWarningsCount = currentWarnings.Warnings + 1;
-
-			await db.get(`UPDATE user_info SET warnings = '${newWarningsCount}' WHERE email = '${userid}'`);
-		}
-	} catch (error) {
-		res.json({
-			errorMessage : error
-		})
+	/** Rider cancelling before deadline */
+	if (userType.Type_User === 1 && passedCancellation === false) {
+		await db.run(`UPDATE rides SET status = "CANCELLED(RIDER)" WHERE rider_id = '${userid}' AND status = "PAID" OR status = "WAITING(DRIVER)"`);
 	}
+
+	/** Rider cancelling after deadline */
+	else if (userType.Type_User === 1 && passedCancellation === true) {
+		await db.run(`UPDATE rides SET status = "CANCELLED(RIDER)" WHERE rider_id = '${userid}' AND status = "PAID" OR status = "WAITING(DRIVER)"`);
+
+		let currentWarnings = await db.get(`SELECT warnings FROM user_info WHERE email = '${userid}'`);
+		let newWarningsCount = currentWarnings.Warnings + 1;
+
+		await db.get(`UPDATE user_info SET warnings = '${newWarningsCount}' WHERE email = '${userid}'`);
+	}
+
+	/** Driver cancelling before deadline */
+	else if (userType.Type_User === 2 && passedCancellation === false) {
+		await db.run(`UPDATE rides SET status = "CANCELLED(DRIVER)" WHERE driver_id = '${userid}' AND status = "PAID" OR status = "PAYMENT" OR status = "WAITING(DRIVER)`);
+	}
+
+	/** Driver cancelling after deadline */
+	else if (userType.Type_User === 2 && passedCancellation === true) {
+		await db.run(`UPDATE rides SET status = "CANCELLED(DRIVER)" WHERE driver_id = '${userid}' AND status = "PAID" OR status = "PAYMENT" OR status = "WAITING(DRIVER)`);
+
+		let currentWarnings = await db.get(`SELECT warnings FROM user_info WHERE email = '${userid}'`);
+		let newWarningsCount = currentWarnings.Warnings + 1;
+
+		await db.get(`UPDATE user_info SET warnings = '${newWarningsCount}' WHERE email = '${userid}'`);
+	}
+
+	else return;
 });
 
 /** 
  * Check if driver cancelled ride 
  * @param req.query.riderid rider email
- * @returns getCancellationStatus
+ * @returns getCancellationStatus latest ride status
  */
 app.get("/check-driver-cancellation-status", async (req: Request, res: Response) => {
 	let db = await dbPromise;
@@ -1416,7 +1355,7 @@ app.get("/check-driver-cancellation-status", async (req: Request, res: Response)
 /** 
  * Check if rider cancelled ride
  * @param req.query.driverid driver email
- * @returns getCancellationStatus
+ * @returns getCancellationStatus latest ride status
  */
 app.get("/check-rider-cancellation-status", async (req: Request, res: Response) => {
 	let db = await dbPromise;

@@ -136,8 +136,7 @@ function Payment() {
             })
             setCancelConfirmPromptVisible(false);
             navigate("/");
-        }
-        catch (error: any) {
+        } catch (error: any) {
             console.error("Error cancelling ride:", error);
         }
     }
