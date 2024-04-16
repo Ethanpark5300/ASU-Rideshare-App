@@ -75,6 +75,10 @@ function EditAccount() {
         <PageTitle title="Edit Account">
             <main id="edit-account">
                 <h1>Edit Account</h1>
+                <div className="editAccountProfileButton">
+                    <button onClick={() => navigate("/Profile")}>Back to Profile Page</button>
+                </div>
+                <br/>
                 <label htmlFor="firstName">First Name</label>
                 <input
                     type="text"
@@ -109,8 +113,8 @@ function EditAccount() {
                     value={phoneNumber || ''}
                     onChange={handlePhoneNumberChange}
                 />
-                
-                <button onClick={() => navigate("/Profile")}>Back to Profile Page</button>
+                <br/>
+                <br/>
                 <button onClick={handleSaveChanges}>Save Changes</button>
             </main>
         </PageTitle>
