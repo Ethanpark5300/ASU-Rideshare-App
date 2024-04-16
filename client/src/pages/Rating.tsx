@@ -92,7 +92,7 @@ function Rating() {
             })
             setCompletedPrompt(true);
         } catch (error) {
-            console.log("Error sending driver rating:", error);
+            console.error("Error sending driver rating:", error);
         }
     };
 
@@ -110,7 +110,7 @@ function Rating() {
             })
             setCompletedPrompt(true);
         } catch (error) {
-            console.log("Error sending rider rating:", error);
+            console.error("Error sending rider rating:", error);
         }
     };
 
@@ -126,7 +126,7 @@ function Rating() {
             })
             alert('Driver has been blocked');
         } catch (error) {
-            console.log("Error rider blocking driver:", error);
+            console.error("Error rider blocking driver:", error);
         }
     };
 
@@ -141,8 +141,8 @@ function Rating() {
                 }),
             })
             alert('Rider has been blocked');
-        } catch (error: any) {
-            console.log("Error driver blocking rider:", error);
+        } catch (error) {
+            console.error("Error driver blocking rider:", error);
         }
     };
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import buildingsData from './Buildings.json';
 import Select from 'react-select';
 import './BuildingSearch.css';
@@ -50,9 +50,7 @@ function BuildingSearch() {
                 placeholder="Search for a building..."
                 components={{ Option: customOption }}
             />
-            <button className="ClearButton" onClick={handleClearSearch}>
-                Clear
-            </button>
+            <button className="ClearButton" onClick={handleClearSearch}>Clear</button>
             {selectedBuilding && (
                 <div className="SelectedBuilding">
                     <h3>Selected Building</h3>

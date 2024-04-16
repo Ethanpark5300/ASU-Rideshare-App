@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import "./NavigationBar.css";
 import Navbar_Logo from "./Navbar-Logo.svg";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAppSelector } from "../../store/hooks";
 import { AccountTypeFlag } from "../../account/Account";
 
@@ -38,19 +38,18 @@ function Navbar() {
         };
     }, []);
 
-    const getAccountInformation = useCallback(async () => {
-        try {
-            const response = await fetch(`/view-account-info?accountEmail=${account?.account?.email}`);
-            const data = await response.json();
-            if (data.account) setUserType(data.account.Type_User);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    }, [account?.account?.email]);
-
     useEffect(() => {
+        async function getAccountInformation() {
+            try {
+                const response = await fetch(`/view-account-info?accountEmail=${account?.account?.email}`);
+                const data = await response.json();
+                if (data.account) setUserType(data.account.Type_User);
+            } catch (error) {
+                console.error("Error fetching account data:", error);
+            }
+        }
         getAccountInformation();
-    }, [getAccountInformation]);
+    }, [account?.account?.email]);
 
     return (
         <nav>

@@ -49,7 +49,7 @@ function App() {
 						}
 					});
 			} catch (error) {
-				console.error(error);
+				console.error("Error reading cookie:", error);
 			}
 		};
 		readCookie();

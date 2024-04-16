@@ -141,8 +141,8 @@ function RideinProgress({ userid }: RideInProgressProps) {
                 }),
             })
         }
-        catch (error: any) {
-            console.log("Error ending ride:", error);
+        catch (error) {
+            console.error("Error ending ride:", error);
         }
     };
 
@@ -154,7 +154,7 @@ function RideinProgress({ userid }: RideInProgressProps) {
                     const data = await response.json();
                     setCheckRideCompleted(data.rideStatus);
                 } catch (error) {
-                    console.log("Error checking if ride ended:", error);
+                    console.error("Error checking if ride ended:", error);
                 }
             }
             checkRideEnded();

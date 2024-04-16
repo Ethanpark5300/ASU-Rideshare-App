@@ -99,7 +99,7 @@ function WaitingDriver() {
                     }),
                 });
             } catch (error) {
-                console.log("Error cancelling ride:", error);
+                console.error("Error cancelling ride:", error);
             }
         }
         confirmCancel();
@@ -141,7 +141,7 @@ function WaitingDriver() {
                     const data = await response.json();
                     setDriverArrivedStatus(data.getDriverArrivedStatus);
                 } catch (error) {
-                    console.log("Error checking if driver arrived:", error);
+                    console.error("Error checking if driver arrived:", error);
                 }
             }
             checkDriverArrivedStatus();

@@ -5,7 +5,7 @@ interface PageProps {
     children: React.ReactNode;
 }
 
-const PageTitle: React.FC<PageProps> = ({ title, children }) => {
+function PageTitle({ title, children }: PageProps) {
     useEffect(() => {
         document.title = title;
     }, [title]);

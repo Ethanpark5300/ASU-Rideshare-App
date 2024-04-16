@@ -34,6 +34,7 @@ function RideHistory() {
             }
         }
         async function getRiderTotalSpendings() {
+            if (userType !== 1) return;
             try {
                 const response = await fetch(`/get-total-spendings?riderid=${account?.account?.email}`);
                 const data = await response.json();
@@ -43,6 +44,7 @@ function RideHistory() {
             }
         }
         async function getDriverTotalEarnings() {
+            if (userType !== 2) return;
             try {
                 const response = await fetch(`/get-total-earnings?driverid=${account?.account?.email}`);
                 const data = await response.json();
@@ -55,12 +57,13 @@ function RideHistory() {
         getRideHistoryList();
         getRiderTotalSpendings();
         getDriverTotalEarnings();
-    }, [account?.account?.email]);
+    }, [account?.account?.email, userType]);
 
     useEffect(() => {
         const delay = 125;
         const timerId = setTimeout(() => {
             async function getRiderAverageRating() {
+                if (userType !== 1) return;
                 try {
                     const response = await fetch(`/get-rider-average-rating?riderid=${account?.account?.email}`);
                     const data = await response.json();
@@ -70,6 +73,7 @@ function RideHistory() {
                 }
             }
             async function getDriverAverageRating() {
+                if (userType !== 2) return;
                 try {
                     const response = await fetch(`/get-driver-average-rating?driverid=${account?.account?.email}`);
                     const data = await response.json();
@@ -82,7 +86,7 @@ function RideHistory() {
             getDriverAverageRating();
         }, delay);
         return () => clearTimeout(timerId);
-    }, [account?.account?.email]);
+    }, [account?.account?.email, userType]);
 
     /**
      * Rider ride history variables information
@@ -115,10 +119,9 @@ function RideHistory() {
             <main id='ride-history'>
                 <h1>Ride History</h1>
 
-                {/** @returns Rider history */}
+                {/** Rider history */}
                 {(userType === 1) && (
                     <>
-                        <h2>Ride History</h2>
                         {ridersRideHistoryList.length > 0 ? (
                             <div>
                                 {ridersRideHistoryList.map((ride) => (
@@ -137,10 +140,9 @@ function RideHistory() {
                     </>
                 )}
 
-                {/** @returns Driver history */}
+                {/** Driver history */}
                 {(userType === 2) && (
                     <>
-                        <h2>Drive History</h2>
                         {driversDriveHistoryList.length > 0 ? (
                             <div>
                                 {driversDriveHistoryList.map((ride) => (

@@ -40,7 +40,7 @@ function EditPayment() {
             });
             alert('Changes saved!');
         } catch (error) {
-            console.log("Error changing PayPal account:", error);
+            console.error("Error changing PayPal account:", error);
         }
     };
 

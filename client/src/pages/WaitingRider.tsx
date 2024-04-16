@@ -72,8 +72,8 @@ function WaitingRider() {
                         passedCancellation: passedCancellation
                     }),
                 });
-            } catch (error: any) {
-                console.log("Error cancelling ride:", error);
+            } catch (error) {
+                console.error("Error cancelling ride:", error);
             }
         }
         confirmCancel();
@@ -95,7 +95,7 @@ function WaitingRider() {
                     const data = await response.json();
                     setCheckRiderCancellationStatus(data.getCancellationStatus);
                 } catch (error) {
-                    console.log("Error checking driver cancellation status:", error);
+                    console.error("Error checking driver cancellation status:", error);
                 }
             }
             checkRiderCancellationStatus();

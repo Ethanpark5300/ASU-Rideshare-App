@@ -218,7 +218,7 @@ function RequestRide({ riderid }: RequestRideProps) {
                 alert('Please provide both pick-up and drop-off locations.');
             }
         } catch (error) {
-            console.log("Error submitting request", error);
+            console.error("Error submitting request", error);
             alert('An error occurred. Please try again.');
         }
     };

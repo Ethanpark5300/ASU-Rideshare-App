@@ -40,7 +40,7 @@ function Login() {
                     }
                 });
         } catch (error) {
-            console.log("Error logging in:" , error);
+            console.error("Error logging in:" , error);
         }
     };
 

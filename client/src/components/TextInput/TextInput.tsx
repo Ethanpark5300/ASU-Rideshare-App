@@ -34,10 +34,7 @@ export const TextInput: React.FC<TextInputProps> = ({placeholder, regex, valueRe
 			defaultValue={defaultValue}
 			onChange={event => {
 				if (event.target.value === '' || (regex !== undefined  ? regex.test(event.target.value) : true)) {
-
 					(valueRef as MutableRefObject<string>).current = event.target.value;
-
-
 				} else {
 					event.target.value = valueRef.current + "";
 				}
@@ -52,7 +49,6 @@ export const TextInput: React.FC<TextInputProps> = ({placeholder, regex, valueRe
 				}
 			}
 			maxLength={maxLength}
-
 		/>
 	);
 }

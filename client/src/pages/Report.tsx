@@ -68,8 +68,8 @@ function Report() {
                 }),
             })
             alert("Driver has been reported");
-        } catch (error: any) {
-            console.log("Error sending driver report:", error);
+        } catch (error) {
+            console.error("Error sending driver report:", error);
         }
     };
 
@@ -87,8 +87,8 @@ function Report() {
                 }),
             })
             alert("Rider has been reported");
-        } catch (error: any) {
-            console.log("Error sending rider report:", error);
+        } catch (error) {
+            console.error("Error sending rider report:", error);
         }
     };
 

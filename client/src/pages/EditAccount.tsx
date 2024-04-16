@@ -61,7 +61,7 @@ function EditAccount() {
             })
             alert('Changes saved!');
         } catch (error) {
-            console.log("Error changing account details:", error);
+            console.error("Error changing account details:", error);
         }
     };
 

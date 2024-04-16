@@ -57,7 +57,7 @@ function Profile() {
                 }),
             })
         } catch (error) {
-            console.log("Error changing driver status:", error);
+            console.error("Error changing driver status:", error);
         }
     };
 

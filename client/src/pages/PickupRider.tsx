@@ -60,7 +60,7 @@ function PickupRider({ driverid }: PickupRiderProps) {
                 }
             );
         } else {
-            console.log("Geolocation is not supported by this browser.")
+            console.error("Geolocation is not supported by this browser.")
         }
     }, []);
 
@@ -125,7 +125,7 @@ function PickupRider({ driverid }: PickupRiderProps) {
                     const data = await response.json();
                     setCheckRiderCancellationStatus(data.getCancellationStatus);
                 } catch (error) {
-                    console.log("Error checking rider cancellation status:", error);
+                    console.error("Error checking rider cancellation status:", error);
                 }
             }
             checkRiderCancellationStatus();
@@ -148,7 +148,7 @@ function PickupRider({ driverid }: PickupRiderProps) {
                         }),
                     })
                 } catch (error) {
-                    console.log("Error updating arrived ride status:", error);
+                    console.error("Error updating arrived ride status:", error);
                 }
             }
         }, 1000);
@@ -167,7 +167,7 @@ function PickupRider({ driverid }: PickupRiderProps) {
                     }),
                 })
             } catch (error) {
-                console.log("Error starting ride:", error);
+                console.error("Error starting ride:", error);
             }
         }
         startRide();

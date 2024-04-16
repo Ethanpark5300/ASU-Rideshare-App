@@ -1,9 +1,8 @@
-
-
 interface ButtonProps {
 	label: string,
 	onClickFn: Function,
 }
+
 /**
  * push button
  * @param props
@@ -11,7 +10,6 @@ interface ButtonProps {
  */
 export const Button = (props: ButtonProps) => {
 	return (
-
 		<button className=""
 			onClick={() => {
 				//if active, bitwise xor[^](subtract flags), else or[|](add flags)
@@ -20,6 +18,5 @@ export const Button = (props: ButtonProps) => {
 		>
 			{props.label}
 		</button>
-
 	);
 }

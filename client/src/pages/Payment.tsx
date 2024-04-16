@@ -84,7 +84,7 @@ function Payment() {
                         rideCost: ridePaymentInformation.Ride_Cost,
                     }),
                 })
-            } catch (error: any) {
+            } catch (error) {
                 console.error("Payment error:", error);
             }
 
@@ -130,7 +130,7 @@ function Payment() {
             })
             setCancelConfirmPromptVisible(false);
             navigate("/");
-        } catch (error: any) {
+        } catch (error) {
             console.error("Error cancelling ride:", error);
         }
     }
@@ -143,7 +143,7 @@ function Payment() {
                     const data = await response.json();
                     setCheckDriverCancellationStatus(data.getCancellationStatus);
                 } catch (error) {
-                    console.log("Error checking driver cancellation status:", error);
+                    console.error("Error checking driver cancellation status:", error);
                 }
             }
             checkDriverCancellationStatus();
