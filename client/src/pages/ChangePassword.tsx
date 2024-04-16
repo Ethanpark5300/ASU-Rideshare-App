@@ -4,9 +4,11 @@ import { TextInput } from "../components/TextInput/TextInput";
 import { Button } from "../components/Buttons/Button";
 import { useRef, useState } from "react";
 import { useAppSelector } from '../store/hooks';
+import { useNavigate } from 'react-router-dom';
 
 function ChangePassword() {
     const account = useAppSelector((state) => state.account);
+    const navigate = useNavigate();
     const givenPassword = useRef<string>(""); /** current account password */
     const newPassword = useRef<string>(""); /** new password that user wants to use  */
     const newConfirmPassword = useRef<string>(""); /** confirm password to see if it matches newPassword*/
@@ -42,6 +44,10 @@ function ChangePassword() {
         <PageTitle title="Change Password">
             <main id="Password">
                <h1>Change Password</h1>
+               <div className="editAccountProfileButton">
+                    <button onClick={() => navigate("/Profile")}>Back to Profile Page</button>
+                </div>
+                <br/>
                 <label>Current Password</label>
                 <TextInput
                     placeholder=""

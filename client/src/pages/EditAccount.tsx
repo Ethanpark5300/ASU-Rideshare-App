@@ -79,6 +79,10 @@ function EditAccount() {
                     <button onClick={() => navigate("/Profile")}>Back to Profile Page</button>
                 </div>
                 <br/>
+                <p>
+                    * Replace text in text boxes with desired information and click save changes.
+                </p>
+                <br/>
                 <label htmlFor="firstName">First Name</label>
                 <input
                     type="text"

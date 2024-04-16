@@ -33,6 +33,7 @@
     font-size: 18px;
     padding: 10px;
     padding-left: 50px;
+    font-weight: bold;
 }
 
 #edit-payment button:hover {

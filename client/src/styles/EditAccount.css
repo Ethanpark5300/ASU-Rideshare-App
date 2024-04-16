@@ -20,6 +20,11 @@
     white-space: nowrap;
 }
 
+#edit-account p {
+    font-size: 15px;
+    padding-left: 4%;
+    color: #A8A3A3;
+}
 
 #edit-account h1 {
     font-size: 50px;
@@ -28,6 +33,7 @@
 
 #edit-account label {
     font-size: 18px;
+    font-weight: bold;
     padding: 10px;
     padding-left: 0px;
 }
