@@ -1,57 +1,60 @@
 import '../styles/RideHistory.css';
 import PageTitle from '../components/PageTitle/PageTitle';
 import { useAppSelector } from '../store/hooks';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 function RideHistory() {
     const account = useAppSelector((state) => state.account);
     const [userType, setUserType] = useState<number>();
     const [ridersRideHistoryList, setRidersRideHistoryList] = useState<any[]>([]);
     const [driversDriveHistoryList, setDriversDriveHistoryList] = useState<any[]>([]);
-    const [riderTotalSpendings, setRiderTotalSpendings] = useState<number>(0);
-    const [driverTotalEarnings, setDriverTotalEarnings] = useState<number>(0);
-    const [riderAverageRating, setRiderAverageRating] = useState<number>(0);
-    const [driverAverageRating, setDriverAverageRating] = useState<number>(0);
+    const [riderTotalSpendings, setRiderTotalSpendings] = useState<number>();
+    const [driverTotalEarnings, setDriverTotalEarnings] = useState<number>();
+    const [riderAverageRating, setRiderAverageRating] = useState<number>();
+    const [driverAverageRating, setDriverAverageRating] = useState<number>();
 
-    const getAccountInformation = useCallback(async () => {
-        try {
-            const response = await fetch(`/view-account-info?accountEmail=${account?.account?.email}`);
-            const data = await response.json();
-            if (data.account) setUserType(data.account.Type_User);
-        } catch (error) {
-            console.error("Error fetching data:", error);
+    useEffect(() => {
+        async function getAccountInformation() {
+            try {
+                const response = await fetch(`/view-account-info?accountEmail=${account?.account?.email}`);
+                const data = await response.json();
+                if (data.account) setUserType(data.account.Type_User);
+            } catch (error) {
+                console.error("Error fetching account information:", error);
+            }
         }
-    }, [account?.account?.email]);
-
-    const getRideHistoryList = useCallback(async () => {
-        try {
-            const response = await fetch(`/ride-history?userid=${account?.account?.email}`);
-            const data = await response.json();
-            setRidersRideHistoryList(data.ridersHistoryList);
-            setDriversDriveHistoryList(data.driversHistoryList);
-        } catch (error) {
-            console.error("Error fetching data:", error);
+        async function getRideHistoryList() {
+            try {
+                const response = await fetch(`/ride-history?userid=${account?.account?.email}`);
+                const data = await response.json();
+                setRidersRideHistoryList(data.ridersHistoryList);
+                setDriversDriveHistoryList(data.driversHistoryList);
+            } catch (error) {
+                console.error("Error fetching ride history:", error);
+            }
         }
-    }, [account?.account?.email]);
-
-    const getRiderTotalSpendings = useCallback(async () => {
-        try {
-            const response = await fetch(`/get-total-spendings?riderid=${account?.account?.email}`);
-            const data = await response.json();
-            setRiderTotalSpendings(data.ridersTotalSpendings);
-        } catch (error) {
-            console.error("Error fetching data:", error);
+        async function getRiderTotalSpendings() {
+            try {
+                const response = await fetch(`/get-total-spendings?riderid=${account?.account?.email}`);
+                const data = await response.json();
+                setRiderTotalSpendings(data.ridersTotalSpendings);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
         }
-    }, [account?.account?.email]);
-
-    const getDriverTotalEarnings = useCallback(async () => {
-        try {
-            const response = await fetch(`/get-total-earnings?driverid=${account?.account?.email}`);
-            const data = await response.json();
-            setDriverTotalEarnings(data.driversTotalEarnings);
-        } catch (error) {
-            console.error("Error fetching data:", error);
+        async function getDriverTotalEarnings() {
+            try {
+                const response = await fetch(`/get-total-earnings?driverid=${account?.account?.email}`);
+                const data = await response.json();
+                setDriverTotalEarnings(data.driversTotalEarnings);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
         }
+        getAccountInformation();
+        getRideHistoryList();
+        getRiderTotalSpendings();
+        getDriverTotalEarnings();
     }, [account?.account?.email]);
 
     useEffect(() => {
@@ -63,7 +66,7 @@ function RideHistory() {
                     const data = await response.json();
                     setRiderAverageRating(data.riderAverageRating);
                 } catch (error) {
-                    console.error("Error fetching data:", error);
+                    console.error("Error fetching rider average rating:", error);
                 }
             }
             async function getDriverAverageRating() {
@@ -72,7 +75,7 @@ function RideHistory() {
                     const data = await response.json();
                     setDriverAverageRating(data.driverAverageRating);
                 } catch (error) {
-                    console.error("Error fetching data:", error);
+                    console.error("Error fetching driver average rating:", error);
                 }
             }
             getRiderAverageRating();
@@ -80,13 +83,6 @@ function RideHistory() {
         }, delay);
         return () => clearTimeout(timerId);
     }, [account?.account?.email]);
-    
-    useEffect(() => {
-        getRideHistoryList();
-        getAccountInformation();
-        getRiderTotalSpendings();
-        getDriverTotalEarnings();
-    }, [getAccountInformation, getRideHistoryList, getRiderTotalSpendings, getDriverTotalEarnings]);
 
     /**
      * Rider ride history variables information
@@ -162,7 +158,6 @@ function RideHistory() {
                         )}
                     </>
                 )}
-                <button onClick={getRideHistoryList}>Refresh</button>
             </main>
         </PageTitle>
     );

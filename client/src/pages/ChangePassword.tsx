@@ -9,17 +9,15 @@ import { useNavigate } from 'react-router-dom';
 function ChangePassword() {
     const account = useAppSelector((state) => state.account);
     const navigate = useNavigate();
-    const givenPassword = useRef<string>(""); /** current account password */
-    const newPassword = useRef<string>(""); /** new password that user wants to use  */
-    const newConfirmPassword = useRef<string>(""); /** confirm password to see if it matches newPassword*/
+    const givenPassword = useRef<string>(); /** current account password */
+    const newPassword = useRef<string>(); /** new password that user wants to use  */
+    const newConfirmPassword = useRef<string>(); /** confirm password to see if it matches newPassword*/
 
     const [passwordFailed, setPasswordFailed] = useState<boolean>(false);
     const [errorMsg, setErrorMsg] = useState<string | undefined>(undefined);
 
     const changePassword = async () => {
-        /*wrong passwords used
-        should this be newPassword!== newConfirmPassword*/
-        if (givenPassword.current !== newPassword.current) {
+        if (newPassword.current !== newConfirmPassword.current) {
             setPasswordFailed(true);
             setErrorMsg("Passwords do not match!");
             return;
@@ -32,10 +30,9 @@ function ChangePassword() {
                     email: account?.account?.email,
                     givenPassword: givenPassword,
                     newPassword: newPassword,
-                }),
+                })
             })
-        }
-        catch (error: any) {
+        } catch (error) {
             console.log("Error changing password:", error);
         }
     };

@@ -1,6 +1,6 @@
 import "../styles/Report.css";
 import PageTitle from "../components/PageTitle/PageTitle";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAppSelector } from "../store/hooks";
 import { useNavigate } from "react-router-dom";
 
@@ -13,14 +13,17 @@ function Report() {
     const [selectedReason, setSelectedReason] = useState<string>();
     const [comments, setComments] = useState<string>();
 
-    const getAccountInformation = useCallback(async () => {
-        try {
-            const response = await fetch(`/view-account-info?accountEmail=${account?.account?.email}`);
-            const data = await response.json();
-            if (data.account) setUserType(data.account.Type_User);
-        } catch (error) {
-            console.error("Error fetching data:", error);
+    useEffect(() => {
+        async function getAccountInformation() {
+            try {
+                const response = await fetch(`/view-account-info?accountEmail=${account?.account?.email}`);
+                const data = await response.json();
+                if (data.account) setUserType(data.account.Type_User);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
         }
+        getAccountInformation();
     }, [account?.account?.email]);
 
     useEffect(() => {
@@ -89,16 +92,12 @@ function Report() {
         }
     };
 
-    useEffect(() => {
-        getAccountInformation();
-    }, [getAccountInformation]);
-
     return (
         <PageTitle title="Report User">
             <main id="report">
                 <h1> Report User</h1>
 
-                {/* Rider report */}
+                {/* Rider report page */}
                 {(userType === 1) &&(
                     <div className="reportContainer">
                         <h2>You are reporting:</h2>
@@ -135,7 +134,7 @@ function Report() {
                     </div>
                 )}
 
-                {/* Driver report */}
+                {/* Driver report page */}
                 {(userType === 2) &&(
                     <div className="reportContainer">
                         <h2>You are reporting:</h2>

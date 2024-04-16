@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { GoogleMap, useJsApiLoader, DirectionsRenderer, MarkerF, Libraries } from '@react-google-maps/api';
 import PageTitle from '../components/PageTitle/PageTitle';
 import "../styles/RideinProgress.css";
@@ -27,15 +27,18 @@ function RideinProgress({ userid }: RideInProgressProps) {
     const [checkRideCompleted, setCheckRideCompleted] = useState<string>();
     const navigate = useNavigate();
 
-    const getAccountInformation = useCallback(async () => {
-        try {
-            const response = await fetch(`/view-account-info?accountEmail=${userid}`);
-            const data = await response.json();
-            if (data.account) setUserType(data.account.Type_User);
-        } catch (error) {
-            console.error("Error fetching data:", error);
+    useEffect(() => {
+        async function getAccountInformation() {
+            try {
+                const response = await fetch(`/view-account-info?accountEmail=${userid}`);
+                const data = await response.json();
+                if (data.account) setUserType(data.account.Type_User);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
         }
-    }, [userid]);
+        getAccountInformation();
+    }, [userid])
 
     useEffect(() => {
         const delay = 125;
@@ -143,28 +146,23 @@ function RideinProgress({ userid }: RideInProgressProps) {
         }
     };
 
-    const checkRideEnded = useCallback(async () => {
-        try {
-            const response = await fetch(`/check-if-ride-ended?userid=${userid}&usertype=${userType}`);
-            const data = await response.json();
-            setCheckRideCompleted(data.rideStatus);
-        } catch (error) {
-            console.log("Error checking if ride ended:", error);
-        }
-    }, [userid, userType]) 
-
     useEffect(() => {
         const interval = setInterval(() => {
+            async function checkRideEnded() {
+                try {
+                    const response = await fetch(`/check-if-ride-ended?userid=${userid}`);
+                    const data = await response.json();
+                    setCheckRideCompleted(data.rideStatus);
+                } catch (error) {
+                    console.log("Error checking if ride ended:", error);
+                }
+            }
             checkRideEnded();
             if (checkRideCompleted !== "COMPLETED") return;
             navigate("/Rating");
         }, 1000);
         return () => clearInterval(interval);
-    }, [checkRideCompleted, navigate, checkRideEnded]);
-
-    useEffect(() => {
-        getAccountInformation();
-    }, [getAccountInformation])
+    }, [userid, checkRideCompleted, navigate]);
 
     return (
         <PageTitle title='Ride in Progress'>
@@ -207,7 +205,8 @@ function RideinProgress({ userid }: RideInProgressProps) {
                 )}
 
                 <aside className="ride-in-progress-container">
-                    {/** @returns Rider information */}
+                    
+                    {/** Rider information */}
                     {(userType === 1 && riderRideInfo) && (
                         <>
                             <h1>Ride in Progress</h1>
@@ -224,7 +223,7 @@ function RideinProgress({ userid }: RideInProgressProps) {
                         </>
                     )}
 
-                    {/** @returns Driver information */}
+                    {/** Driver information */}
                     {(userType === 2 && driverRideInfo) && (
                         <>
                             <h1>Ride in Progress</h1>

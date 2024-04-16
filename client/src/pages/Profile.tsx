@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import '../styles/Profile.css';
 import { useAppSelector } from '../store/hooks';
 import PageTitle from '../components/PageTitle/PageTitle';
@@ -8,45 +8,44 @@ import { setAccountStore } from "../store/features/accountSlice";
 import { useNavigate } from 'react-router-dom';
 
 function Profile() {
-    const dispatch = useAppDispatch();
     const account = useAppSelector((state) => state.account);
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const [firstName, setFirstName] = useState<string>('');
-    const [lastName, setLastName] = useState<string>('');
-    const [userType, setUserType] = useState<number>(1);
-    const [paypalEmail, setPaypalEmail] = useState<string>('');
-    const [phoneNumber, setPhoneNumber] = useState<string>('');
-    const [status, setStatus] = useState<string>('');
-
-    const getAccountInformation = useCallback(async () => {
-        try {
-            const response = await fetch(`/view-account-info?accountEmail=${account?.account?.email}`);
-            const data = await response.json();
-
-            if (data.account) {
-                setFirstName(data.account.First_Name);
-                setLastName(data.account.Last_Name);
-                setUserType(data.account.Type_User);
-                setPaypalEmail(data.account.Pay_Pal);
-                setPhoneNumber(data.account.Phone_Number);
-                setStatus(data.account.Status_User);
-            }
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    }, [account?.account?.email]);
+    const [firstName, setFirstName] = useState<string>();
+    const [lastName, setLastName] = useState<string>();
+    const [userType, setUserType] = useState<number>();
+    const [paypalEmail, setPaypalEmail] = useState<string>();
+    const [phoneNumber, setPhoneNumber] = useState<string>();
+    const [status, setStatus] = useState<string>();
 
     useEffect(() => {
-        getAccountInformation();
-    }, [getAccountInformation]);
+        async function getAccountInformation() {
+            try {
+                const response = await fetch(`/view-account-info?accountEmail=${account?.account?.email}`);
+                const data = await response.json();
 
+                if (data.account) {
+                    setFirstName(data.account.First_Name);
+                    setLastName(data.account.Last_Name);
+                    setUserType(data.account.Type_User);
+                    setPaypalEmail(data.account.Pay_Pal);
+                    setPhoneNumber(data.account.Phone_Number);
+                    setStatus(data.account.Status_User);
+                }
+            } catch (error) {
+                console.error("Error fetching account infromation:", error);
+            }
+        }
+        getAccountInformation();
+    }, [account?.account?.email, status]);
+    
     const eatCookie = async () => {
         await fetch(`/clear-cookie?userEmail=${account?.account?.email}`);
         dispatch(setAccountStore(undefined));
         navigate("/Login");
     };
-
+    
     const changeStatus = async () => {
         try {
             fetch(`/change-status`, {
@@ -57,9 +56,8 @@ function Profile() {
                     currentStatus: status,
                 }),
             })
-            getAccountInformation();
-        } catch (e: any) {
-            console.log(e);
+        } catch (error) {
+            console.log("Error changing driver status:", error);
         }
     };
 
@@ -89,12 +87,11 @@ function Profile() {
                 </div>
 
                 <div className="profileInfo">
-                    <header>
-                        <h2>Account Info</h2>
-                    </header>
+                    <header><h2>Account Info</h2></header>
                     <br />
                     <p><strong>Name: </strong> {firstName} {lastName} </p>
 
+                    {/* Rider profile */}
                     {(userType === 1) && (
                         <>
                             <p><strong>Type: </strong> Rider</p>
@@ -106,6 +103,8 @@ function Profile() {
                             <button onClick={() => navigate("/EditAccount")}>Edit Account</button>
                         </>
                     )}
+
+                    {/* Driver profile */}
                     {(userType === 2) && (
                         <>
                             <p><strong>Type: </strong> Driver</p>

@@ -1,4 +1,4 @@
-#edit-payment{
+#edit-payment {
     display: flex;
     height: 100%;
     padding-top: 100px;
@@ -10,7 +10,7 @@
     align-items: center;
 }
 
-#edit-payment button{
+#edit-payment button {
     color: white;
     background: var(--brand-maroon);
     padding: 8px 20px;
@@ -21,6 +21,7 @@
     cursor: pointer;
     /* transition: all 0.2s; */
     white-space: nowrap;
+    max-width: 25%;
 }
 
 

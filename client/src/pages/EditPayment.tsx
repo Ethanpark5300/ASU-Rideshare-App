@@ -1,40 +1,30 @@
 import '../styles/EditPayment.css';
 import PageTitle from '../components/PageTitle/PageTitle';
 import { useAppSelector } from '../store/hooks';
-import { SetStateAction, useCallback, useEffect, useState } from 'react';
+import { SetStateAction, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function EditPayment() {
     const account = useAppSelector((state) => state.account);
     const navigate = useNavigate();
-    const [loading, setLoading] = useState<boolean>(true);
-    const [paypalEmail, setPaypalEmail] = useState<string>('');
+    const [paypalEmail, setPaypalEmail] = useState<string>();
 
     useEffect(() => {
-        if (account && account.account) {
-            setLoading(false);
-            setPaypalEmail(account.account.paypalEmail);
-        }
+        if (account && account.account) setPaypalEmail(account.account.paypalEmail);
     }, [account]);
 
-    const getPaymentInformation = useCallback(async () => {
-        try {
-            const response = await fetch(`/view-account-info?accountEmail=${account?.account?.email}`);
-            const data = await response.json();
-
-            if (data.account) {
-                setPaypalEmail(data.account.Pay_Pal);
-            }
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    }, [account?.account?.email]);
-
     useEffect(() => {
+        async function getPaymentInformation() {
+            try {
+                const response = await fetch(`/view-account-info?accountEmail=${account?.account?.email}`);
+                const data = await response.json();
+                if (data.account) setPaypalEmail(data.account.Pay_Pal);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
         getPaymentInformation();
-    }, [getPaymentInformation]);
-
-    if (loading) { return <div>Loading...</div>; }
+    }, [account?.account?.email]);
 
     const handlePaypalEmailChange = (e: { target: { value: SetStateAction<string>; }; }) => { setPaypalEmail(e.target.value); };
 
@@ -46,12 +36,11 @@ function EditPayment() {
                 body: JSON.stringify({
                     userEmail: account?.account?.email,
                     newPaypalEmail: paypalEmail
-                }),
+                })
             });
             alert('Changes saved!');
-        }
-        catch (e: any) {
-            console.log(e);
+        } catch (error) {
+            console.log("Error changing PayPal account:", error);
         }
     };
 

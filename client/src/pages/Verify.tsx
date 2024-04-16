@@ -14,27 +14,25 @@ function Verify() {
     //get data from redirect
     
     const { state } = useLocation();
+
     //if state is null, redirect
     useEffect(() => {
-        if (state === null) {
-            navigate("/Register");
-        } 
+        if (state === null) navigate("/Register");
     }, [state, navigate]);
+
     const verifyEmail = "";
     const verifyRef = useRef<string>("");
 
     const [registerFailed, setRegisterFailed] = useState<boolean>(false);
     const [errorMsg, setErrorMsg] = useState<string | undefined>(undefined);
-
     const [isSending, setIsSending] = useState(false);
-
     const [registerMessage, setRegisterMessage] = useState<string | undefined>();
-
 
     const registerRequest = useCallback(async () => {
         setErrorMsg(undefined);
         setRegisterFailed(false);
         setRegisterMessage(undefined);
+
         //basic checks
         if (verifyRef.current === "") {
             setRegisterFailed(true);
@@ -70,6 +68,7 @@ function Verify() {
     const resendRequest = useCallback(async () => {
         // don't send again while we are sending
         if (isSending) return;
+        
         // update state
         setIsSending(true);
 
@@ -80,18 +79,13 @@ function Verify() {
                 email: verifyEmail,
             }),
         })
-            .then((res) => res.json())
-            .then((data) => {
-            });
         setIsSending(false);
     }, [isSending, verifyEmail]);
 
     return (
         <PageTitle title="Verify">
             <main id="verify">
-                <header>
-                    <h1>Join the Rideshare Community</h1>
-                </header>
+                <header><h1>Join the Rideshare Community</h1></header>
 
                 <div className = "verify-text-container">
                     <h2>Verification ID:</h2>

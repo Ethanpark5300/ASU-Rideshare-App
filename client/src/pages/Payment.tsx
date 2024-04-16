@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import "../styles/Payment.css"
 import PageTitle from '../components/PageTitle/PageTitle';
@@ -13,6 +13,7 @@ const paypalOptions = {
 
 function Payment() {
     const account = useAppSelector((state) => state.account);
+    const navigate = useNavigate();
     const [paypalLoaded, setPaypalLoaded] = useState<boolean>(false);
     const [paymentStatus, setPaymentStatus] = useState<string>();
     const [showErrorPopup, setShowErrorPopup] = useState<boolean>(false);
@@ -21,7 +22,6 @@ function Payment() {
     const [cancelConfirmPromptVisible, setCancelConfirmPromptVisible] = useState<boolean>(false);
     const [cancellationDriverStatus, setCheckDriverCancellationStatus] = useState<string>();
     const [cancelledDriverPopup, setCancelledDriverPopup] = useState<boolean>(false);
-    const navigate = useNavigate();
 
     const buttonStyles = {
         color: 'gold' as const,
@@ -43,7 +43,6 @@ function Payment() {
             };
             getRidePaymentInformation();
         }, delay);
-
         return () => clearTimeout(timerId);
     }, [account?.account?.email]);
 
@@ -51,12 +50,8 @@ function Payment() {
         return actions.order.create({
             purchase_units: [
                 {
-                    amount: {
-                        value: ridePaymentInformation.Ride_Cost,
-                    },
-                    driver: {
-                        email_address: ridePaymentInformation.Pay_Pal,
-                    },
+                    amount: { value: ridePaymentInformation.Ride_Cost },
+                    driver: { email_address: ridePaymentInformation.Pay_Pal }
                 },
             ],
         });
@@ -89,8 +84,7 @@ function Payment() {
                         rideCost: ridePaymentInformation.Ride_Cost,
                     }),
                 })
-            }
-            catch (error: any) {
+            } catch (error: any) {
                 console.error("Payment error:", error);
             }
 
@@ -132,7 +126,7 @@ function Payment() {
                 headers: { "Content-type": "application/json" },
                 body: JSON.stringify({
                     riderid: account?.account?.email,
-                }),
+                })
             })
             setCancelConfirmPromptVisible(false);
             navigate("/");
@@ -141,24 +135,23 @@ function Payment() {
         }
     }
 
-    const checkDriverCancellationStatus = useCallback(async () => {
-        try {
-            const response = await fetch(`/check-driver-cancellation-status?riderid=${account?.account?.email}`);
-            const data = await response.json();
-            setCheckDriverCancellationStatus(data.getCancellationStatus);
-        } catch (error) {
-            console.log("Error checking driver cancellation status:", error);
-        }
-    }, [account?.account?.email]);
-
     useEffect(() => {
         const interval = setInterval(() => {
+            async function checkDriverCancellationStatus() {
+                try {
+                    const response = await fetch(`/check-driver-cancellation-status?riderid=${account?.account?.email}`);
+                    const data = await response.json();
+                    setCheckDriverCancellationStatus(data.getCancellationStatus);
+                } catch (error) {
+                    console.log("Error checking driver cancellation status:", error);
+                }
+            }
             checkDriverCancellationStatus();
             if (cancellationDriverStatus !== "CANCELLED(DRIVER)") return;
             setCancelledDriverPopup(true);
         }, 1000);
         return () => clearInterval(interval);
-    }, [cancellationDriverStatus, checkDriverCancellationStatus]);
+    }, [account?.account?.email, cancellationDriverStatus]);
 
     return (
         <PageTitle title='Payment'>
@@ -198,10 +191,10 @@ function Payment() {
                     </div>
                 </div>
 
-                {/** @return successful/error popup depending on payment status */}
+                {/** Successful/error popup depending on payment status */}
                 {renderPopup()}
 
-                {/** @return cancel warning popup */}
+                {/** Cancel warning popup */}
                 {cancelConfirmPromptVisible && (
                     <div className='cancel-popup'>
                         <p>Are you sure you want to cancel the ride?</p>
@@ -212,7 +205,7 @@ function Payment() {
                     </div>
                 )}
 
-                {/** @return driver cancelling popup */}
+                {/** Driver cancelling popup */}
                 {cancelledDriverPopup && (
                     <div className='cancel-popup'>
                         <p>Sorry, driver has cancelled your ride.</p>

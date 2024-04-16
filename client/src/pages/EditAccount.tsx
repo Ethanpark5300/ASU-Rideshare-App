@@ -2,21 +2,19 @@ import '../styles/EditAccount.css';
 import PageTitle from '../components/PageTitle/PageTitle';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../store/hooks';
-import { useState, useEffect, SetStateAction, useCallback } from 'react';
+import { useState, useEffect, SetStateAction } from 'react';
 
 function EditAccount() {
     const account = useAppSelector((state) => state.account);
     const navigate = useNavigate();
 
-    const [loading, setLoading] = useState<boolean>(true);
-    const [firstName, setFirstName] = useState<string>('');
-    const [lastName, setLastName] = useState<string>('');
-    const [userType, setUserType] = useState(1);
-    const [phoneNumber, setPhoneNumber] = useState<string>('');
+    const [firstName, setFirstName] = useState<string>();
+    const [lastName, setLastName] = useState<string>();
+    const [userType, setUserType] = useState(0);
+    const [phoneNumber, setPhoneNumber] = useState<string>();
 
     useEffect(() => {
         if (account && account.account) {
-            setLoading(false);
             setFirstName(account.account.firstName);
             setLastName(account.account.lastName);
             setUserType(account.account.accountType);
@@ -24,27 +22,24 @@ function EditAccount() {
         }
     }, [account]);
 
-    const getAccountInformation = useCallback(async () => {
-        try {
-            const response = await fetch(`/view-account-info?accountEmail=${account?.account?.email}`);
-            const data = await response.json();
-
-            if (data.account) {
-                setFirstName(data.account.First_Name);
-                setLastName(data.account.Last_Name);
-                setUserType(data.account.Type_User);
-                setPhoneNumber(data.account.Phone_Number);
-            }
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    }, [account?.account?.email]);
-
     useEffect(() => {
-        getAccountInformation();
-    }, [getAccountInformation]);
+        async function getAccountInformation() {
+            try {
+                const response = await fetch(`/view-account-info?accountEmail=${account?.account?.email}`);
+                const data = await response.json();
 
-    if (loading) { return <div>Loading...</div>; }
+                if (data.account) {
+                    setFirstName(data.account.First_Name);
+                    setLastName(data.account.Last_Name);
+                    setUserType(data.account.Type_User);
+                    setPhoneNumber(data.account.Phone_Number);
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
+        getAccountInformation();
+    }, [account?.account?.email]);
 
     const handleFirstNameChange = (e: { target: { value: SetStateAction<string>; }; }) => { setFirstName(e.target.value); };
     const handleLastNameChange = (e: { target: { value: SetStateAction<string>; }; }) => { setLastName(e.target.value); };
@@ -62,12 +57,11 @@ function EditAccount() {
                     newLastName: lastName,
                     newAccountType: userType,
                     newPhoneNumber: phoneNumber
-                }),
-            });
+                })
+            })
             alert('Changes saved!');
-        }
-        catch (e: any) {
-            console.log(e);
+        } catch (error) {
+            console.log("Error changing account details:", error);
         }
     };
 

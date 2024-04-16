@@ -20,7 +20,7 @@ function ChooseDriver() {
             setFavoriteDriversAvailableList(data.availableFavoriteDrivers);
             setDriversAvailableList(data.otherAvailableDrivers);
         } catch (error) {
-            console.error("Error fetching data:", error);
+            console.error("Error retrieving available drivers list:", error);
         }
     }, [account?.account?.email]);
 
@@ -32,7 +32,7 @@ function ChooseDriver() {
                 body: JSON.stringify({
                     riderid: account?.account?.email,
                     driverid: selectedDriver?.Email
-                }),
+                })
             });
             setRequestedDrivers((prevDrivers) => [...prevDrivers, selectedDriver]);
             refreshDriversList();
@@ -49,53 +49,50 @@ function ChooseDriver() {
                 body: JSON.stringify({
                     riderid: account?.account?.email,
                     driverid: selectedDriver?.Email
-                }),
+                })
             });
             setRequestedDrivers((prevDrivers) => prevDrivers.filter((driver) => driver.Email !== selectedDriver?.Email));
             refreshDriversList();
         } catch (error) {
-            console.error("Error canceling request:", error);
+            console.error("Error cancelling driver request:", error);
         }
     };
 
-    const removeRideEntry = async () => {
-        try {
-            await fetch(`/cancel-request`, {
-                method: "POST",
-                headers: { "Content-type": "application/json" },
-                body: JSON.stringify({
-                    riderid: account?.account?.email,
-                }),
-            });
-        } catch (error) {
-            console.error("Error cancelling request:", error);
+    function cancelRideRequest() {
+        async function removeRideRequest() {
+            try {
+                await fetch(`/cancel-request`, {
+                    method: "POST",
+                    headers: { "Content-type": "application/json" },
+                    body: JSON.stringify({ 
+                        riderid: account?.account?.email 
+                    })
+                });
+            } catch (error) {
+                console.error("Error cancelling ride request:", error);
+            }
         }
-    };
-
-    function cancelRideRequest() { 
-        removeRideEntry();
+        removeRideRequest();
         navigate("/");
     }
 
-    const checkRideStatus = useCallback(async () => {
-        try {
-            const response = await fetch(`/check-driver-accepted-status?riderid=${account?.account?.email}`);
-            const data = await response.json();
-            setDriverAccepted(data.recievedDriver);
-
-            if (driverAccepted !== "PAYMENT") return;
-            navigate("/Payment");
-        } catch (error) {
-            console.error("Error checking ride status:", error);
-        }
-    }, [account?.account?.email, navigate, driverAccepted]);
-
     useEffect(() => {
         const interval = setInterval(() => {
+            async function checkRideStatus() {
+                try {
+                    const response = await fetch(`/check-driver-accepted-status?riderid=${account?.account?.email}`);
+                    const data = await response.json();
+                    setDriverAccepted(data.recievedDriver);
+                    if (driverAccepted !== "PAYMENT") return;
+                    navigate("/Payment");
+                } catch (error) {
+                    console.error("Error checking ride status:", error);
+                }
+            }
             checkRideStatus();
         }, 1000);
         return () => clearInterval(interval);
-    }, [checkRideStatus]);
+    }, [account?.account?.email, driverAccepted, navigate]);
 
     useEffect(() => {
         refreshDriversList();
@@ -106,7 +103,7 @@ function ChooseDriver() {
             <main id="choose-driver">
                 <aside className="choosedriver-panel">
                     <header><h1>Choose Driver</h1></header>
-                    
+
                     {/* List of available riders favorite drivers */}
                     <section id="available-favorite-drivers-container">
                         <h2>Available Favorite Drivers</h2>
@@ -158,7 +155,6 @@ function ChooseDriver() {
                     </section>
 
                     <section className="choose-driver-btns-container">
-                        <button className="btn check-status-btn" onClick={checkRideStatus}>Check Status</button>
                         <button className="btn refresh-list-btn" onClick={refreshDriversList}>Refresh List</button>
                         <button className="btn cancel-ride-btn" onClick={cancelRideRequest}>Cancel Ride</button>
                     </section>

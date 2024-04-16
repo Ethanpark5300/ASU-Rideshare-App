@@ -653,7 +653,7 @@ app.get("/check-driver-favorite-status", async (req: Request, res: Response) => 
 	
 	let getCurrentDriverFavoriteStatus = await db.all(`SELECT status FROM favorites WHERE rider_id = '${riderid}' AND driver_id = '${latestDriverID}'`);
 	
-	if (getCurrentDriverFavoriteStatus[getCurrentDriverFavoriteStatus.length - 1].Status === undefined) {
+	if (getCurrentDriverFavoriteStatus.Status === undefined || getCurrentDriverFavoriteStatus[getCurrentDriverFavoriteStatus.length - 1].Status === undefined) {
 		favoriteStatus = "Omitted";
 	} else {
 		favoriteStatus = getCurrentDriverFavoriteStatus[getCurrentDriverFavoriteStatus.length-1].Status;
@@ -1319,12 +1319,12 @@ app.post("/cancel-ride", async (req: Request, res: Response) => {
 
 	/** Driver cancelling before deadline */
 	else if (userType.Type_User === 2 && passedCancellation === false) {
-		await db.run(`UPDATE rides SET status = "CANCELLED(DRIVER)" WHERE driver_id = '${userid}' AND status = "PAID" OR status = "PAYMENT" OR status = "WAITING(DRIVER)`);
+		await db.run(`UPDATE rides SET status = "CANCELLED(DRIVER)" WHERE driver_id = '${userid}' AND status = "PAID" OR status = "PAYMENT" OR status = "WAITING(DRIVER)"`);
 	}
 
 	/** Driver cancelling after deadline */
 	else if (userType.Type_User === 2 && passedCancellation === true) {
-		await db.run(`UPDATE rides SET status = "CANCELLED(DRIVER)" WHERE driver_id = '${userid}' AND status = "PAID" OR status = "PAYMENT" OR status = "WAITING(DRIVER)`);
+		await db.run(`UPDATE rides SET status = "CANCELLED(DRIVER)" WHERE driver_id = '${userid}' AND status = "PAID" OR status = "PAYMENT" OR status = "WAITING(DRIVER)"`);
 
 		let currentWarnings = await db.get(`SELECT warnings FROM user_info WHERE email = '${userid}'`);
 		let newWarningsCount = currentWarnings.Warnings + 1;

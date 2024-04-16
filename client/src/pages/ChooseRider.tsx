@@ -17,7 +17,7 @@ function ChooseRider() {
             setPendingRequestsList(data.pendingRiderRequestsList);
             setAllRequestsList(data.allRequestsList);
         } catch (error) {
-            console.error("Error fetching data:", error);
+            console.error("Error retrieving ride queue list:", error);
         }
     }, [account?.account?.email]);
 
@@ -30,7 +30,7 @@ function ChooseRider() {
                 body: JSON.stringify({
                     driverid: account?.account?.email,
                     riderid: selectedRider?.Rider_ID
-                }),
+                })
             });
         } catch (error) {
             console.error("Error accepting ride request:", error);

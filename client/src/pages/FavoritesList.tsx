@@ -1,6 +1,6 @@
 import '../styles/FavoritesList.css';
 import PageTitle from '../components/PageTitle/PageTitle';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppSelector } from '../store/hooks';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,26 +11,29 @@ function FavoritesList() {
     const [ridersFavoritesList, setRidersFavoritesList] = useState<any[]>([]);
     const [driversPendingFavoritesList, setDriversPendingFavoritesList] = useState<any[]>([]);
 
-    const getAccountInformation = useCallback(async () => {
-        try {
-            const response = await fetch(`/view-account-info?accountEmail=${account?.account?.email}`);
-            const data = await response.json();
-            if (data.account) setUserType(data.account.Type_User);
-        } catch (error) {
-            console.error("Error fetching data:", error);
+    useEffect(() => {
+        async function getAccountInformation() {
+            try {
+                const response = await fetch(`/view-account-info?accountEmail=${account?.account?.email}`);
+                const data = await response.json();
+                if (data.account) setUserType(data.account.Type_User);
+            } catch (error) {
+                console.error("Error fetching account information:", error);
+            }
         }
-    }, [account?.account?.email]);
-
-    const getFavoritesList = useCallback(async () => {
-        try {
-            const response = await fetch(`/get-favorites-list?userid=${account?.account?.email}`);
-            const data = await response.json();
-            setRidersFavoritesList(data.getRidersFavoritesList);
-            setDriversPendingFavoritesList(data.getDriversPendingFavoritesList);
-        } catch (error) {
-            console.error("Error getting blocked list:", error);
+        async function getFavoritesList() {
+            try {
+                const response = await fetch(`/get-favorites-list?userid=${account?.account?.email}`);
+                const data = await response.json();
+                setRidersFavoritesList(data.getRidersFavoritesList);
+                setDriversPendingFavoritesList(data.getDriversPendingFavoritesList);
+            } catch (error) {
+                console.error("Error getting favorites list:", error);
+            }
         }
-    }, [account?.account?.email]);
+        getAccountInformation();
+        getFavoritesList();
+    }, [account?.account?.email, ridersFavoritesList, driversPendingFavoritesList]);
 
     const unfavoriteDriver = async (selectedDriver: { Driver_ID: string; }) => {
         try {
@@ -40,10 +43,10 @@ function FavoritesList() {
                 body: JSON.stringify({
                     riderid: account?.account?.email,
                     selectedDriver: selectedDriver?.Driver_ID
-                }),
+                })
             });
         } catch (error) {
-            console.error("Error unfavoriting request:", error);
+            console.error("Error unfavoriting driver:", error);
         }
     };
 
@@ -58,7 +61,7 @@ function FavoritesList() {
                 }),
             });
         } catch (error) {
-            console.error("Error unfavoriting request:", error);
+            console.error("Error accepting favorite request:", error);
         }
     };
 
@@ -73,26 +76,18 @@ function FavoritesList() {
                 }),
             });
         } catch (error) {
-            console.error("Error unfavoriting request:", error);
+            console.error("Error declining favorite request:", error);
         }
     };
-
-    useEffect(() => {
-        getAccountInformation();
-        getFavoritesList();
-        // eslint-disable-next-line
-    }, [ridersFavoritesList, driversPendingFavoritesList, getFavoritesList]);
 
     return (
         <PageTitle title="Favorites List">
             <main id="favorites-list">
 
-                {/** @returns rider's favorite and pending favorite list */}
+                {/** Rider's favorite and pending favorite list */}
                 {(userType === 1) && (
                     <>
-                        <header>
-                            <h1>Favorites List</h1>
-                        </header>
+                        <header><h1>Favorites List</h1></header>
                         {ridersFavoritesList.length > 0 ? (
                             <table>
                                 <thead>
@@ -120,12 +115,10 @@ function FavoritesList() {
                     </>
                 )}
 
-                {/** @returns driver's pending favorite list */}
+                {/** Driver's pending favorite list */}
                 {(userType === 2) && (
                     <>
-                        <header>
-                            <h1>Pending Favorites</h1>
-                        </header>
+                        <header><h1>Pending Favorites</h1></header>
                         {driversPendingFavoritesList.length > 0 ? (
                             <table>
                                 <thead>
@@ -153,10 +146,7 @@ function FavoritesList() {
                         )}
                     </>
                 )}
-                <div className="favorites-btns-container">
-                    <button onClick={getFavoritesList} className='refresh-btn'>Refresh</button>
-                    <button className='back-to-profile-btn' onClick={() => navigate("/")}>Back to Profile</button>
-                </div>
+                <button className='back-to-profile-btn' onClick={() => navigate("/")}>Back to Profile</button>
             </main>
         </PageTitle>
     );

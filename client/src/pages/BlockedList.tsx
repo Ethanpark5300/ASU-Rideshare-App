@@ -1,21 +1,24 @@
 import '../styles/BlockedList.css';
 import PageTitle from '../components/PageTitle/PageTitle';
 import { useAppSelector } from '../store/hooks';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 function BlockedList() {
     const account = useAppSelector((state) => state.account);
     const [blockedList, setBlockedList] = useState<any[]>([]);
 
-    const getBlockedList = useCallback(async () => {
-        try {
-            const response = await fetch(`/get-blocked-list?userid=${account?.account?.email}`);
-            const data = await response.json();
-            setBlockedList(data.blockedList);
-        } catch (error) {
-            console.error("Error getting blocked list:", error);
+    useEffect(() => {
+        async function getBlockedList() {
+            try {
+                const response = await fetch(`/get-blocked-list?userid=${account?.account?.email}`);
+                const data = await response.json();
+                setBlockedList(data.blockedList);
+            } catch (error) {
+                console.error("Error getting blocked list:", error);
+            }
         }
-    }, [account?.account?.email]);
+        getBlockedList();
+    }, [account?.account?.email, blockedList]);
 
     const unblockUser = async (selectedUser: { Blockee_ID: string; }) => {
         try {
@@ -25,23 +28,17 @@ function BlockedList() {
                 body: JSON.stringify({
                     userid: account?.account?.email,
                     selectedUser: selectedUser?.Blockee_ID
-                }),
+                })
             });
         } catch (error) {
-            console.error("Error unblocking request:", error);
+            console.error("Error unblocking user:", error);
         }
     };
-
-    useEffect(() => {
-        getBlockedList();
-    }, [blockedList, getBlockedList]);
 
     return (
         <PageTitle title="Blocked List">
             <main id="blocked-list">
-                <header> 
-                    <h1>Blocked List</h1>
-                </header>
+                <header><h1>Blocked List</h1></header>
                 
                 {blockedList.length > 0 ? (
                     <table>
@@ -63,10 +60,6 @@ function BlockedList() {
                 ) : (
                     <div className = "blocked-list-container">No blocked list available.</div>
                 )}
-                
-                <div className = "blocked-list-btns-container">
-                    <button className="blocked-list-refresh-btn" onClick={getBlockedList}>Refresh</button>
-                </div>
             </main>
         </PageTitle>
     );

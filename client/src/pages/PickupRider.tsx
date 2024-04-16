@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { GoogleMap, useJsApiLoader, DirectionsRenderer, MarkerF, Libraries } from '@react-google-maps/api';
 import PageTitle from '../components/PageTitle/PageTitle';
 import "../styles/PickupRider.css";
@@ -117,24 +117,23 @@ function PickupRider({ driverid }: PickupRiderProps) {
     };
 
     /** Checking if the rider cancelled the ride */
-    const checkRiderCancellationStatus = useCallback(async () => {
-        try {
-            const response = await fetch(`/check-rider-cancellation-status?driverid=${driverid}`);
-            const data = await response.json();
-            setCheckRiderCancellationStatus(data.getCancellationStatus);
-        } catch (error) {
-            // console.log("Error checking rider cancellation status:", error);
-        }
-    }, [driverid]);
-
     useEffect(() => {
         const interval = setInterval(() => {
+            async function checkRiderCancellationStatus() {
+                try {
+                    const response = await fetch(`/check-rider-cancellation-status?driverid=${driverid}`);
+                    const data = await response.json();
+                    setCheckRiderCancellationStatus(data.getCancellationStatus);
+                } catch (error) {
+                    console.log("Error checking rider cancellation status:", error);
+                }
+            }
             checkRiderCancellationStatus();
             if (cancellationRiderStatus !== "CANCELLED(RIDER)") return;
             setCancelledRiderPopup(true);
         }, 1000);
         return () => clearInterval(interval);
-    }, [cancellationRiderStatus, checkRiderCancellationStatus]);
+    }, [driverid, cancellationRiderStatus]);
 
     /** Handling when driver arrives to pick-up point */
     useEffect(() => {
@@ -157,21 +156,20 @@ function PickupRider({ driverid }: PickupRiderProps) {
     }, [estimatedRemainingDistance, driverid]);
 
     /** Handling when the ride starts */
-    async function startRide() {
-        try {
-            fetch(`/start-ride`, {
-                method: "POST",
-                headers: { "Content-type": "application/json" },
-                body: JSON.stringify({
-                    driverid: driverid,
-                }),
-            })
-        } catch (error) {
-            console.log("Error starting ride:", error);
-        }
-    }
-
     const handleStartRide = () => {
+        async function startRide() {
+            try {
+                fetch(`/start-ride`, {
+                    method: "POST",
+                    headers: { "Content-type": "application/json" },
+                    body: JSON.stringify({
+                        driverid: driverid,
+                    }),
+                })
+            } catch (error) {
+                console.log("Error starting ride:", error);
+            }
+        }
         startRide();
         navigate("/RideInProgress");
     }

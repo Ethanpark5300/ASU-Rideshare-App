@@ -1,6 +1,6 @@
 import '../styles/Waiting.css'
 import PageTitle from '../components/PageTitle/PageTitle';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppSelector } from '../store/hooks';
 import CancellationTimer from '../components/Timer/Timer';
 import { useNavigate } from 'react-router-dom';
@@ -70,7 +70,7 @@ function WaitingDriver() {
                     setRiderRideInfo(data.riderRideInfo);
                     setPickupAddress(riderRideInfo.Pickup_Location);
                 } catch (error) {
-                    // console.error("Error fetching data:", error);
+                    console.error("Error fetching ride information:", error);
                 }
             };
             getRideInformation();
@@ -87,22 +87,21 @@ function WaitingDriver() {
         else setPassedCancellationPopup(true)
     }
 
-    const confirmCancel = async () => {
-        try {
-            fetch(`/cancel-ride`, {
-                method: "POST",
-                headers: { "Content-type": "application/json" },
-                body: JSON.stringify({
-                    userid: account?.account?.email,
-                    passedCancellation: passedCancellation
-                }),
-            });
-        } catch (error: any) {
-            console.log("Error cancelling ride:", error);
-        }
-    };
-
     const handleConfirmCancel = () => {
+        async function confirmCancel() {
+            try {
+                fetch(`/cancel-ride`, {
+                    method: "POST",
+                    headers: { "Content-type": "application/json" },
+                    body: JSON.stringify({
+                        userid: account?.account?.email,
+                        passedCancellation: passedCancellation
+                    }),
+                });
+            } catch (error) {
+                console.log("Error cancelling ride:", error);
+            }
+        }
         confirmCancel();
         navigate("/");
         setBeforeCancellationPopup(false);
@@ -115,24 +114,23 @@ function WaitingDriver() {
     }
 
     /** Check if driver cancelled the ride */
-    const checkDriverCancellationStatus = useCallback(async () => {
-        try {
-            const response = await fetch(`/check-driver-cancellation-status?riderid=${account?.account?.email}`);
-            const data = await response.json();
-            setCheckDriverCancellationStatus(data.getCancellationStatus);
-        } catch (error) {
-            console.log("Error checking driver cancellation status:", error);
-        }
-    }, [account?.account?.email]);
-
     useEffect(() => {
         const interval = setInterval(() => {
+            async function checkDriverCancellationStatus() {
+                try {
+                    const response = await fetch(`/check-driver-cancellation-status?riderid=${account?.account?.email}`);
+                    const data = await response.json();
+                    setCheckDriverCancellationStatus(data.getCancellationStatus);
+                } catch (error) {
+                    console.error("Error checking driver cancellation status:", error);
+                }
+            }
             checkDriverCancellationStatus();
             if (cancellationDriverStatus !== "CANCELLED(DRIVER)") return;
             setCancelledDriverPopup(true);
         }, 1000);
         return () => clearInterval(interval);
-    }, [cancellationDriverStatus, checkDriverCancellationStatus]);
+    }, [account?.account?.email, cancellationDriverStatus]);
 
     /** Check if driver arrived at the pick-up location */
     useEffect(() => {
@@ -143,7 +141,7 @@ function WaitingDriver() {
                     const data = await response.json();
                     setDriverArrivedStatus(data.getDriverArrivedStatus);
                 } catch (error) {
-                    // console.log("Error checking if driver arrived:", error);
+                    console.log("Error checking if driver arrived:", error);
                 }
             }
             checkDriverArrivedStatus();
@@ -162,7 +160,7 @@ function WaitingDriver() {
                     const data = await response.json();
                     setDriverStarted(data.getDriverStartedStatus);
                 } catch (error) {
-                    // console.log("Error checking if driver started:", error);
+                    console.error("Error checking if driver started:", error);
                 }
             }
             checkDriverStarted();
@@ -215,7 +213,7 @@ function WaitingDriver() {
                     )}
                 </div>
 
-                {/** @returns before cancellation warning popup */}
+                {/** Before cancellation warning popup */}
                 {beforeCancellationPopup && (
                     <div className="waiting-before-cancel-popup">
                         <h2>Cancellation Popup Warning</h2>
@@ -227,7 +225,7 @@ function WaitingDriver() {
                     </div>
                 )}
 
-                {/** @returns after cancellation warning popup */}
+                {/** After cancellation warning popup */}
                 {passedCancellationPopup && (
                     <div className="waiting-after-cancel-popup">
                         <h2>Cancellation Popup Warning</h2>
@@ -240,7 +238,7 @@ function WaitingDriver() {
                     </div>
                 )}
 
-                {/** @returns driver cancelled popup */}
+                {/** Driver cancelled popup */}
                 {cancelledDriverPopup && (
                     <div className='waiting-before-cancel-popup'>
                         <p>Sorry, driver has cancelled your ride.</p>
@@ -248,7 +246,7 @@ function WaitingDriver() {
                     </div>
                 )}
 
-                {/** @returns driver arrived popup */}
+                {/** Driver arrived popup */}
                 {driverArrivedPopup && (
                     <div className='driver-arrived-popup'>
                         <p>Your driver has arrived to your selected pick-up location.</p>

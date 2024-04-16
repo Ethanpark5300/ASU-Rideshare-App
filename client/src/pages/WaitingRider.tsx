@@ -1,6 +1,6 @@
 import '../styles/Waiting.css'
 import PageTitle from '../components/PageTitle/PageTitle';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppSelector } from '../store/hooks';
 import LiveTracking from '../components/GoogleMaps/LiveTracking';
 import CancellationTimer from '../components/Timer/Timer';
@@ -34,24 +34,23 @@ function WaitingRider() {
         return () => clearTimeout(timerId);
     }, [account?.account?.email]);
 
-    const checkPaymentStatus = useCallback(async () => {
-        try {
-            const response = await fetch(`/get-rider-payment-status?driverid=${account?.account?.email}`);
-            const data = await response.json();
-            setPaymentStatus(data.rideStatus);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    }, [account?.account?.email]);
-
     useEffect(() => {
         const interval = setInterval(() => {
+            async function checkPaymentStatus() {
+                try {
+                    const response = await fetch(`/get-rider-payment-status?driverid=${account?.account?.email}`);
+                    const data = await response.json();
+                    setPaymentStatus(data.rideStatus);
+                } catch (error) {
+                    console.error("Error fetching data:", error);
+                }
+            }
             checkPaymentStatus();
             if (paymentStatus !== "PAID") return;
             navigate("/PickupRider");
         }, 1000);
         return () => clearInterval(interval);
-    }, [navigate, paymentStatus, checkPaymentStatus]);
+    }, [account?.account?.email, navigate, paymentStatus]);
 
     const handleTimerEnd = () => {
         setPassedCancellation(true);
@@ -62,22 +61,21 @@ function WaitingRider() {
         else setPassedCancellationPopup(true);
     }
 
-    const confirmCancel = async () => {
-        try {
-            fetch(`/cancel-ride`, {
-                method: "POST",
-                headers: { "Content-type": "application/json" },
-                body: JSON.stringify({
-                    userid: account?.account?.email,
-                    passedCancellation: passedCancellation
-                }),
-            });
-        } catch (error: any) {
-            console.log("Error cancelling ride:", error);
-        }
-    };
-
     const handleConfirmCancel = () => {
+        async function confirmCancel() {
+            try {
+                fetch(`/cancel-ride`, {
+                    method: "POST",
+                    headers: { "Content-type": "application/json" },
+                    body: JSON.stringify({
+                        userid: account?.account?.email,
+                        passedCancellation: passedCancellation
+                    }),
+                });
+            } catch (error: any) {
+                console.log("Error cancelling ride:", error);
+            }
+        }
         confirmCancel();
         navigate("/");
         setBeforeCancellationPopup(false);
@@ -89,24 +87,23 @@ function WaitingRider() {
         setPassedCancellationPopup(false);
     }
 
-    const checkRiderCancellationStatus = useCallback(async () => {
-        try {
-            const response = await fetch(`/check-rider-cancellation-status?driverid=${account?.account?.email}`);
-            const data = await response.json();
-            setCheckRiderCancellationStatus(data.getCancellationStatus);
-        } catch (error) {
-            console.log("Error checking driver cancellation status:", error);
-        }
-    }, [account?.account?.email]);
-
     useEffect(() => {
         const interval = setInterval(() => {
+            async function checkRiderCancellationStatus() {
+                try {
+                    const response = await fetch(`/check-rider-cancellation-status?driverid=${account?.account?.email}`);
+                    const data = await response.json();
+                    setCheckRiderCancellationStatus(data.getCancellationStatus);
+                } catch (error) {
+                    console.log("Error checking driver cancellation status:", error);
+                }
+            }
             checkRiderCancellationStatus();
             if (cancellationRiderStatus !== "CANCELLED(RIDER)") return;
             setCancelledRiderPopup(true);
         }, 1000);
         return () => clearInterval(interval);
-    }, [cancellationRiderStatus, checkRiderCancellationStatus]);
+    }, [account?.account?.email, cancellationRiderStatus]);
 
     return (
         <PageTitle title="Waiting Rider">
@@ -128,7 +125,7 @@ function WaitingRider() {
                     )}
                 </div>
 
-                {/** @returns before cancellation popup warning */}
+                {/** Before cancellation popup warning */}
                 {beforeCancellationPopup && (
                     <div className="waiting-before-cancel-popup">
                         <h2>Cancellation Popup Warning</h2>
@@ -140,7 +137,7 @@ function WaitingRider() {
                     </div>
                 )}
 
-                {/** @returns after cancellation popup warning */}
+                {/** After cancellation popup warning */}
                 {passedCancellationPopup && (
                     <div className="waiting-after-cancel-popup">
                         <h2>Cancellation Popup Warning</h2>
@@ -153,7 +150,7 @@ function WaitingRider() {
                     </div>
                 )}
 
-                {/** @returns rider cancelled popup */}
+                {/** Rider cancelled popup */}
                 {cancelledRiderPopup && (
                     <div className="rider-cancelled-popup">
                         <p>Sorry, rider cancelled the ride</p>

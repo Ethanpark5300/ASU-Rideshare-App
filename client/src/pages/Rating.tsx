@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import '../styles/Rating.css';
 import PageTitle from '../components/PageTitle/PageTitle';
 import { useNavigate } from 'react-router-dom';
@@ -14,15 +14,31 @@ function Rating() {
     const [showFavoriteButtons, setShowFavoriteButtons] = useState<boolean>(true);
     const [completedPrompt, setCompletedPrompt] = useState<boolean>(false);
 
-    const getAccountInformation = useCallback(async () => {
-        try {
-            const response = await fetch(`/view-account-info?accountEmail=${account?.account?.email}`);
-            const data = await response.json();
-            if (data.account) setUserType(data.account.Type_User);
-        } catch (error) {
-            console.error("Error fetching data:", error);
+    useEffect(() => {
+        async function getAccountInformation() {
+            try {
+                const response = await fetch(`/view-account-info?accountEmail=${account?.account?.email}`);
+                const data = await response.json();
+                if (data.account) setUserType(data.account.Type_User);
+            } catch (error) {
+                console.error("Error fetching account data:", error);
+            } 
         }
-    }, [account?.account?.email]);
+        async function checkFavoriteStatus() {
+            if (userType !== 1) return; /** Don't run if user is not a rider */
+
+            try {
+                const response = await fetch(`/check-driver-favorite-status?riderid=${account?.account?.email}`);
+                const data = await response.json();
+                setDriverFavoriteStatus(data.currentDriverFavoriteStatus);
+                setShowFavoriteButtons(driverFavoriteStatus !== "Pending" && driverFavoriteStatus !== "Favorited");
+            } catch (error) {
+                console.error("Error fetching favorite status:", error);
+            }
+        }
+        getAccountInformation();
+        checkFavoriteStatus();
+    }, [account?.account?.email, userType, driverFavoriteStatus]);
 
     useEffect(() => {
         const delay = 500;
@@ -41,19 +57,6 @@ function Rating() {
         }, delay);
         return () => clearTimeout(timerId);
     }, [account?.account?.email]);
-
-    const checkFavoriteStatus = useCallback(async () => {
-        if (userType !== 1) return; /** Don't run if user is not a rider */
-
-        try {
-            const response = await fetch(`/check-driver-favorite-status?riderid=${account?.account?.email}`);
-            const data = await response.json();
-            setDriverFavoriteStatus(data.currentDriverFavoriteStatus);
-            setShowFavoriteButtons(driverFavoriteStatus !== "Pending" && driverFavoriteStatus !== "Favorited");
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    }, [account?.account?.email, userType, driverFavoriteStatus]);
 
     const [formChanges, setFormChanges] = useState({
         rating: 0,
@@ -88,8 +91,8 @@ function Rating() {
                 }),
             })
             setCompletedPrompt(true);
-        } catch (error: any) {
-            console.log("Error sending rider rating:", error);
+        } catch (error) {
+            console.log("Error sending driver rating:", error);
         }
     };
 
@@ -106,7 +109,7 @@ function Rating() {
                 }),
             })
             setCompletedPrompt(true);
-        } catch (error: any) {
+        } catch (error) {
             console.log("Error sending rider rating:", error);
         }
     };
@@ -122,8 +125,8 @@ function Rating() {
                 }),
             })
             alert('Driver has been blocked');
-        } catch (error: any) {
-            console.log("Error blocking user:", error);
+        } catch (error) {
+            console.log("Error rider blocking driver:", error);
         }
     };
 
@@ -139,14 +142,9 @@ function Rating() {
             })
             alert('Rider has been blocked');
         } catch (error: any) {
-            console.log("Error blocking user:", error);
+            console.log("Error driver blocking rider:", error);
         }
     };
-
-    useEffect(() => {
-        getAccountInformation();
-        checkFavoriteStatus();
-    }, [getAccountInformation, checkFavoriteStatus]);
 
     return (
         <PageTitle title="Rating">

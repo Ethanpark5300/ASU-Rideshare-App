@@ -225,7 +225,6 @@ function RequestRide({ riderid }: RequestRideProps) {
 
     const buildingOptions: BuildingOption[] = buildingsData.buildings.map((building: Building) => ({
         value: building.code,
-        // label: `${building.code} - ${building.name}`,
         label: `${building.code} - ${building.name} (${building.address})`,
         address: building.address,
     }));
@@ -272,7 +271,7 @@ function RequestRide({ riderid }: RequestRideProps) {
                                             onLoad={(autocomplete) => (originAutocomplete.current = autocomplete)}
                                             onPlaceChanged={handleOriginPlaceChanged}
                                             options={{
-                                                // types: ['establishment'],
+                                                types: ['establishment'],
                                                 strictBounds: true,
                                                 bounds: new window.google.maps.LatLngBounds(
                                                     new window.google.maps.LatLng(31.332177, -114.818268), // Southwest corner of Arizona
@@ -346,7 +345,7 @@ function RequestRide({ riderid }: RequestRideProps) {
                                             onLoad={(autocomplete) => (destinationAutocomplete.current = autocomplete)}
                                             onPlaceChanged={handleDestinationPlaceChanged}
                                             options={{
-                                                // types: ['establishment'],
+                                                types: ['establishment'],
                                                 strictBounds: true,
                                                 bounds: new window.google.maps.LatLngBounds(
                                                     new window.google.maps.LatLng(31.332177, -114.818268), // Southwest corner of Arizona

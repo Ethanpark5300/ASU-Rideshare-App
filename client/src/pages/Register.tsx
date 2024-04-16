@@ -6,25 +6,24 @@ import PageTitle from "../components/PageTitle/PageTitle";
 import { useNavigate } from "react-router-dom";
 
 function Register() {
-    const emailRef = useRef<string>("");
-    const firstNameRef = useRef<string>("");
-    const lastNameRef = useRef<string>("");
-    const passwordRef = useRef<string>("");
-    const password2Ref = useRef<string>("");
+	const navigate = useNavigate();
+
+    const emailRef = useRef<string>();
+    const firstNameRef = useRef<string>();
+    const lastNameRef = useRef<string>();
+    const passwordRef = useRef<string>();
+    const password2Ref = useRef<string>();
 
     const [registerFailed, setRegisterFailed] = useState<boolean>(false);
     const [errorMsg, setErrorMsg] = useState<string | undefined>(undefined);
-
     const [isSending, setIsSending] = useState(false);
-
     const [registerMessage, setRegisterMessage] = useState<string | undefined>();
-
-	const navigate = useNavigate();
 
     const registerRequest = useCallback(async () => {
         setErrorMsg(undefined);
         setRegisterFailed(false);
         setRegisterMessage(undefined);
+        
         //basic checks
         if (!emailRef.current.endsWith("@asu.edu")) {
             setRegisterFailed(true);
@@ -78,6 +77,7 @@ function Register() {
             });
         setIsSending(false);
     }, [isSending, navigate]);
+    
     return (
         <PageTitle title="Register">
             <main id="register">

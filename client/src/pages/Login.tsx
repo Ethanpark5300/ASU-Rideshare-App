@@ -39,8 +39,8 @@ function Login() {
                         dispatch(setAccountStore(undefined));
                     }
                 });
-        } catch (e: any) {
-            console.log(e);
+        } catch (error) {
+            console.log("Error logging in:" , error);
         }
     };
 
