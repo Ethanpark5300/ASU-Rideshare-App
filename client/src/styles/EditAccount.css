@@ -1,0 +1,36 @@
+#edit-account{
+    display: flex;
+    height: 100%;
+    padding-top: 100px;
+    padding-left: 35%;
+    flex-direction: column;
+}
+
+#edit-account button{
+    color: white;
+    background: var(--brand-maroon);
+    padding: 8px 20px;
+    border-radius: 1000px;
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    /* transition: all 0.2s; */
+    white-space: nowrap;
+}
+
+
+#edit-account h1 {
+    font-size: 50px;
+    padding-left: 7%;
+}
+
+#edit-account label {
+    font-size: 18px;
+    padding: 10px;
+    padding-left: 50px;
+}
+
+#edit-account button:hover {
+    background: maroon;
+}

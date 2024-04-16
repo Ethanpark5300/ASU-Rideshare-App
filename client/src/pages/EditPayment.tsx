@@ -59,7 +59,9 @@ function EditPayment() {
         <PageTitle title="Edit Payment">
             <main id="edit-payment">
                 <h1>Edit Payment</h1>
-                <button onClick={() => navigate("/Profile")}>Back to Profile Page</button>
+                <div className="backProfileButton">
+                    <button onClick={() => navigate("/Profile")}>Back to Profile Page</button>
+                </div>
                 <br />
                 <br />
                 <div className="infobox">

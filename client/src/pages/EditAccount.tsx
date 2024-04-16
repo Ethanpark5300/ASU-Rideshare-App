@@ -109,6 +109,7 @@ function EditAccount() {
                     value={phoneNumber || ''}
                     onChange={handlePhoneNumberChange}
                 />
+                
                 <button onClick={() => navigate("/Profile")}>Back to Profile Page</button>
                 <button onClick={handleSaveChanges}>Save Changes</button>
             </main>
