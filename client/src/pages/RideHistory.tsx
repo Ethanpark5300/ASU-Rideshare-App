@@ -114,15 +114,13 @@ function RideHistory() {
      * @param driversDriveHistoryList.Given_Ride_Date Ride date
      */
 
-    // <td>Name = {ride.Driver_FirstName} {ride.Driver_LastName} Pickup Location = {ride.Pickup_Location} Pickup Time = {ride.Pickup_Time} Dropoff Location = {ride.Dropoff_Location} Dropoff Time = {ride.Dropoff_Time} Date = {ride.Ride_Date} Cost = {ride.Cost} Rating = {ride.Given_Rider_Rating}</td>
-
     return (
         <PageTitle title="Ride History">
             <main id='ride-history'>
                 <h1>Ride History</h1>
 
                 {/** Rider history */}
-                {(userType === 1) && (
+                {(userType === 1 && riderTotalSpendings && riderAverageRating) && (
                     <>
                         {ridersRideHistoryList.length > 0 ? (
                             <>
@@ -142,7 +140,7 @@ function RideHistory() {
                                     <tbody>
                                         {ridersRideHistoryList.map((ride) => (
                                             <tr key={ride.Ride_ID}>
-                                                <td>{ride.Driver_FirstName} {ride.Driver_LastName}</td>
+                                                <td>{ride.First_Name} {ride.Last_Name}</td>
                                                 <td>{ride.Pickup_Location}</td>
                                                 <td>{ride.Pickup_Time}</td>
                                                 <td>{ride.Dropoff_Time}</td>
@@ -166,7 +164,7 @@ function RideHistory() {
                 )}
 
                 {/** Driver history */}
-                {(userType === 2) && (
+                {(userType === 2 && driverTotalEarnings && driverAverageRating) && (
                     <>
                         {driversDriveHistoryList.length > 0 ? (
                             <>
@@ -186,7 +184,7 @@ function RideHistory() {
                                     <tbody>
                                         {driversDriveHistoryList.map((ride) => (
                                             <tr key={ride.Ride_ID}>
-                                                <td>{ride.Rider_FirstName} {ride.Rider_LastName}</td>
+                                                <td>{ride.First_Name} {ride.Last_Name}</td>
                                                 <td>{ride.Pickup_Location}</td>
                                                 <td>{ride.Pickup_Time}</td>
                                                 <td>{ride.Dropoff_Location}</td>
@@ -202,7 +200,8 @@ function RideHistory() {
                                     <p>Total Earnings: ${driverTotalEarnings.toFixed(2)}</p>
                                     <p>Average Rating: {driverAverageRating.toFixed(2)}</p>
                                     <p>Total Rides: {driversDriveHistoryList.length}</p>
-                                </div></>
+                                </div>
+                            </>
                         ) : (
                             <div className="driver-no-history" >No drive history available.</div>
                         )}
