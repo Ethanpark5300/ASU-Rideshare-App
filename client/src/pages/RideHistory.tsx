@@ -167,17 +167,40 @@ function RideHistory() {
                 {(userType === 2) && (
                     <>
                         {driversDriveHistoryList.length > 0 ? (
-                            <div>
-                                {driversDriveHistoryList.map((ride) => (
-                                    <div key={ride.Ride_ID}>
-                                        <table>
-                                            <tr>
-                                                <td>Name = {ride.Rider_FirstName} {ride.Rider_LastName} Date = {ride.Ride_Date} Time = {ride.Pickup_Time} Location = {ride.Dropoff_Location} Payout = {ride.Earned} Rating = {ride.Given_Driver_Rating}</td>
+                            <><div>
+                                <table className="driver-history">
+                                    <thead>
+                                        <tr>
+                                            <th>Rider</th>
+                                            <th>Pickup Location</th>
+                                            <th>Pickup Time</th>
+                                            <th>Dropoff Location</th>
+                                            <th>Dropoff Time</th>
+                                            <th>Ride Date</th>
+                                            <th>Payout</th>
+                                            <th>Driver Rating</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {driversDriveHistoryList.map((ride) => (
+                                            <tr key={ride.Ride_ID}>
+                                                <td>{ride.Rider_FirstName} {ride.Rider_LastName}</td>
+                                                <td>{ride.Pickup_Location}</td>
+                                                <td>{ride.Pickup_Time}</td>
+                                                <td>{ride.Dropoff_Location}</td>
+                                                <td>{ride.Dropoff_Time}</td>
+                                                <td>{ride.Ride_Date}</td>
+                                                <td>{ride.Ride_Cost}</td>
+                                                <td>{ride.Given_Driver_Rating}</td>
                                             </tr>
-                                        </table>
-                                    </div>
-                                ))}
-                            </div>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div><div className="driver-stats">
+                                    <p>Total Earnings: ${driverTotalEarnings.toFixed(2)}</p>
+                                    <p>Average Rating: {driverAverageRating.toFixed(2)}</p>
+                                    <p>Total Rides: {driversDriveHistoryList.length}</p>
+                                </div></>
                         ) : (
                             <div>No drive history available.</div>
                         )}
