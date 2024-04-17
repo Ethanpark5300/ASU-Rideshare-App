@@ -125,34 +125,36 @@ function RideHistory() {
                 {(userType === 1) && (
                     <>
                         {ridersRideHistoryList.length > 0 ? (
-                            <><table>
-                                <thead>
-                                    <tr>
-                                        <th>Driver</th>
-                                        <th>Pickup Location</th>
-                                        <th>Pickup Time</th>
-                                        <th>Dropoff Location</th>
-                                        <th>Dropoff Time</th>
-                                        <th>Ride Date</th>
-                                        <th>Cost</th>
-                                        <th>Rider Rating</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {ridersRideHistoryList.map((ride) => (
-                                        <tr key={ride.Ride_ID}>
-                                            <td>{ride.Driver_FirstName} {ride.Driver_LastName}</td>
-                                            <td>{ride.Pickup_Location}</td>
-                                            <td>{ride.Pickup_Time}</td>
-                                            <td>{ride.Dropoff_Time}</td>
-                                            <td>{ride.Dropoff_Location}</td>
-                                            <td>{ride.Ride_Date}</td>
-                                            <td>{ride.Ride_Cost}</td>
-                                            <td>{ride.Given_Rider_Rating}</td>
+                            <><div>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Driver</th>
+                                            <th>Pickup Location</th>
+                                            <th>Pickup Time</th>
+                                            <th>Dropoff Location</th>
+                                            <th>Dropoff Time</th>
+                                            <th>Ride Date</th>
+                                            <th>Cost</th>
+                                            <th>Rider Rating</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table><div className="rider-stats">
+                                    </thead>
+                                    <tbody>
+                                        {ridersRideHistoryList.map((ride) => (
+                                            <tr key={ride.Ride_ID}>
+                                                <td>{ride.Driver_FirstName} {ride.Driver_LastName}</td>
+                                                <td>{ride.Pickup_Location}</td>
+                                                <td>{ride.Pickup_Time}</td>
+                                                <td>{ride.Dropoff_Time}</td>
+                                                <td>{ride.Dropoff_Location}</td>
+                                                <td>{ride.Ride_Date}</td>
+                                                <td>{ride.Ride_Cost}</td>
+                                                <td>{ride.Given_Rider_Rating}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div><div className="rider-stats">
                                     <p>Total Spending: ${riderTotalSpendings.toFixed(2)}</p>
                                     <p>Average Rating: {riderAverageRating.toFixed(2)}</p>
                                     <p>Total Rides: {ridersRideHistoryList.length}</p>

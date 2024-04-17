@@ -19,3 +19,8 @@
     border: 2px solid black;
     text-align: center;
 }
+
+#ride-history h1 {
+    background-color: var(--brand-gold);
+    padding: .5rem;
+}
