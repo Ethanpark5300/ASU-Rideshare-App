@@ -125,7 +125,7 @@ function RideHistory() {
                 {(userType === 1) && (
                     <>
                         {ridersRideHistoryList.length > 0 ? (
-                            <><div>
+                            <>
                                 <table>
                                     <thead>
                                         <tr>
@@ -154,13 +154,13 @@ function RideHistory() {
                                         ))}
                                     </tbody>
                                 </table>
-                            </div><div className="rider-stats">
+                                <div className="rider-stats">
                                     <p>Total Spending: ${riderTotalSpendings.toFixed(2)}</p>
                                     <p>Average Rating: {riderAverageRating.toFixed(2)}</p>
                                     <p>Total Rides: {ridersRideHistoryList.length}</p>
                                 </div></>
                         ) : (
-                            <div>No ride history available.</div>
+                            <div className="rider-no-history">No ride history available.</div>
                         )}
                     </>
                 )}
@@ -169,7 +169,7 @@ function RideHistory() {
                 {(userType === 2) && (
                     <>
                         {driversDriveHistoryList.length > 0 ? (
-                            <><div>
+                            <>
                                 <table className="driver-history">
                                     <thead>
                                         <tr>
@@ -198,13 +198,13 @@ function RideHistory() {
                                         ))}
                                     </tbody>
                                 </table>
-                            </div><div className="driver-stats">
+                                <div className="driver-stats">
                                     <p>Total Earnings: ${driverTotalEarnings.toFixed(2)}</p>
                                     <p>Average Rating: {driverAverageRating.toFixed(2)}</p>
                                     <p>Total Rides: {driversDriveHistoryList.length}</p>
                                 </div></>
                         ) : (
-                            <div>No drive history available.</div>
+                            <div className="driver-no-history" >No drive history available.</div>
                         )}
                     </>
                 )}

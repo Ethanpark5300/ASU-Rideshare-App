@@ -24,3 +24,12 @@
     background-color: var(--brand-gold);
     padding: .5rem;
 }
+
+#ride-history .rider-stats,
+#ride-history .driver-stats {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
